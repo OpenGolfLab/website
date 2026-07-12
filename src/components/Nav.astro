@@ -1,6 +1,6 @@
 ---
 import Logo from "./Logo.astro";
-import { NAV_LINKS } from "../consts";
+import { NAV_LINKS, BUYMEACOFFEE_URL } from "../consts";
 
 // Normalize the current path (strip trailing slash) for active-link matching.
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -33,7 +33,19 @@ const isActive = (href: string) => {
           </a>
         ))
       }
-      <a href="/download" class="btn btn-primary nav-cta">Download</a>
+      <a
+        href={BUYMEACOFFEE_URL}
+        class="btn btn-coffee nav-cta"
+        rel="noopener"
+        target="_blank"
+      >
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M8 2.5c-.6.8-.6 1.7 0 2.5M12 2.5c-.6.8-.6 1.7 0 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+        Buy me a coffee
+      </a>
     </nav>
   </div>
 </header>

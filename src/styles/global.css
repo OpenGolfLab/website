@@ -242,6 +242,17 @@ time {
   border-color: var(--green);
   background: var(--surface-2);
 }
+.btn-coffee {
+  background: #ffdd00;
+  color: #1a1400;
+  font-weight: 600;
+  box-shadow: 0 6px 18px -10px rgba(255, 221, 0, 0.6);
+}
+.btn-coffee:hover {
+  background: #ffe533;
+  color: #1a1400;
+  box-shadow: 0 8px 22px -8px rgba(255, 221, 0, 0.7);
+}
 .btn-lg {
   font-size: 1.1rem;
   padding: 1rem 1.7rem;

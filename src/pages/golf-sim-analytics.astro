@@ -1,0 +1,462 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Screenshot from "../components/Screenshot.astro";
+import JsonLd from "../components/JsonLd.astro";
+import {
+  LATEST_RELEASE_URL,
+  PRODUCT_NAME,
+  PRODUCT_OS,
+  PRODUCT_PRICE,
+  SITE_TAGLINE,
+  SITE_URL,
+} from "../consts";
+
+const title = "Golf Sim Analytics";
+const description = `${PRODUCT_NAME} is a free Windows app for GSPro — zero-click capture, 15 interactive dashboards, deep per-shot metrics, and PGA Tour benchmarks. Local-first and private.`;
+
+const valueProps = [
+  {
+    metric: "0",
+    unit: "clicks to import",
+    title: "Zero-click data capture",
+    body: "Practice Range CSV exports are picked up from your Desktop automatically. Live rounds track in real time from GSPro's round file and archive themselves when the round ends. You play — the data files itself.",
+  },
+  {
+    metric: "15",
+    unit: "dashboards",
+    title: "15 interactive dashboards",
+    body: "Six categories covering dispersion, gapping, trajectory, swing efficiency, shot shape, speed training, on-course scoring and live sessions — every angle on your ball flight.",
+  },
+  {
+    metric: "6+",
+    unit: "metrics per shot",
+    title: "Deep per-shot analytics",
+    body: "Hover any point for carry, ball speed, launch, descent, spin and smash factor — each flagged against that club's ideal window, so you see exactly where a shot fell out of spec.",
+  },
+  {
+    metric: "5–20",
+    unit: "handicap overlays",
+    title: "Benchmarks in one click",
+    body: "Overlay PGA Tour averages or any handicap level from 5 to 20 to measure your numbers against a real, honest target.",
+  },
+  {
+    metric: "A/B",
+    unit: "live fitting",
+    title: "Built-in fitting bay",
+    body: "Compare shafts and adapter settings head-to-head with live shot capture. Test two configurations and let the dispersion decide which one stays in the bag.",
+  },
+  {
+    metric: "100%",
+    unit: "on your machine",
+    title: "Local-first & private",
+    body: "Every shot lives in Parquet files right next to the app. Nothing is uploaded, there's no account, and it's completely free.",
+  },
+];
+
+const categories = [
+  { name: "Metrics", items: "Dispersion · Trajectory · Club Gapping · Swing Efficiency · Shot Quality · Shot & Club Trends" },
+  { name: "Optimization", items: "Launch & Spin · Session Comparison · Shot Shape" },
+  { name: "Club Fitting", items: "Adapter A/B testing with live shot capture" },
+  { name: "Speed Training", items: "Cruising speed · Fatigue curve · Long-term progression" },
+  { name: "On-Course", items: "Automatic scorecards" },
+  { name: "Live", items: "Real-time dispersion" },
+];
+
+const steps = [
+  { n: "01", title: "Export or play", body: "Hit export in GSPro's Practice Range, or just start a round. That's the only thing you do." },
+  { n: "02", title: "Auto-ingest", body: "The app detects GSPro's files the instant they appear and files everything into local Parquet." },
+  { n: "03", title: "Explore dashboards", body: "Open any of the 15 dashboards, hover shots for full metrics, and drop in Tour or handicap benchmarks." },
+];
+
+const softwareLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: PRODUCT_NAME,
+  applicationCategory: "SportsApplication",
+  operatingSystem: "Windows 10, Windows 11",
+  softwareVersion: "latest",
+  downloadUrl: LATEST_RELEASE_URL,
+  url: `${SITE_URL}/golf-sim-analytics`,
+  description,
+  offers: { "@type": "Offer", price: PRODUCT_PRICE, priceCurrency: "USD" },
+  publisher: { "@type": "Organization", name: "OpenGolfLab", url: SITE_URL },
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd slot="head" data={softwareLd} />
+
+  <!-- ============================ HERO ============================ -->
+  <section class="app-hero">
+    <div class="grid-bg"></div>
+    <div class="container app-hero-inner">
+      <div class="app-hero-copy">
+        <p class="eyebrow">The app · free for GSPro</p>
+        <h1>Golf Sim Analytics</h1>
+        <p class="app-hero-tagline">{SITE_TAGLINE}</p>
+        <p class="lede" style="margin-top:1.1rem;">
+          A free Windows app that turns every GSPro session into deep,
+          interactive analytics — automatically. No imports, no accounts, and
+          nothing ever leaves your machine.
+        </p>
+        <div class="hero-cta">
+          <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
+              ><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              ></path></svg
+            >
+            Download for Windows
+          </a>
+          <a href="/download" class="btn btn-secondary btn-lg">Install guide &amp; FAQ</a>
+        </div>
+        <div class="hero-chips" role="list" aria-label="Example shot readout">
+          <span class="stat-chip" role="listitem"><span class="label">Smash</span><b>1.49</b></span>
+          <span class="stat-chip" role="listitem"><span class="label">Carry</span><b>285</b> yd</span>
+          <span class="stat-chip" role="listitem"><span class="label">Ball</span><b>167</b> mph</span>
+          <span class="stat-chip" role="listitem"><span class="label">Spin</span><b>2,610</b> rpm</span>
+        </div>
+        <p class="app-free-note">
+          Free forever · {PRODUCT_OS} · No account required
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container app-hero-shot">
+    <Screenshot
+      src="/images/screenshots/home.jpg"
+      alt="Golf Sim Analytics home dashboard showing a session summary with carry distances, a dispersion plot, and per-club metrics."
+      loading="eager"
+      caption="The home dashboard — a live readout of your latest session."
+    />
+  </section>
+
+  <!-- ========================= WHY ========================= -->
+  <section class="section" style="padding-bottom:0;">
+    <div class="container">
+      <p class="eyebrow">Why it exists</p>
+      <h2 class="app-why-h">GSPro shows you the shot. It doesn't remember it.</h2>
+      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
+        GSPro is a superb simulator, but the numbers vanish the moment the ball
+        lands — there's no history, no trends, no dispersion over time. Golf Sim
+        Analytics is the memory and the microscope: it captures every shot you
+        hit and turns it into analytics you can actually practice against.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= FEATURES ========================= -->
+  <section class="section">
+    <div class="container">
+      <div class="feature-grid">
+        {
+          valueProps.map((f) => (
+            <article class="card feature">
+              <div class="feature-metric">
+                <span class="feature-num tnum">{f.metric}</span>
+                <span class="feature-unit">{f.unit}</span>
+              </div>
+              <h3>{f.title}</h3>
+              <p class="text-muted">{f.body}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= SCREENSHOTS ======================= -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">A look inside</p>
+      <h2>Data-forward on every screen</h2>
+      <div class="screens-grid">
+        <Screenshot
+          src="/images/screenshots/dispersion.jpg"
+          alt="Dispersion dashboard plotting shot landing positions with left-right and carry scatter, colored by club, against an ideal target ellipse."
+          caption="Dispersion — the shape and tightness of every club."
+        />
+        <Screenshot
+          src="/images/screenshots/gapping_benchmarks.jpg"
+          alt="Club gapping chart with carry-distance bars for each club overlaid with PGA Tour benchmark markers to reveal distance gaps."
+          caption="Club gapping with one-click Tour and handicap benchmarks."
+        />
+        <Screenshot
+          src="/images/screenshots/live.jpg"
+          alt="Live dashboard updating a dispersion plot in real time as new shots arrive during a GSPro session."
+          caption="Live — real-time dispersion as you hit."
+        />
+        <Screenshot
+          src="/images/screenshots/speed_training.jpg"
+          alt="Speed training dashboard showing cruising clubhead speed, a fatigue curve across a session, and long-term speed progression."
+          caption="Speed training — cruising speed, fatigue and progression."
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== DASHBOARDS BY CATEGORY ==================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="cats">
+        <p class="cats-head">15 dashboards, six categories</p>
+        <ul class="cats-list">
+          {
+            categories.map((c) => (
+              <li class="cat">
+                <span class="cat-name">{c.name}</span>
+                <span class="cat-items">{c.items}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= HOW IT WORKS ======================= -->
+  <section class="section how" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">How it works</p>
+      <h2>Three steps, and two of them are just playing golf</h2>
+      <ol class="steps">
+        {
+          steps.map((s) => (
+            <li class="step card">
+              <span class="step-n tnum">{s.n}</span>
+              <h3>{s.title}</h3>
+              <p class="text-muted">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===================== PART OF SOMETHING BIGGER ===================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="app-lab card">
+        <div class="grid-bg" style="opacity:0.5"></div>
+        <div class="app-lab-inner">
+          <p class="eyebrow">Part of the bigger picture</p>
+          <h2>Your practice tool is also a research instrument</h2>
+          <p class="lede" style="margin-top:0.75rem;">
+            Every shot you capture is a data point that could improve equipment
+            testing for everyone. Golf Sim Analytics is the front door to
+            <a href="/lab">OpenGolfLab</a> — an open, free effort to build the
+            robust, standardized ball and club comparisons the golf world is
+            missing.
+          </p>
+          <div class="hero-cta">
+            <a href="/lab" class="btn btn-secondary">See the mission</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= FINAL CTA ========================= -->
+  <section class="section-tight">
+    <div class="container final-cta">
+      <h2>Start with your very next session</h2>
+      <p class="lede mx-auto" style="margin-top:0.6rem;">
+        Free, private, and Windows-ready. Install it, play, and watch your
+        numbers show up.
+      </p>
+      <div class="hero-cta" style="justify-content:center;">
+        <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">Download for Windows</a>
+        <a href="/download" class="btn btn-secondary btn-lg">System requirements</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .app-hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    background: radial-gradient(110% 90% at 20% -10%, rgba(61, 220, 132, 0.09), transparent 60%);
+  }
+  .app-hero-inner {
+    position: relative;
+    z-index: 1;
+    padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2rem, 5vw, 3.5rem);
+  }
+  .app-hero-copy {
+    max-width: 62ch;
+  }
+  .app-hero-tagline {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    color: var(--green);
+    letter-spacing: 0.02em;
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+  }
+  .hero-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    margin-top: 1.6rem;
+  }
+  .app-free-note {
+    margin-top: 1.1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .app-hero-shot {
+    margin-top: -1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .app-why-h {
+    max-width: 20ch;
+  }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+  }
+  .feature {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .feature-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
+  }
+  .feature-num {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+  .feature-unit {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+  }
+  .feature h3 {
+    font-size: 1.15rem;
+  }
+
+  .screens-grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.4rem;
+  }
+
+  .cats {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.5rem;
+  }
+  .cats-head {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+  }
+  .cats-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem 2rem;
+  }
+  .cat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cat-name {
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--green);
+    font-size: 0.98rem;
+  }
+  .cat-items {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .steps {
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+  }
+  .step-n {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .step h3 {
+    margin-top: 0.6rem;
+    font-size: 1.2rem;
+  }
+  .step p {
+    margin-top: 0.4rem;
+  }
+
+  .app-lab {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(1.75rem, 4vw, 3rem);
+    background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
+  }
+  .app-lab-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 62ch;
+  }
+
+  .final-cta {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  @media (max-width: 900px) {
+    .feature-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .steps {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 680px) {
+    .feature-grid,
+    .screens-grid,
+    .cats-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

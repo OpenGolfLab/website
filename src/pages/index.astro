@@ -1,75 +1,37 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Screenshot from "../components/Screenshot.astro";
-import {
-  LATEST_RELEASE_URL,
-  PRODUCT_NAME,
-  SITE_TAGLINE,
-} from "../consts";
+import { PRODUCT_NAME } from "../consts";
 
-const features = [
+const problems = [
   {
-    title: "Zero-click data capture",
-    body: "Practice Range CSV exports are picked up from your Desktop automatically — no import buttons. Live rounds track in real time from GSPro's round file and archive themselves the moment the round ends.",
-    metric: "0",
-    unit: "clicks to import",
+    title: "Sample sizes of a dozen",
+    body: "Most “definitive” ball and club reviews rest on a handful of shots from one or two testers on one launch monitor. That's not data — it's an anecdote with a chart.",
   },
   {
-    title: "15 interactive dashboards",
-    body: "Six categories — Metrics, Optimization, Club Fitting, Speed Training, On-Course and Live — covering dispersion, gapping, trajectory, swing efficiency, shot shape and more.",
-    metric: "15",
-    unit: "dashboards",
+    title: "Everyone tests differently",
+    body: "Different balls, different swings, different conditions, different software. Two reviews reach opposite conclusions because they never measured the same way.",
   },
   {
-    title: "Deep per-shot analytics",
-    body: "Hover any point for carry, ball speed, launch, descent, spin and smash factor — each flagged against that club's ideal window so you see exactly where a shot fell out of spec.",
-    metric: "6+",
-    unit: "metrics per shot",
-  },
-  {
-    title: "Benchmarks in one click",
-    body: "Overlay PGA Tour averages or any handicap level from 5 to 20 to see how your numbers stack up against a real target.",
-    metric: "5–20",
-    unit: "handicap overlays",
-  },
-  {
-    title: "Built-in fitting bay",
-    body: "Run adapter and shaft settings head-to-head with live shot capture. A/B two configurations and let the dispersion tell you which one to keep.",
-    metric: "A/B",
-    unit: "live comparison",
-  },
-  {
-    title: "Local-first & private",
-    body: "Every shot lives in Parquet files right next to the app. Nothing leaves your machine, there's no account, and it's completely free.",
-    metric: "100%",
-    unit: "on your machine",
+    title: "Conclusions dressed as truth",
+    body: "Limited tests get published as gospel, and golfers buy equipment based on numbers that would never survive a real sample.",
   },
 ];
 
-const categories = [
-  { name: "Metrics", items: "Dispersion · Trajectory · Club Gapping · Swing Efficiency · Shot Quality · Shot & Club Trends" },
-  { name: "Optimization", items: "Launch & Spin · Session Comparison · Shot Shape" },
-  { name: "Club Fitting", items: "Adapter A/B testing with live shot capture" },
-  { name: "Speed Training", items: "Cruising speed · Fatigue curve · Long-term progression" },
-  { name: "On-Course", items: "Automatic scorecards" },
-  { name: "Live", items: "Real-time dispersion" },
-];
-
-const steps = [
+const framework = [
   {
     n: "01",
-    title: "Export or play",
-    body: "Hit export in GSPro's Practice Range, or just start a round. That's the only thing you do.",
+    title: "One standardized method",
+    body: "A shared, documented protocol for how a test is run and what gets recorded — so every contribution is measured the same way.",
   },
   {
     n: "02",
-    title: "Auto-ingest",
-    body: "The app watches for GSPro's files, ingests them the instant they appear, and files everything into local Parquet.",
+    title: "Thousands of shots, many players",
+    body: "Instead of one tester's dozen swings, aggregate data from a whole community across skill levels, swings and setups.",
   },
   {
     n: "03",
-    title: "Explore dashboards",
-    body: "Open any of the 15 dashboards, hover shots for full metrics, and drop in Tour or handicap benchmarks.",
+    title: "Comparisons you can trust",
+    body: "Real distributions — ball performance, club gapping by handicap, launch and spin norms — with the sample size to back them up.",
   },
 ];
 ---
@@ -77,188 +39,158 @@ const steps = [
 <BaseLayout>
   <!-- ============================ HERO ============================ -->
   <section class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <img
+        src="/images/course_bg.jpg"
+        alt=""
+        width="2400"
+        height="1350"
+        fetchpriority="high"
+      />
+      <div class="hero-scrim"></div>
+    </div>
     <div class="grid-bg"></div>
+
     <div class="container hero-inner">
-      <p class="eyebrow">Open golf simulator analytics · for GSPro</p>
-      <h1 class="hero-title">{SITE_TAGLINE}</h1>
+      <span class="pill hero-openpill">◆ Open &amp; free · community-powered</span>
+      <h1 class="hero-title">Golf equipment testing, done in the open.</h1>
       <p class="lede hero-lede">
-        {PRODUCT_NAME} is a free Windows app that turns your GSPro sessions into
-        deep, interactive analytics — automatically. No imports, no accounts,
-        no data leaving your machine.
+        Every ball and club “review” you've read is built on a handful of shots.
+        OpenGolfLab is a free, community effort to fix that — crowd-sourcing
+        thousands of standardized tests so golfers can finally compare gear on
+        real data, not anecdotes.
       </p>
 
       <div class="hero-cta">
-        <a href="/download" class="btn btn-primary btn-lg">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
-            ><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            ></path></svg
-          >
-          Download for Windows
-        </a>
-        <a href="/blog" class="btn btn-secondary btn-lg">Read the blog</a>
+        <a href="/lab" class="btn btn-primary btn-lg">See the mission</a>
+        <a href="/golf-sim-analytics" class="btn btn-secondary btn-lg">Get the app</a>
       </div>
 
-      <div class="hero-chips" role="list" aria-label="Example shot readout">
-        <span class="stat-chip" role="listitem"
-          ><span class="label">Smash</span><b>1.49</b></span
-        >
-        <span class="stat-chip" role="listitem"
-          ><span class="label">Carry</span><b>285</b> yd</span
-        >
-        <span class="stat-chip" role="listitem"
-          ><span class="label">Ball</span><b>167</b> mph</span
-        >
-        <span class="stat-chip" role="listitem"
-          ><span class="label">Launch</span><b>14.2</b>°</span
-        >
-        <span class="stat-chip" role="listitem"
-          ><span class="label">Spin</span><b>2,610</b> rpm</span
-        >
+      <div class="hero-chips" role="list" aria-label="What makes the data trustworthy">
+        <span class="stat-chip" role="listitem"><span class="label">Method</span><b>Standardized</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Sample</span><b>Crowd-sourced</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Cost</span><b>Free</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Data</span><b>Open</b></span>
       </div>
     </div>
   </section>
 
-  <!-- ===================== HERO SCREENSHOT ===================== -->
-  <section class="container hero-shot">
-    <Screenshot
-      src="/images/screenshots/home.jpg"
-      alt="Golf Sim Analytics home dashboard showing a session summary with carry distances, a dispersion plot, and per-club metrics."
-      loading="eager"
-      caption="The home dashboard — a live readout of your latest session."
-    />
-  </section>
-
-  <!-- ========================= FEATURES ========================= -->
-  <section id="features" class="section">
+  <!-- ========================= THE PROBLEM ========================= -->
+  <section class="section" id="why">
     <div class="container">
-      <p class="eyebrow">What it does</p>
-      <h2>Everything about your ball flight, without the busywork</h2>
-      <p class="lede" style="margin-top:0.75rem;">
-        Tighten your gapping, diagnose your misses, and dial in equipment —
-        from the same data GSPro already produces.
+      <p class="eyebrow">Why this exists</p>
+      <h2 class="mission-h">The way golf gear gets tested is broken</h2>
+      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
+        Picking a ball or a driver should be an evidence-based decision. Instead,
+        the “evidence” is usually a tiny, one-off test that gets treated as the
+        final word. Three problems show up everywhere:
       </p>
 
-      <div class="feature-grid">
+      <div class="problem-grid">
         {
-          features.map((f) => (
-            <article class="card feature">
-              <div class="feature-metric">
-                <span class="feature-num tnum">{f.metric}</span>
-                <span class="feature-unit">{f.unit}</span>
-              </div>
-              <h3>{f.title}</h3>
-              <p class="text-muted">{f.body}</p>
+          problems.map((p) => (
+            <article class="card problem">
+              <span class="problem-x" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+              </span>
+              <h3>{p.title}</h3>
+              <p class="text-muted">{p.body}</p>
             </article>
           ))
         }
       </div>
-
-      <!-- dashboards by category -->
-      <div class="cats">
-        <p class="cats-head">15 dashboards, six categories</p>
-        <ul class="cats-list">
-          {
-            categories.map((c) => (
-              <li class="cat">
-                <span class="cat-name">{c.name}</span>
-                <span class="cat-items">{c.items}</span>
-              </li>
-            ))
-          }
-        </ul>
-      </div>
     </div>
   </section>
 
-  <!-- ======================= SCREENSHOTS ======================= -->
-  <section id="screens" class="section" style="padding-top:0;">
+  <!-- ========================= THE SOLUTION ========================= -->
+  <section class="section solution" style="padding-top:0;">
     <div class="container">
-      <p class="eyebrow">A look inside</p>
-      <h2>Data-forward, every screen</h2>
+      <p class="eyebrow">The fix</p>
+      <h2 class="mission-h">Crowd-source the tests. Standardize the method.</h2>
+      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
+        One tester can't produce trustworthy comparisons. A community can — but
+        only if everyone measures the same way. That's the whole idea behind
+        OpenGolfLab: a robust intercomparison framework so thousands of
+        contributions add up to something real.
+      </p>
 
-      <div class="screens-grid">
-        <Screenshot
-          src="/images/screenshots/dispersion.jpg"
-          alt="Dispersion dashboard plotting shot landing positions with left-right and carry scatter, colored by club, against an ideal target ellipse."
-          caption="Dispersion — see the shape and tightness of every club."
-        />
-        <Screenshot
-          src="/images/screenshots/gapping_benchmarks.jpg"
-          alt="Club gapping chart with carry-distance bars for each club overlaid with PGA Tour benchmark markers to reveal distance gaps."
-          caption="Club gapping with one-click Tour and handicap benchmarks."
-        />
-        <Screenshot
-          src="/images/screenshots/live.jpg"
-          alt="Live dashboard updating a dispersion plot in real time as new shots arrive during a GSPro session."
-          caption="Live — real-time dispersion as you hit."
-        />
-        <Screenshot
-          src="/images/screenshots/speed_training.jpg"
-          alt="Speed training dashboard showing cruising clubhead speed, a fatigue curve across a session, and long-term speed progression."
-          caption="Speed training — cruising speed, fatigue and progression."
-        />
-      </div>
-    </div>
-  </section>
-
-  <!-- ======================= HOW IT WORKS ======================= -->
-  <section id="how" class="section how">
-    <div class="container">
-      <p class="eyebrow">How it works</p>
-      <h2>Three steps, and two of them are just playing golf</h2>
-
-      <ol class="steps">
+      <ol class="framework">
         {
-          steps.map((s) => (
+          framework.map((f) => (
             <li class="step card">
-              <span class="step-n tnum">{s.n}</span>
-              <h3>{s.title}</h3>
-              <p class="text-muted">{s.body}</p>
+              <span class="step-n tnum">{f.n}</span>
+              <h3>{f.title}</h3>
+              <p class="text-muted">{f.body}</p>
             </li>
           ))
         }
       </ol>
+
+      <p class="framework-foot text-muted">
+        The community analytics hub — real ball comparisons, gapping by handicap,
+        launch &amp; spin norms — lives in <a href="/lab">the Lab</a>.
+      </p>
     </div>
   </section>
 
-  <!-- ========================= LAB TEASER ======================== -->
+  <!-- ==================== THE TOOL (APP) ==================== -->
   <section class="section">
     <div class="container">
-      <div class="lab-teaser card">
-        <div class="grid-bg" style="opacity:0.5"></div>
-        <div class="lab-teaser-inner">
-          <p class="eyebrow">Coming next · OpenGolfLab</p>
-          <h2>An open lab for sim golf data</h2>
-          <p class="lede" style="margin-top:0.75rem;">
-            The app makes your data useful. The Lab makes everyone's data
-            useful — an open framework where sim golfers contribute anonymized
-            ball and club metrics to build community-driven analytics: real-world
-            ball comparisons, gapping distributions by handicap, and launch/spin
-            norms you can actually trust.
+      <div class="tool card">
+        <div class="tool-copy">
+          <p class="eyebrow">How you contribute</p>
+          <h2>{PRODUCT_NAME} is the instrument</h2>
+          <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
+            You can't crowd-source data without a consistent way to capture it.
+            Golf Sim Analytics is our free Windows app for GSPro that records
+            every shot automatically — carry, ball speed, launch, spin, smash —
+            and turns it into 15 interactive dashboards. Practice better today,
+            and (opt-in) help build the shared dataset tomorrow.
           </p>
+          <ul class="tool-points">
+            <li>Zero-click capture from GSPro — no import step</li>
+            <li>15 dashboards, deep per-shot metrics, Tour &amp; handicap benchmarks</li>
+            <li>Local-first &amp; private — your raw data never leaves your machine</li>
+          </ul>
           <div class="hero-cta">
-            <a href="/lab" class="btn btn-primary">Explore the Lab</a>
-            <a href="/blog" class="btn btn-secondary">Follow along</a>
+            <a href="/golf-sim-analytics" class="btn btn-primary">Explore the app</a>
+            <a href="/download" class="btn btn-secondary">Download for Windows</a>
           </div>
+        </div>
+        <div class="tool-shot">
+          <img
+            src="/images/screenshots/dispersion.jpg"
+            alt="Golf Sim Analytics dispersion dashboard plotting shot landing positions by club against an ideal target ellipse."
+            width="1200"
+            height="900"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ========================= FINAL CTA ========================= -->
+  <!-- ==================== OPEN & FREE CALLOUT ==================== -->
   <section class="section-tight">
-    <div class="container final-cta">
-      <h2>Start with your very next session</h2>
-      <p class="lede mx-auto" style="margin-top:0.6rem;">
-        Free, private, and Windows-ready. Install it, play, and watch your
-        numbers show up.
-      </p>
-      <div class="hero-cta" style="justify-content:center;">
-        <a href="/download" class="btn btn-primary btn-lg">Download for Windows</a>
-        <a href={LATEST_RELEASE_URL} class="btn btn-secondary btn-lg" rel="noopener"
-          >View releases</a
-        >
+    <div class="container">
+      <div class="openfree">
+        <div class="grid-bg" style="opacity:0.6"></div>
+        <div class="openfree-inner">
+          <h2>Open source. Free forever. No catch.</h2>
+          <p class="lede mx-auto" style="text-align:center;margin-top:0.8rem;">
+            The app is free, the data will be open, and the whole project is
+            built in public on GitHub. No paywalls, no accounts, no selling your
+            swing. If OpenGolfLab is useful to you, a coffee keeps it caffeinated
+            — but nothing here is ever locked away.
+          </p>
+          <div class="hero-cta" style="justify-content:center;">
+            <a href="/lab" class="btn btn-primary">Join the effort</a>
+            <a href="/blog" class="btn btn-secondary">Follow the blog</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -270,24 +202,48 @@ const steps = [
     position: relative;
     overflow: hidden;
     border-bottom: 1px solid var(--border);
-    background: radial-gradient(
-      120% 90% at 50% -10%,
-      rgba(61, 220, 132, 0.08),
-      transparent 60%
-    );
+    isolation: isolate;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+  .hero-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+  }
+  /* Scrim keeps text at WCAG AA over any photo. */
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(13, 17, 23, 0.72) 0%, rgba(13, 17, 23, 0.86) 60%, var(--bg) 100%),
+      radial-gradient(120% 90% at 50% -10%, rgba(61, 220, 132, 0.12), transparent 55%);
+  }
+  .hero .grid-bg {
+    z-index: -1;
   }
   .hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: clamp(3.5rem, 9vw, 6.5rem) clamp(2.5rem, 6vw, 4rem);
+    padding-block: clamp(4rem, 11vw, 8rem) clamp(3rem, 7vw, 5rem);
     text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  .hero-openpill {
+    color: var(--green);
+    border-color: var(--green-dim);
+    background: rgba(13, 17, 23, 0.5);
+    margin-bottom: 1.2rem;
+  }
   .hero-title {
-    margin-top: 0.4rem;
-    background: linear-gradient(180deg, #ffffff 0%, #c7d2dd 100%);
+    max-width: 18ch;
+    background: linear-gradient(180deg, #ffffff 0%, #cdd8e2 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -295,6 +251,7 @@ const steps = [
   .hero-lede {
     margin-top: 1.2rem;
     text-align: center;
+    color: #cbd5e0;
   }
   .hero-cta {
     display: flex;
@@ -306,115 +263,52 @@ const steps = [
   .hero-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.6rem;
+    gap: 0.55rem;
     justify-content: center;
     margin-top: 2rem;
   }
 
-  .hero-shot {
-    margin-top: -2.5rem;
-    position: relative;
-    z-index: 2;
-    margin-bottom: 1rem;
+  /* ---- Shared section headings ---- */
+  .mission-h {
+    max-width: 22ch;
   }
 
-  /* ---- Feature grid ---- */
-  .feature-grid {
+  /* ---- Problem grid ---- */
+  .problem-grid {
     margin-top: 2.5rem;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.1rem;
   }
-  .feature {
+  .problem {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
   }
-  .feature-metric {
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
+  .problem-x {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: #ff7b72;
+    background: rgba(255, 123, 114, 0.1);
+    border: 1px solid rgba(255, 123, 114, 0.25);
     margin-bottom: 0.4rem;
   }
-  .feature-num {
-    font-family: var(--font-head);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--green);
-    line-height: 1;
-  }
-  .feature-unit {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-dim);
-  }
-  .feature h3 {
-    font-size: 1.15rem;
+  .problem h3 {
+    font-size: 1.12rem;
   }
 
-  /* ---- Categories ---- */
-  .cats {
-    margin-top: 2rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    padding: 1.5rem;
-  }
-  .cats-head {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 1rem;
-  }
-  .cats-list {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.9rem 2rem;
-  }
-  .cat {
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-    padding-bottom: 0.9rem;
-    border-bottom: 1px solid var(--border);
-  }
-  .cat-name {
-    font-family: var(--font-head);
-    font-weight: 600;
-    color: var(--green);
-    font-size: 0.98rem;
-  }
-  .cat-items {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-  }
-
-  /* ---- Screenshots grid ---- */
-  .screens-grid {
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.4rem;
-  }
-
-  /* ---- How it works ---- */
-  .steps {
+  /* ---- Framework steps ---- */
+  .framework {
     margin-top: 2.5rem;
     list-style: none;
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.1rem;
-    counter-reset: step;
-  }
-  .step {
-    position: relative;
   }
   .step-n {
     font-family: var(--font-mono);
@@ -429,23 +323,71 @@ const steps = [
   .step p {
     margin-top: 0.4rem;
   }
+  .framework-foot {
+    margin-top: 1.5rem;
+    font-size: 0.98rem;
+  }
 
-  /* ---- Lab teaser ---- */
-  .lab-teaser {
+  /* ---- Tool (app) split ---- */
+  .tool {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .tool-copy {
+    padding: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  .tool-points {
+    margin: 1.2rem 0 1.6rem;
+    padding-left: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .tool-points li {
+    position: relative;
+    padding-left: 1.7rem;
+    color: var(--text-muted);
+  }
+  .tool-points li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green-glow);
+  }
+  .tool-shot {
+    position: relative;
+    border-left: 1px solid var(--border);
+    min-height: 260px;
+    background: var(--bg-elevated);
+  }
+  .tool-shot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---- Open & free callout ---- */
+  .openfree {
     position: relative;
     overflow: hidden;
-    padding: clamp(1.75rem, 4vw, 3rem);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: clamp(2rem, 5vw, 3.5rem);
+    text-align: center;
     background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
   }
-  .lab-teaser-inner {
+  .openfree-inner {
     position: relative;
     z-index: 1;
-    max-width: 62ch;
-  }
-
-  /* ---- Final CTA ---- */
-  .final-cta {
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -453,21 +395,18 @@ const steps = [
 
   /* ---- Responsive ---- */
   @media (max-width: 900px) {
-    .feature-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .steps {
+    .problem-grid,
+    .framework {
       grid-template-columns: 1fr;
     }
-  }
-  @media (max-width: 680px) {
-    .feature-grid,
-    .screens-grid,
-    .cats-list {
+    .tool {
       grid-template-columns: 1fr;
     }
-    .hero-shot {
-      margin-top: -1rem;
+    .tool-shot {
+      border-left: none;
+      border-top: 1px solid var(--border);
+      min-height: 220px;
+      order: -1;
     }
   }
 </style>
