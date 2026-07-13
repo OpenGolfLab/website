@@ -90,11 +90,7 @@ const framework = [
         {
           problems.map((p) => (
             <article class="card problem">
-              <span class="problem-x" aria-hidden="true">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
-              </span>
+              <span class="problem-tag" aria-hidden="true">Problem</span>
               <h3>{p.title}</h3>
               <p class="text-muted">{p.body}</p>
             </article>
@@ -285,17 +281,18 @@ const framework = [
     flex-direction: column;
     gap: 0.55rem;
   }
-  .problem-x {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    color: #ff7b72;
-    background: rgba(255, 123, 114, 0.1);
-    border: 1px solid rgba(255, 123, 114, 0.25);
-    margin-bottom: 0.4rem;
+  .problem-tag {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    margin-bottom: 0.7rem;
   }
   .problem h3 {
     font-size: 1.12rem;
