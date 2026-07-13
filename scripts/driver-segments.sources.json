@@ -1,0 +1,102 @@
+{
+  "_comment": "Hand-curated category winners behind the segmented driver tables. Two groupings: 'features' (what each outlet crowned for a performance priority) and 'profiles' (what each outlet recommended for a player type — swing speed or handicap). Outlet ids must match rankers in driver-rankings.sources.json so names/links join automatically. Cells are the exact model string that outlet named; leave a cell out if that outlet didn't make a clear pick for it. Model strings must match those used in driver-rankings.sources.json. After editing, run `npm run rankings` to regenerate. Sources: same articles as the main ranking table.",
+  "features": {
+    "columns": [
+      { "id": "overall", "label": "Overall", "desc": "Best all-round driver" },
+      { "id": "distance", "label": "Distance", "desc": "Longest / fastest ball speed" },
+      { "id": "forgiveness", "label": "Forgiveness", "desc": "Most stable on off-centre hits (high MOI)" },
+      { "id": "accuracy", "label": "Accuracy", "desc": "Tightest dispersion / straightest" },
+      { "id": "lowspin", "label": "Low spin", "desc": "Tour / better-player low-spin pick" },
+      { "id": "launch", "label": "High launch", "desc": "Easiest to get airborne / peak height" },
+      { "id": "value", "label": "Value", "desc": "Best performance per dollar" }
+    ],
+    "byOutlet": {
+      "mygolfspy": {
+        "overall": "TaylorMade Qi4D",
+        "distance": "Callaway Quantum Max",
+        "forgiveness": "Srixon ZXi Max",
+        "accuracy": "LA GOLF Driver"
+      },
+      "golfmonthly": {
+        "overall": "TaylorMade Qi4D",
+        "forgiveness": "PXG Lightning Max 10K+",
+        "lowspin": "Titleist GTS4",
+        "launch": "Wilson DYNAPWR Max+"
+      },
+      "todaysgolfer": {
+        "overall": "Callaway Quantum Triple Diamond Max",
+        "distance": "Callaway Quantum Max",
+        "forgiveness": "Ping G440 Max",
+        "launch": "Srixon ZXi"
+      },
+      "golflens": {
+        "overall": "TaylorMade Qi4D",
+        "distance": "Callaway Quantum Max",
+        "forgiveness": "Ping G440 K",
+        "accuracy": "LA GOLF Driver",
+        "lowspin": "Callaway Quantum Triple Diamond",
+        "value": "Titleist GT3"
+      },
+      "breakingeighty": {
+        "overall": "Callaway Quantum Max",
+        "distance": "Titleist GT2",
+        "forgiveness": "Tour Edge Exotics Max",
+        "value": "Cleveland Launcher XL 2"
+      },
+      "hole19": {
+        "overall": "TaylorMade Qi4D",
+        "distance": "Callaway Quantum Max",
+        "forgiveness": "Ping G440 Max"
+      },
+      "independentgolfreviews": {
+        "overall": "Callaway Quantum Triple Diamond",
+        "distance": "TaylorMade Qi4D",
+        "launch": "Wilson DYNAPWR Max+"
+      },
+      "golfwrx": {
+        "forgiveness": "Ping G440 K"
+      }
+    }
+  },
+  "profiles": {
+    "columns": [
+      { "id": "speed_fast", "label": "Fast swing (105+ mph)", "group": "Swing speed", "desc": "Faster swingers who create their own launch" },
+      { "id": "speed_mid", "label": "Mid swing (90–105)", "group": "Swing speed", "desc": "The majority of club golfers" },
+      { "id": "speed_slow", "label": "Slow swing (<90)", "group": "Swing speed", "desc": "Moderate swing speeds needing launch help" },
+      { "id": "hc_low", "label": "Low handicap", "group": "Handicap", "desc": "Better ball-strikers" },
+      { "id": "hc_mid", "label": "Mid / average", "group": "Handicap", "desc": "Average club golfer" },
+      { "id": "hc_high", "label": "High hcp / beginner", "group": "Handicap", "desc": "Higher handicaps and new golfers" },
+      { "id": "senior", "label": "Senior", "group": "Handicap", "desc": "Senior players" }
+    ],
+    "byOutlet": {
+      "mygolfspy": {
+        "speed_fast": "Callaway Quantum Max",
+        "speed_mid": "TaylorMade Qi4D",
+        "speed_slow": "LA GOLF Driver"
+      },
+      "golfwrx": {
+        "speed_fast": "TaylorMade Qi4D",
+        "speed_mid": "Titleist GT2",
+        "speed_slow": "Ping G440 K"
+      },
+      "hole19": {
+        "speed_fast": "Callaway Quantum Triple Diamond Max",
+        "speed_mid": "TaylorMade Qi4D",
+        "speed_slow": "TaylorMade Qi4D Max"
+      },
+      "breakingeighty": {
+        "speed_slow": "Cobra OPTM Max-K",
+        "hc_high": "Ping G440 K"
+      },
+      "golfmonthly": {
+        "hc_mid": "Srixon ZXi"
+      },
+      "independentgolfreviews": {
+        "hc_low": "Callaway Quantum Triple Diamond",
+        "hc_mid": "Cobra OPTM X",
+        "hc_high": "Takomo Ignis D1",
+        "senior": "PXG Lightning Max Lite"
+      }
+    }
+  }
+}
