@@ -3,6 +3,7 @@ title: "GSPro has no memory. That's the problem Golf Sim Analytics solves."
 description: "GSPro is a brilliant simulator, but it forgets every shot the moment it lands — no history, no trends, no dispersion over time. Here's why that gap matters, and how our free app fills it."
 pubDate: 2026-07-12
 heroImage: "/images/screenshots/gapping_benchmarks.jpg"
+category: "Product"
 tags: ["golf-sim-analytics", "gspro", "why"]
 ---
 

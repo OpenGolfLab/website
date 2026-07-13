@@ -12,6 +12,8 @@ const blog = defineCollection({
     updatedDate: z.coerce.date().optional(),
     // Path under /public, e.g. "/images/blog/intro.jpg". Optional.
     heroImage: z.string().optional(),
+    // One primary category. "Research" posts also surface on The Lab.
+    category: z.enum(["Research", "Product", "Guides", "Updates"]).default("Updates"),
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),

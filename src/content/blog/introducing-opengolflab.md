@@ -3,6 +3,7 @@ title: "Introducing OpenGolfLab"
 description: "A new home for open, community-driven golf simulator analytics — starting with a free app, and building toward a shared dataset the whole sim community can learn from."
 pubDate: 2026-07-10
 heroImage: "/images/blog/introducing-opengolflab.jpg"
+category: "Research"
 tags: ["announcement", "vision"]
 ---
 

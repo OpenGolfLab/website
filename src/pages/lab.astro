@@ -1,6 +1,13 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import FormattedDate from "../components/FormattedDate.astro";
 import { GITHUB_URL, GITHUB_WATCH_URL } from "../consts";
+
+// Research-category posts surface here, paired with the data.
+const labPosts = (
+  await getCollection("blog", ({ data }) => !data.draft && data.category === "Research")
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const title = "The Lab";
 const description =
@@ -164,6 +171,50 @@ const previewRows = [
       </div>
     </section>
 
+    <!-- From the Lab: Research-category articles, paired with the data -->
+    <section class="lab-section" aria-labelledby="writing">
+      <p class="eyebrow">From the Lab</p>
+      <h2 id="writing">Field notes &amp; findings</h2>
+      <p class="text-muted" style="max-width:60ch;margin-bottom:1.5rem;">
+        Write-ups that go with the data — methodology, early results, and the
+        thinking behind the framework.
+      </p>
+
+      {
+        labPosts.length === 0 ? (
+          <div class="card lab-empty">
+            <p class="text-muted">
+              The first findings aren't published yet. Follow the
+              <a href="/blog">blog</a> or watch the
+              <a href={GITHUB_URL} rel="noopener">GitHub repo</a> and you'll see
+              them the moment they land.
+            </p>
+          </div>
+        ) : (
+          <ul class="lab-posts">
+            {labPosts.map((post) => (
+              <li>
+                <a href={`/blog/${post.id}/`} class="card lab-post">
+                  <div class="lab-post-meta">
+                    <span class="pill lab-post-cat">Research</span>
+                    <FormattedDate date={post.data.pubDate} />
+                  </div>
+                  <h3>{post.data.title}</h3>
+                  <p class="text-muted">{post.data.description}</p>
+                  <span class="lab-post-more">Read →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <p class="text-muted" style="margin-top:1.25rem;font-size:0.95rem;">
+        Looking for release notes and product updates? Those live on the
+        <a href="/blog">blog</a>.
+      </p>
+    </section>
+
     <section class="lab-section lab-cta">
       <div class="card lab-cta-card">
         <h2>Help shape the framework</h2>
@@ -321,6 +372,58 @@ const previewRows = [
     font-size: 0.85rem;
     letter-spacing: 0.05em;
     color: var(--text-dim);
+  }
+
+  /* From the Lab — articles */
+  .lab-posts {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+  }
+  .lab-post {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    height: 100%;
+    color: inherit;
+  }
+  .lab-post:hover {
+    border-color: var(--green-dim);
+  }
+  .lab-post h3 {
+    font-size: 1.2rem;
+  }
+  .lab-post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .lab-post-cat {
+    color: var(--green);
+    border-color: var(--green-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.66rem;
+  }
+  .lab-post-more {
+    margin-top: auto;
+    padding-top: 0.4rem;
+    font-family: var(--font-head);
+    font-weight: 600;
+    color: var(--green);
+  }
+  .lab-empty {
+    padding: 1.5rem;
+  }
+  @media (max-width: 720px) {
+    .lab-posts {
+      grid-template-columns: 1fr;
+    }
   }
 
   .lab-cta-card {
