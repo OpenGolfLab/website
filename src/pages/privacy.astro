@@ -1,0 +1,112 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { GITHUB_URL, PRODUCT_NAME } from "../consts";
+
+const title = "Data & privacy";
+const description =
+  "How OpenGolfLab handles your data: local-first by default, contribution is opt-in and anonymized, only aggregates are published, and your raw shots are never sold.";
+const updated = "July 2026";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight priv-hero">
+    <div class="grid-bg"></div>
+    <div class="container priv-hero-inner">
+      <p class="eyebrow">The short version</p>
+      <h1>Data &amp; privacy</h1>
+      <p class="lede" style="margin-top:0.9rem;">
+        {PRODUCT_NAME} is local-first: your shots stay on your machine. Sharing
+        data with the community is entirely opt-in, always anonymized, and only
+        ever published as combined averages — never your raw shots, never sold.
+      </p>
+    </div>
+  </section>
+
+  <div class="container priv-body">
+    <article class="prose">
+      <h2>The app is local-first</h2>
+      <p>
+        {PRODUCT_NAME} runs entirely on your Windows PC. Your shot history lives
+        in local files next to the app, there's no account to create, and
+        nothing is uploaded anywhere as part of normal use. If you never opt in
+        to contribute, no data ever leaves your machine.
+      </p>
+
+      <h2>Contributing is opt-in</h2>
+      <p>
+        Sharing data with OpenGolfLab is off by default. It only happens when
+        you explicitly turn on the opt-in inside the app and export a
+        contribution. You can turn it off again at any time, and you choose when
+        (and whether) to submit anything.
+      </p>
+
+      <h2>What a contribution includes</h2>
+      <p>
+        When you opt in, the app builds an anonymized bundle of shot metrics:
+        club, ball and club speed, launch angle, spin, carry, and similar
+        per-shot numbers — plus an optional handicap <em>band</em> (a range like
+        “10–14”, never an exact index) and, if you enter them, the ball or club
+        model. Every value is a measurement of a golf shot.
+      </p>
+
+      <h2>What it never includes</h2>
+      <p>
+        Contributions never contain your name, email, file paths, device
+        identifiers, or precise timestamps. There's no account and no tracking
+        tying a bundle back to you — a random, non-identifying id is used only
+        to avoid counting the same submission twice.
+      </p>
+
+      <h2>How contributed data is used</h2>
+      <p>
+        Raw submissions are kept private. Only <strong>combined community
+        aggregates</strong> — distributions, per-club averages and ranges, ball
+        comparisons — are ever published on this site. Individual raw shots are
+        not published and are not sold to anyone, including equipment brands.
+        The aggregates exist to help golfers make better-informed gear
+        decisions, and that's it.
+      </p>
+
+      <h2>Open by design</h2>
+      <p>
+        The contribution schema and the code that aggregates the data are
+        developed in the open on <a href={GITHUB_URL} rel="noopener">GitHub</a>,
+        so anyone can see exactly what's collected and how it's summarized. The
+        anonymization happens in the app, before anything is shared.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If how contributions are handled ever changes, the opt-in consent screen
+        in the app and this page will be updated to match, and the change will
+        apply going forward. Questions or concerns are welcome via the
+        <a href={GITHUB_URL} rel="noopener">GitHub repository</a>.
+      </p>
+
+      <p class="priv-updated">Last updated: {updated}</p>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .priv-hero {
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .priv-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 60ch;
+    padding-block: clamp(2.5rem, 6vw, 3.5rem);
+  }
+  .priv-body {
+    padding-block: clamp(2.5rem, 6vw, 3.5rem);
+  }
+  .priv-updated {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+</style>

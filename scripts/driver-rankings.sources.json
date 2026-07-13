@@ -1,0 +1,135 @@
+{
+  "_comment": "Hand-curated source of truth for the 2026 driver-rankings feature. Each entry is one outlet's published ranking of 2026 drivers, in the exact order that outlet presents them (position 1 = that outlet's #1 pick). Model strings must match across outlets so the same club lines up in the table — keep them consistent when you add/refresh a source. After editing, run `npm run rankings` to regenerate public/data/driver-rankings.json. Sources that do not publish an ordinal ranking (e.g. GolfTec's unranked showcase) or that list stale prior-generation clubs (e.g. T5Golf) are deliberately excluded.",
+  "category": "Driver",
+  "season": "2026",
+  "rankers": [
+    {
+      "id": "mygolfspy",
+      "name": "MyGolfSpy",
+      "url": "https://mygolfspy.com/buyers-guides/drivers/best-drivers-of-2026/",
+      "title": "Best Drivers of 2026",
+      "note": "Most Wanted robot + human test, 42 drivers — overall podium",
+      "ranking": [
+        "TaylorMade Qi4D",
+        "Callaway Quantum Max",
+        "Callaway Quantum Triple Diamond"
+      ]
+    },
+    {
+      "id": "golfmonthly",
+      "name": "Golf Monthly",
+      "url": "https://www.golfmonthly.com/best-golf-deals/best-golf-drivers-65086",
+      "title": "12 Of The Best Drivers I Have Tested In 2026",
+      "note": "Editor 'Quick List' order",
+      "ranking": [
+        "TaylorMade Qi4D",
+        "Ping G440 K",
+        "Callaway Quantum Triple Diamond",
+        "PXG Lightning Max 10K+",
+        "Titleist GTS4",
+        "Srixon ZXi",
+        "Cobra OPTM X",
+        "Mizuno JPX One Select",
+        "Wilson DYNAPWR Max+",
+        "Callaway Quantum Max D"
+      ]
+    },
+    {
+      "id": "todaysgolfer",
+      "name": "Today's Golfer",
+      "url": "https://www.todays-golfer.com/equipment/best/drivers-us/",
+      "title": "We tested every golf driver of 2026",
+      "note": "Neil Wain / GCQuad test — Best Driver 2026 podium",
+      "ranking": [
+        "Callaway Quantum Triple Diamond Max",
+        "Callaway Quantum Max",
+        "Ping G440 Max"
+      ]
+    },
+    {
+      "id": "golfwrx",
+      "name": "GolfWRX",
+      "url": "https://golfwrx.com/774559/best-driver-2026-the-best-drivers-for-high-mid-low-swing-speed-golfers/",
+      "title": "Best driver 2026: high, mid, low swing speed",
+      "note": "Mid swing-speed list (their most representative category)",
+      "ranking": [
+        "Titleist GT2",
+        "TaylorMade Qi4D",
+        "Ping G440 K",
+        "Callaway Quantum Max",
+        "Ping G440 Max"
+      ]
+    },
+    {
+      "id": "breakingeighty",
+      "name": "Breaking Eighty",
+      "url": "https://breakingeighty.com/best-golf-drivers",
+      "title": "10 Best Golf Drivers of 2026",
+      "note": "Flagship-led order (Sean Ogle)",
+      "ranking": [
+        "Callaway Quantum Max",
+        "TaylorMade Qi4D",
+        "Tour Edge Exotics Max",
+        "Titleist GT2",
+        "Ping G440 K",
+        "Cleveland Launcher XL 2",
+        "TaylorMade R7 Quad Mini",
+        "Srixon ZXi",
+        "Stix Compete",
+        "Cobra OPTM Max-K"
+      ]
+    },
+    {
+      "id": "hole19",
+      "name": "Hole19",
+      "url": "https://www.hole19golf.com/the-19th-hole/the-7-best-golf-drivers-of-2026-tested-and-ranked",
+      "title": "The 7 Best Golf Drivers of 2026: Tested and Ranked",
+      "note": "Ranked list of 7",
+      "ranking": [
+        "TaylorMade Qi4D",
+        "TaylorMade Qi4D Max",
+        "Callaway Quantum Triple Diamond Max",
+        "Callaway Quantum Max",
+        "Titleist GT2",
+        "Ping G440 Max",
+        "Cobra DS-ADAPT LS"
+      ]
+    },
+    {
+      "id": "golflens",
+      "name": "GolfLens",
+      "url": "https://golflens.io/learn/best-drivers-2026",
+      "title": "Best Drivers 2026 — Data-Driven Rankings",
+      "note": "Meta-aggregate of 5 tests — overall then category leaders",
+      "ranking": [
+        "TaylorMade Qi4D",
+        "Callaway Quantum Triple Diamond Max",
+        "Callaway Quantum Max",
+        "Ping G440 K",
+        "LA GOLF Driver",
+        "Callaway Quantum Triple Diamond"
+      ]
+    },
+    {
+      "id": "independentgolfreviews",
+      "name": "Independent Golf Reviews",
+      "url": "https://www.independentgolfreviews.com/best-golf-drivers/",
+      "title": "The Best Golf Drivers In 2026",
+      "note": "'Official Driver Rankings 2026' order (Ryan Heiman)",
+      "ranking": [
+        "Callaway Quantum Triple Diamond",
+        "Cobra OPTM X",
+        "Ping G440 K",
+        "Vice VGD01",
+        "Takomo Ignis D1",
+        "PXG Lightning Max Lite",
+        "TaylorMade Qi4D",
+        "Tour Edge Hot Launch Max D",
+        "TaylorMade R7 Quad Mini",
+        "Titleist GT3",
+        "Wilson DYNAPWR Max+",
+        "LA GOLF Driver"
+      ]
+    }
+  ]
+}

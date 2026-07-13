@@ -1,0 +1,431 @@
+{
+  "category": "Driver",
+  "season": "2026",
+  "generated_date": "2026-07-13",
+  "method": "Normalized Borda count across outlet rankings; each list weighted equally regardless of length. Lower consensus number = stronger cross-outlet agreement.",
+  "totals": {
+    "rankers": 8,
+    "drivers": 27
+  },
+  "rankers": [
+    {
+      "id": "mygolfspy",
+      "name": "MyGolfSpy",
+      "url": "https://mygolfspy.com/buyers-guides/drivers/best-drivers-of-2026/",
+      "title": "Best Drivers of 2026",
+      "note": "Most Wanted robot + human test, 42 drivers — overall podium",
+      "count": 3
+    },
+    {
+      "id": "golfmonthly",
+      "name": "Golf Monthly",
+      "url": "https://www.golfmonthly.com/best-golf-deals/best-golf-drivers-65086",
+      "title": "12 Of The Best Drivers I Have Tested In 2026",
+      "note": "Editor 'Quick List' order",
+      "count": 10
+    },
+    {
+      "id": "todaysgolfer",
+      "name": "Today's Golfer",
+      "url": "https://www.todays-golfer.com/equipment/best/drivers-us/",
+      "title": "We tested every golf driver of 2026",
+      "note": "Neil Wain / GCQuad test — Best Driver 2026 podium",
+      "count": 3
+    },
+    {
+      "id": "golfwrx",
+      "name": "GolfWRX",
+      "url": "https://golfwrx.com/774559/best-driver-2026-the-best-drivers-for-high-mid-low-swing-speed-golfers/",
+      "title": "Best driver 2026: high, mid, low swing speed",
+      "note": "Mid swing-speed list (their most representative category)",
+      "count": 5
+    },
+    {
+      "id": "breakingeighty",
+      "name": "Breaking Eighty",
+      "url": "https://breakingeighty.com/best-golf-drivers",
+      "title": "10 Best Golf Drivers of 2026",
+      "note": "Flagship-led order (Sean Ogle)",
+      "count": 10
+    },
+    {
+      "id": "hole19",
+      "name": "Hole19",
+      "url": "https://www.hole19golf.com/the-19th-hole/the-7-best-golf-drivers-of-2026-tested-and-ranked",
+      "title": "The 7 Best Golf Drivers of 2026: Tested and Ranked",
+      "note": "Ranked list of 7",
+      "count": 7
+    },
+    {
+      "id": "golflens",
+      "name": "GolfLens",
+      "url": "https://golflens.io/learn/best-drivers-2026",
+      "title": "Best Drivers 2026 — Data-Driven Rankings",
+      "note": "Meta-aggregate of 5 tests — overall then category leaders",
+      "count": 6
+    },
+    {
+      "id": "independentgolfreviews",
+      "name": "Independent Golf Reviews",
+      "url": "https://www.independentgolfreviews.com/best-golf-drivers/",
+      "title": "The Best Golf Drivers In 2026",
+      "note": "'Official Driver Rankings 2026' order (Ryan Heiman)",
+      "count": 12
+    }
+  ],
+  "drivers": [
+    {
+      "model": "TaylorMade Qi4D",
+      "brand": "TaylorMade",
+      "ranks": {
+        "mygolfspy": 1,
+        "golfmonthly": 1,
+        "golfwrx": 2,
+        "breakingeighty": 2,
+        "hole19": 1,
+        "golflens": 1,
+        "independentgolfreviews": 7
+      },
+      "appearances": 7,
+      "avgRank": 2.14,
+      "bestRank": 1,
+      "score": 6.2,
+      "consensus": 1
+    },
+    {
+      "model": "Callaway Quantum Max",
+      "brand": "Callaway",
+      "ranks": {
+        "mygolfspy": 2,
+        "todaysgolfer": 2,
+        "golfwrx": 4,
+        "breakingeighty": 1,
+        "hole19": 4,
+        "golflens": 3
+      },
+      "appearances": 6,
+      "avgRank": 2.67,
+      "bestRank": 1,
+      "score": 3.971,
+      "consensus": 2
+    },
+    {
+      "model": "Ping G440 K",
+      "brand": "Ping",
+      "ranks": {
+        "golfmonthly": 2,
+        "golfwrx": 3,
+        "breakingeighty": 5,
+        "golflens": 4,
+        "independentgolfreviews": 3
+      },
+      "appearances": 5,
+      "avgRank": 3.4,
+      "bestRank": 2,
+      "score": 3.433,
+      "consensus": 3
+    },
+    {
+      "model": "Callaway Quantum Triple Diamond Max",
+      "brand": "Callaway",
+      "ranks": {
+        "todaysgolfer": 1,
+        "hole19": 3,
+        "golflens": 2
+      },
+      "appearances": 3,
+      "avgRank": 2,
+      "bestRank": 1,
+      "score": 2.548,
+      "consensus": 4
+    },
+    {
+      "model": "Callaway Quantum Triple Diamond",
+      "brand": "Callaway",
+      "ranks": {
+        "mygolfspy": 3,
+        "golfmonthly": 3,
+        "golflens": 6,
+        "independentgolfreviews": 1
+      },
+      "appearances": 4,
+      "avgRank": 3.25,
+      "bestRank": 1,
+      "score": 2.3,
+      "consensus": 5
+    },
+    {
+      "model": "Titleist GT2",
+      "brand": "Titleist",
+      "ranks": {
+        "golfwrx": 1,
+        "breakingeighty": 4,
+        "hole19": 5
+      },
+      "appearances": 3,
+      "avgRank": 3.33,
+      "bestRank": 1,
+      "score": 2.129,
+      "consensus": 6
+    },
+    {
+      "model": "Cobra OPTM X",
+      "brand": "Cobra",
+      "ranks": {
+        "golfmonthly": 7,
+        "independentgolfreviews": 2
+      },
+      "appearances": 2,
+      "avgRank": 4.5,
+      "bestRank": 2,
+      "score": 1.317,
+      "consensus": 7
+    },
+    {
+      "model": "TaylorMade Qi4D Max",
+      "brand": "TaylorMade",
+      "ranks": {
+        "hole19": 2
+      },
+      "appearances": 1,
+      "avgRank": 2,
+      "bestRank": 2,
+      "score": 0.857,
+      "consensus": 8
+    },
+    {
+      "model": "Ping G440 Max",
+      "brand": "Ping",
+      "ranks": {
+        "todaysgolfer": 3,
+        "golfwrx": 5,
+        "hole19": 6
+      },
+      "appearances": 3,
+      "avgRank": 4.67,
+      "bestRank": 3,
+      "score": 0.819,
+      "consensus": 9
+    },
+    {
+      "model": "Srixon ZXi",
+      "brand": "Srixon",
+      "ranks": {
+        "golfmonthly": 6,
+        "breakingeighty": 8
+      },
+      "appearances": 2,
+      "avgRank": 7,
+      "bestRank": 6,
+      "score": 0.8,
+      "consensus": 10
+    },
+    {
+      "model": "Tour Edge Exotics Max",
+      "brand": "Tour Edge",
+      "ranks": {
+        "breakingeighty": 3
+      },
+      "appearances": 1,
+      "avgRank": 3,
+      "bestRank": 3,
+      "score": 0.8,
+      "consensus": 11
+    },
+    {
+      "model": "Vice VGD01",
+      "brand": "Vice",
+      "ranks": {
+        "independentgolfreviews": 4
+      },
+      "appearances": 1,
+      "avgRank": 4,
+      "bestRank": 4,
+      "score": 0.75,
+      "consensus": 12
+    },
+    {
+      "model": "TaylorMade R7 Quad Mini",
+      "brand": "TaylorMade",
+      "ranks": {
+        "breakingeighty": 7,
+        "independentgolfreviews": 9
+      },
+      "appearances": 2,
+      "avgRank": 8,
+      "bestRank": 7,
+      "score": 0.733,
+      "consensus": 13
+    },
+    {
+      "model": "PXG Lightning Max 10K+",
+      "brand": "PXG",
+      "ranks": {
+        "golfmonthly": 4
+      },
+      "appearances": 1,
+      "avgRank": 4,
+      "bestRank": 4,
+      "score": 0.7,
+      "consensus": 14
+    },
+    {
+      "model": "Takomo Ignis D1",
+      "brand": "Takomo",
+      "ranks": {
+        "independentgolfreviews": 5
+      },
+      "appearances": 1,
+      "avgRank": 5,
+      "bestRank": 5,
+      "score": 0.667,
+      "consensus": 15
+    },
+    {
+      "model": "Titleist GTS4",
+      "brand": "Titleist",
+      "ranks": {
+        "golfmonthly": 5
+      },
+      "appearances": 1,
+      "avgRank": 5,
+      "bestRank": 5,
+      "score": 0.6,
+      "consensus": 16
+    },
+    {
+      "model": "PXG Lightning Max Lite",
+      "brand": "PXG",
+      "ranks": {
+        "independentgolfreviews": 6
+      },
+      "appearances": 1,
+      "avgRank": 6,
+      "bestRank": 6,
+      "score": 0.583,
+      "consensus": 17
+    },
+    {
+      "model": "Cleveland Launcher XL 2",
+      "brand": "Cleveland",
+      "ranks": {
+        "breakingeighty": 6
+      },
+      "appearances": 1,
+      "avgRank": 6,
+      "bestRank": 6,
+      "score": 0.5,
+      "consensus": 18
+    },
+    {
+      "model": "LA GOLF Driver",
+      "brand": "LA GOLF",
+      "ranks": {
+        "golflens": 5,
+        "independentgolfreviews": 12
+      },
+      "appearances": 2,
+      "avgRank": 8.5,
+      "bestRank": 5,
+      "score": 0.417,
+      "consensus": 19
+    },
+    {
+      "model": "Tour Edge Hot Launch Max D",
+      "brand": "Tour Edge",
+      "ranks": {
+        "independentgolfreviews": 8
+      },
+      "appearances": 1,
+      "avgRank": 8,
+      "bestRank": 8,
+      "score": 0.417,
+      "consensus": 20
+    },
+    {
+      "model": "Wilson DYNAPWR Max+",
+      "brand": "Wilson",
+      "ranks": {
+        "golfmonthly": 9,
+        "independentgolfreviews": 11
+      },
+      "appearances": 2,
+      "avgRank": 10,
+      "bestRank": 9,
+      "score": 0.367,
+      "consensus": 21
+    },
+    {
+      "model": "Mizuno JPX One Select",
+      "brand": "Mizuno",
+      "ranks": {
+        "golfmonthly": 8
+      },
+      "appearances": 1,
+      "avgRank": 8,
+      "bestRank": 8,
+      "score": 0.3,
+      "consensus": 22
+    },
+    {
+      "model": "Titleist GT3",
+      "brand": "Titleist",
+      "ranks": {
+        "independentgolfreviews": 10
+      },
+      "appearances": 1,
+      "avgRank": 10,
+      "bestRank": 10,
+      "score": 0.25,
+      "consensus": 23
+    },
+    {
+      "model": "Stix Compete",
+      "brand": "Stix",
+      "ranks": {
+        "breakingeighty": 9
+      },
+      "appearances": 1,
+      "avgRank": 9,
+      "bestRank": 9,
+      "score": 0.2,
+      "consensus": 24
+    },
+    {
+      "model": "Cobra DS-ADAPT LS",
+      "brand": "Cobra",
+      "ranks": {
+        "hole19": 7
+      },
+      "appearances": 1,
+      "avgRank": 7,
+      "bestRank": 7,
+      "score": 0.143,
+      "consensus": 25
+    },
+    {
+      "model": "Callaway Quantum Max D",
+      "brand": "Callaway",
+      "ranks": {
+        "golfmonthly": 10
+      },
+      "appearances": 1,
+      "avgRank": 10,
+      "bestRank": 10,
+      "score": 0.1,
+      "consensus": 26
+    },
+    {
+      "model": "Cobra OPTM Max-K",
+      "brand": "Cobra",
+      "ranks": {
+        "breakingeighty": 10
+      },
+      "appearances": 1,
+      "avgRank": 10,
+      "bestRank": 10,
+      "score": 0.1,
+      "consensus": 27
+    }
+  ]
+}

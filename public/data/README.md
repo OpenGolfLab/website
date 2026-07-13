@@ -9,3 +9,15 @@ it; when it's absent, the Lab shows clearly-labeled sample data instead.
 
 To refresh it: run `aggregate.py` in the data repo (it writes here automatically
 when the two repos are checked out side by side), then commit and push this repo.
+
+## driver-rankings.json
+
+`driver-rankings.json` here is **also generated** — do not edit it by hand.
+
+It is the aggregated 2026 driver-ranking table shown on the Lab page: every major
+club-review outlet's published ranking, tallied into one driver × ranker matrix
+with a consensus column. It is produced by `scripts/build-driver-rankings.mjs`
+from the hand-curated `scripts/driver-rankings.sources.json`.
+
+To refresh it (after adding a new outlet or updating a ranking in the sources
+file): run `npm run rankings`, then commit and push this repo.
