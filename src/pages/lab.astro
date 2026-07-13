@@ -1,4 +1,6 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import FormattedDate from "../components/FormattedDate.astro";
@@ -31,17 +33,56 @@ const pillars = [
   },
 ];
 
-// Illustrative SAMPLE rows (~10-handicap band). NOT real community data —
-// they show the shape the real tables will take once contributions begin.
-const previewRows = [
-  { club: "Driver", carry: "245", ball: "152", launch: "13.5", spin: "2,650", n: "1,240" },
-  { club: "7 Iron", carry: "152", ball: "115", launch: "18.5", spin: "6,300", n: "1,890" },
-  { club: "PW", carry: "118", ball: "98", launch: "24.6", spin: "8,600", n: "1,510" },
-];
+// If real community aggregates have been published to public/data/summary.json,
+// read them at build time and render them. Otherwise fall back to the labeled
+// illustrative sample below. (Produced by the aggregator in opengolflab-data.)
+const DEFAULT_BAND = "10-14";
+let live: any = null;
+try {
+  const p = path.resolve("public/data/summary.json");
+  if (fs.existsSync(p)) live = JSON.parse(fs.readFileSync(p, "utf-8"));
+} catch {
+  live = null;
+}
+const isLive = !!(live && live.totals && live.totals.shots > 0 && Array.isArray(live.gapping) && live.gapping.length);
 
-// Illustrative carry-distance distribution (7-iron), for the sample chart.
-const dist = [6, 14, 28, 55, 82, 100, 86, 60, 32, 12];
-const binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
+const num = (v: number) => Number(v).toLocaleString("en-US");
+
+let previewRows;
+let bandLabel = DEFAULT_BAND;
+let dist: number[];
+let binLabels: string[];
+let distClub = "7 Iron";
+
+if (isLive) {
+  const bands = live.gapping.map((g: any) => g.handicap_band);
+  bandLabel = bands.includes(DEFAULT_BAND) ? DEFAULT_BAND : bands[0];
+  previewRows = live.gapping
+    .filter((g: any) => g.handicap_band === bandLabel)
+    .sort((a: any, b: any) => b.carry - a.carry)
+    .map((r: any) => ({
+      club: r.club,
+      carry: r.carry != null ? String(r.carry) : "—",
+      ball: r.ball != null ? String(r.ball) : "—",
+      launch: r.launch != null ? String(r.launch) : "—",
+      spin: r.spin != null ? num(r.spin) : "—",
+      n: num(r.shots),
+    }));
+  const counts: number[] = live.distribution?.counts ?? [];
+  const max = Math.max(1, ...counts);
+  dist = counts.map((c) => Math.round((c / max) * 100));
+  binLabels = (live.distribution?.bins ?? []).map((b: string, i: number) => (i % 2 === 0 ? b : ""));
+  distClub = live.distribution?.club ?? distClub;
+} else {
+  // Illustrative SAMPLE rows (~10-handicap band). NOT real community data.
+  previewRows = [
+    { club: "Driver", carry: "245", ball: "152", launch: "13.5", spin: "2,650", n: "1,240" },
+    { club: "7 Iron", carry: "152", ball: "115", launch: "18.5", spin: "6,300", n: "1,890" },
+    { club: "PW", carry: "118", ball: "98", launch: "24.6", spin: "8,600", n: "1,510" },
+  ];
+  dist = [6, 14, 28, 55, 82, 100, 86, 60, 32, 12];
+  binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
+}
 ---
 
 <BaseLayout title={title} description={description}>
@@ -131,21 +172,39 @@ const binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
     <section class="lab-section" aria-labelledby="preview">
       <p class="eyebrow">Preview</p>
       <div class="preview-head">
-        <h2 id="preview">Community gapping — by handicap</h2>
-        <span class="sample-badge">Sample data</span>
+        <h2 id="preview">Community gapping — {bandLabel} handicap</h2>
+        {
+          isLive ? (
+            <span class="sample-badge live-badge">
+              {num(live.totals.contributors)} contributors · {num(live.totals.shots)} shots
+            </span>
+          ) : (
+            <span class="sample-badge">Sample data</span>
+          )
+        }
       </div>
-      <p class="text-muted" style="max-width:62ch;margin-bottom:1.25rem;">
-        A preview of the shape the real dataset will take. The numbers below are
-        <strong>illustrative samples</strong> (roughly a 10-handicap band) — not
-        yet real community data. Once contributions begin, live figures replace
-        them here.
-      </p>
+      {
+        isLive ? (
+          <p class="text-muted" style="max-width:62ch;margin-bottom:1.25rem;">
+            Live community aggregates for the <strong>{bandLabel}</strong> handicap
+            band, built from {num(live.totals.shots)} contributed shots.
+            Last updated {live.generated_date}.
+          </p>
+        ) : (
+          <p class="text-muted" style="max-width:62ch;margin-bottom:1.25rem;">
+            A preview of the shape the real dataset will take. The numbers below are
+            <strong>illustrative samples</strong> (roughly a 10-handicap band) — not
+            yet real community data. Once contributions begin, live figures replace
+            them here.
+          </p>
+        )
+      }
 
       <div class="table-wrap" role="region" aria-label="Community gapping sample table" tabindex="0">
         <table class="data-table">
           <caption class="sr-only">
-            Sample community gapping by club — carry, ball speed, launch, spin
-            and sample size. Illustrative values, not real community data.
+            Community gapping by club — carry, ball speed, launch, spin and
+            sample size.
           </caption>
           <thead>
             <tr>
@@ -177,8 +236,10 @@ const binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
       <!-- Illustrative distribution chart (inline SVG, no chart library) -->
       <figure class="dist-chart">
         <figcaption class="dist-cap">
-          <span>Sample: 7-iron carry distribution</span>
-          <span class="sample-badge">Illustrative</span>
+          <span>{distClub} carry distribution{isLive ? "" : " — sample"}</span>
+          <span class:list={["sample-badge", { "live-badge": isLive }]}>
+            {isLive ? "Community" : "Illustrative"}
+          </span>
         </figcaption>
         <svg
           viewBox="0 0 800 320"
@@ -197,9 +258,11 @@ const binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
           >
           {
             dist.map((v, i) => {
-              const slot = 72.5;
-              const bw = 48;
-              const x = 55 + i * slot + (slot - bw) / 2;
+              const L = 55;
+              const R = 782;
+              const slot = (R - L) / dist.length;
+              const bw = slot * 0.66;
+              const x = L + i * slot + (slot - bw) / 2;
               const h = (v / 100) * 245;
               const y = 275 - h;
               const op = (0.4 + 0.55 * (v / 100)).toFixed(2);
@@ -419,6 +482,12 @@ const binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
     background: rgba(255, 207, 92, 0.08);
     border-radius: 999px;
     padding: 0.25rem 0.6rem;
+    white-space: nowrap;
+  }
+  .live-badge {
+    color: var(--green);
+    border-color: var(--green-dim);
+    background: rgba(61, 220, 132, 0.08);
   }
 
   /* Distribution chart */
