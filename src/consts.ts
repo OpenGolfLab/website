@@ -17,11 +17,8 @@ export const LATEST_RELEASE_URL = `${GITHUB_URL}/releases/latest`;
 /** Watch/star the repo (used on the Lab page as an email-free CTA). */
 export const GITHUB_WATCH_URL = `${GITHUB_URL}/subscription`;
 
-/**
- * Buy Me a Coffee link (top-nav support button).
- * ⇩⇩⇩  REPLACE with your real page, e.g. "https://buymeacoffee.com/opengolflab".
- */
-export const BUYMEACOFFEE_URL = "https://buymeacoffee.com/YOUR_HANDLE";
+/** Ko-fi support link (top-nav support button). */
+export const KOFI_URL = "https://ko-fi.com/opengolflab";
 
 /** Site identity. */
 export const SITE_TITLE = "OpenGolfLab";

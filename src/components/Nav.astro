@@ -1,6 +1,6 @@
 ---
 import Logo from "./Logo.astro";
-import { NAV_LINKS, BUYMEACOFFEE_URL } from "../consts";
+import { NAV_LINKS, KOFI_URL } from "../consts";
 
 // Normalize the current path (strip trailing slash) for active-link matching.
 const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
@@ -34,7 +34,7 @@ const isActive = (href: string) => {
         ))
       }
       <a
-        href={BUYMEACOFFEE_URL}
+        href={KOFI_URL}
         class="btn btn-coffee nav-cta"
         rel="noopener"
         target="_blank"
