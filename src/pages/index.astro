@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { PRODUCT_NAME } from "../consts";
+import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
 
 // One positive trio — replaces the old "problems" + "framework" sections.
 const ideas = [
@@ -47,7 +47,7 @@ const ideas = [
       </p>
 
       <div class="hero-cta">
-        <a href="/lab" class="btn btn-primary btn-lg">See the mission</a>
+        <a href="/lab" class="btn btn-primary btn-lg">Explore the data</a>
         <a href="/golf-sim-analytics" class="btn btn-secondary btn-lg">Get the app</a>
       </div>
 
@@ -128,16 +128,16 @@ const ideas = [
       <div class="openfree">
         <div class="grid-bg" style="opacity:0.6"></div>
         <div class="openfree-inner">
-          <h2>Open source. Free forever. No catch.</h2>
+          <h2>Independent, and staying that way.</h2>
           <p class="lede mx-auto" style="text-align:center;margin-top:0.8rem;">
-            The app is free, the data will be open, and the whole project is
-            built in public on GitHub. No paywalls, no accounts, no selling your
-            swing. If OpenGolfLab is useful to you, a coffee keeps it caffeinated
-            — but nothing here is ever locked away.
+            OpenGolfLab has no ads and no sponsors nudging the numbers — which is
+            the whole point of trusting the data. Fueling the Lab is what keeps
+            it that way. Or just play: every shot you choose to contribute makes
+            the picture sharper for everyone.
           </p>
           <div class="hero-cta" style="justify-content:center;">
-            <a href="/lab" class="btn btn-primary">Follow the effort</a>
-            <a href="/blog" class="btn btn-secondary">Read the blog</a>
+            <a href={KOFI_URL} class="btn btn-coffee" rel="noopener" target="_blank">Fuel the Lab</a>
+            <a href={GITHUB_URL} class="btn btn-secondary" rel="noopener" target="_blank">Watch on GitHub</a>
           </div>
         </div>
       </div>
