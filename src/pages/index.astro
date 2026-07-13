@@ -2,36 +2,22 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PRODUCT_NAME } from "../consts";
 
-const problems = [
-  {
-    title: "Sample sizes of a dozen",
-    body: "Most “definitive” ball and club reviews rest on a handful of shots from one or two testers on one launch monitor. That's not data — it's an anecdote with a chart.",
-  },
-  {
-    title: "Everyone tests differently",
-    body: "Different balls, different swings, different conditions, different software. Two reviews reach opposite conclusions because they never measured the same way.",
-  },
-  {
-    title: "Conclusions dressed as truth",
-    body: "Limited tests get published as gospel, and golfers buy equipment based on numbers that would never survive a real sample.",
-  },
-];
-
-const framework = [
+// One positive trio — replaces the old "problems" + "framework" sections.
+const ideas = [
   {
     n: "01",
-    title: "One standardized method",
-    body: "A shared, documented protocol for how a test is run and what gets recorded — so every contribution is measured the same way.",
+    title: "More shots, more signal",
+    body: "Any single test is limited by how many shots one person can hit. Pool thousands across a community and the patterns become something you can actually trust.",
   },
   {
     n: "02",
-    title: "Thousands of shots, many players",
-    body: "Instead of one tester's dozen swings, aggregate data from a whole community across skill levels, swings and setups.",
+    title: "One shared method",
+    body: "Everyone measures the same way, following one open, documented protocol — so contributions add up to comparisons that are truly apples-to-apples.",
   },
   {
     n: "03",
-    title: "Comparisons you can trust",
-    body: "Real distributions — ball performance, club gapping by handicap, launch and spin norms — with the sample size to back them up.",
+    title: "Open results, for everyone",
+    body: "Real ball comparisons, club gapping by handicap, launch and spin norms — free and open for any golfer to use.",
   },
 ];
 ---
@@ -53,12 +39,12 @@ const framework = [
 
     <div class="container hero-inner">
       <span class="pill hero-openpill">◆ Open &amp; free · community-powered</span>
-      <h1 class="hero-title">Golf equipment testing, done in the open.</h1>
+      <h1 class="hero-title">Better gear decisions, together.</h1>
       <p class="lede hero-lede">
-        Every ball and club “review” you've read is built on a handful of shots.
-        OpenGolfLab is a free, community effort to fix that — crowd-sourcing
-        thousands of standardized tests so golfers can finally compare gear on
-        real data, not anecdotes.
+        Most equipment tests are small by necessity — one tester, a handful of
+        shots. Pooled across a community and measured the same way, that data
+        can go a lot further. OpenGolfLab is a free, open effort to help make
+        that happen.
       </p>
 
       <div class="hero-cta">
@@ -66,7 +52,7 @@ const framework = [
         <a href="/golf-sim-analytics" class="btn btn-secondary btn-lg">Get the app</a>
       </div>
 
-      <div class="hero-chips" role="list" aria-label="What makes the data trustworthy">
+      <div class="hero-chips" role="list" aria-label="What shapes the data">
         <span class="stat-chip" role="listitem"><span class="label">Method</span><b>Standardized</b></span>
         <span class="stat-chip" role="listitem"><span class="label">Sample</span><b>Crowd-sourced</b></span>
         <span class="stat-chip" role="listitem"><span class="label">Cost</span><b>Free</b></span>
@@ -75,81 +61,49 @@ const framework = [
     </div>
   </section>
 
-  <!-- ========================= THE PROBLEM ========================= -->
+  <!-- ========================= THE IDEA ========================= -->
   <section class="section" id="why">
     <div class="container">
       <p class="eyebrow">Why this exists</p>
-      <h2 class="mission-h">The way golf gear gets tested is broken</h2>
+      <h2 class="mission-h">Great gear decisions deserve more data</h2>
       <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        Picking a ball or a driver should be an evidence-based decision. Instead,
-        the “evidence” is usually a tiny, one-off test that gets treated as the
-        final word. Three problems show up everywhere:
+        Choosing a ball or a driver should lean on real evidence. The more shots,
+        players and consistency behind a comparison, the more you can trust it —
+        and that's exactly the kind of thing a community can build together.
       </p>
 
-      <div class="problem-grid">
+      <ol class="idea-grid">
         {
-          problems.map((p) => (
-            <article class="card problem">
-              <span class="problem-tag" aria-hidden="true">Problem</span>
-              <h3>{p.title}</h3>
-              <p class="text-muted">{p.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <!-- ========================= THE SOLUTION ========================= -->
-  <section class="section solution" style="padding-top:0;">
-    <div class="container">
-      <p class="eyebrow">The fix</p>
-      <h2 class="mission-h">Crowd-source the tests. Standardize the method.</h2>
-      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        One tester can't produce trustworthy comparisons. A community can — but
-        only if everyone measures the same way. That's the whole idea behind
-        OpenGolfLab: a robust intercomparison framework so thousands of
-        contributions add up to something real.
-      </p>
-
-      <ol class="framework">
-        {
-          framework.map((f) => (
-            <li class="step card">
-              <span class="step-n tnum">{f.n}</span>
-              <h3>{f.title}</h3>
-              <p class="text-muted">{f.body}</p>
+          ideas.map((it) => (
+            <li class="card idea">
+              <span class="idea-n tnum">{it.n}</span>
+              <h3>{it.title}</h3>
+              <p class="text-muted">{it.body}</p>
             </li>
           ))
         }
       </ol>
 
-      <p class="framework-foot text-muted">
-        The community analytics hub — real ball comparisons, gapping by handicap,
-        launch &amp; spin norms — lives in <a href="/lab">the Lab</a>.
+      <p class="idea-foot text-muted">
+        The community analytics hub — comparisons, gapping by handicap, launch
+        &amp; spin norms — is taking shape in <a href="/lab">the Lab</a>.
       </p>
     </div>
   </section>
 
   <!-- ==================== THE TOOL (APP) ==================== -->
-  <section class="section">
+  <section class="section" style="padding-top:0;">
     <div class="container">
       <div class="tool card">
         <div class="tool-copy">
-          <p class="eyebrow">How you contribute</p>
+          <p class="eyebrow">How you can help</p>
           <h2>{PRODUCT_NAME} is the instrument</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
-            You can't crowd-source data without a consistent way to capture it.
-            Golf Sim Analytics is our free Windows app for GSPro that records
-            every shot automatically — carry, ball speed, launch, spin, smash —
-            and turns it into 15 interactive dashboards. Practice better today,
-            and (opt-in) help build the shared dataset tomorrow.
+            Consistent data needs a consistent way to capture it. Our free
+            Windows app for GSPro records every shot automatically and turns it
+            into 15 dashboards — so you get sharper practice today, and (only if
+            you opt in) can help build the shared dataset tomorrow.
           </p>
-          <ul class="tool-points">
-            <li>Zero-click capture from GSPro — no import step</li>
-            <li>15 dashboards, deep per-shot metrics, Tour &amp; handicap benchmarks</li>
-            <li>Local-first &amp; private — your raw data never leaves your machine</li>
-          </ul>
           <div class="hero-cta">
             <a href="/golf-sim-analytics" class="btn btn-primary">Explore the app</a>
             <a href="/download" class="btn btn-secondary">Download for Windows</a>
@@ -183,8 +137,8 @@ const framework = [
             — but nothing here is ever locked away.
           </p>
           <div class="hero-cta" style="justify-content:center;">
-            <a href="/lab" class="btn btn-primary">Join the effort</a>
-            <a href="/blog" class="btn btn-secondary">Follow the blog</a>
+            <a href="/lab" class="btn btn-primary">Follow the effort</a>
+            <a href="/blog" class="btn btn-secondary">Read the blog</a>
           </div>
         </div>
       </div>
@@ -211,7 +165,6 @@ const framework = [
     object-fit: cover;
     object-position: center 35%;
   }
-  /* Scrim keeps text at WCAG AA over any photo. */
   .hero-scrim {
     position: absolute;
     inset: 0;
@@ -238,7 +191,7 @@ const framework = [
     margin-bottom: 1.2rem;
   }
   .hero-title {
-    max-width: 18ch;
+    max-width: 20ch;
     background: linear-gradient(180deg, #ffffff 0%, #cdd8e2 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -264,42 +217,12 @@ const framework = [
     margin-top: 2rem;
   }
 
-  /* ---- Shared section headings ---- */
   .mission-h {
     max-width: 22ch;
   }
 
-  /* ---- Problem grid ---- */
-  .problem-grid {
-    margin-top: 2.5rem;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.1rem;
-  }
-  .problem {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-  }
-  .problem-tag {
-    display: inline-block;
-    align-self: flex-start;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    padding: 0.25rem 0.7rem;
-    margin-bottom: 0.7rem;
-  }
-  .problem h3 {
-    font-size: 1.12rem;
-  }
-
-  /* ---- Framework steps ---- */
-  .framework {
+  /* ---- Idea trio ---- */
+  .idea-grid {
     margin-top: 2.5rem;
     list-style: none;
     padding: 0;
@@ -307,20 +230,22 @@ const framework = [
     grid-template-columns: repeat(3, 1fr);
     gap: 1.1rem;
   }
-  .step-n {
+  .idea {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .idea-n {
     font-family: var(--font-mono);
     font-size: 0.95rem;
     color: var(--green);
     letter-spacing: 0.1em;
   }
-  .step h3 {
-    margin-top: 0.6rem;
+  .idea h3 {
+    margin-top: 0.5rem;
     font-size: 1.2rem;
   }
-  .step p {
-    margin-top: 0.4rem;
-  }
-  .framework-foot {
+  .idea-foot {
     margin-top: 1.5rem;
     font-size: 0.98rem;
   }
@@ -335,30 +260,6 @@ const framework = [
   }
   .tool-copy {
     padding: clamp(1.75rem, 4vw, 2.75rem);
-  }
-  .tool-points {
-    margin: 1.2rem 0 1.6rem;
-    padding-left: 0;
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-  .tool-points li {
-    position: relative;
-    padding-left: 1.7rem;
-    color: var(--text-muted);
-  }
-  .tool-points li::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0.55em;
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-    background: var(--green);
-    box-shadow: 0 0 10px var(--green-glow);
   }
   .tool-shot {
     position: relative;
@@ -390,10 +291,8 @@ const framework = [
     align-items: center;
   }
 
-  /* ---- Responsive ---- */
   @media (max-width: 900px) {
-    .problem-grid,
-    .framework {
+    .idea-grid {
       grid-template-columns: 1fr;
     }
     .tool {
