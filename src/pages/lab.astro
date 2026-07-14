@@ -74,6 +74,16 @@ const rankerShort: Record<string, string> = {
   independentgolfreviews: "Indep. GR",
 };
 
+// Reviewed-but-unranked clubs + the forgiveness/distance/senior breakdown.
+const alsoAvailable =
+  hasRankings && Array.isArray(rankings.alsoAvailable) ? rankings.alsoAvailable : [];
+const breakdown = hasRankings && rankings.breakdown ? rankings.breakdown : null;
+const breakdownOrder = ["forgiveness", "distance", "senior"];
+const outletById = hasRankings
+  ? Object.fromEntries((rankings.allRankers ?? rankings.rankers).map((r: any) => [r.id, r]))
+  : {};
+const creditRankers = hasRankings ? rankings.allRankers ?? rankings.rankers : [];
+
 // Segmented tables (by priority / by player profile).
 let segments: any = null;
 try {
@@ -343,18 +353,22 @@ if (isLive) {
           <div class="preview-head">
             <h2 id="rankings">2026 driver rankings — the web's consensus</h2>
             <span class="sample-badge live-badge">
-              {rankings.totals.rankers} outlets · {rankings.totals.drivers} drivers
+              {rankings.totals.rankers} ranking outlets · {rankings.totals.drivers} drivers
             </span>
           </div>
           <p class="text-muted" style="max-width:66ch;margin-bottom:1.25rem;">
-            We comb the major club-review outlets, record where each one ranks
-            every 2026 driver, and tally them into a single table. Each column is
-            a ranker — linked to their article, full credit to them — and each
-            cell is that outlet's placement for that driver. The{" "}
-            <strong>Consensus</strong> column combines every list with a
-            normalized Borda count, so a driver is rewarded both for ranking
-            highly and for showing up across many outlets. Last updated{" "}
-            {rankings.generated_date}.
+            This table counts <strong>only outlets that publish a true ordinal
+            ranking</strong> — where position means overall quality, #1 to last.
+            Each column is one such ranker, linked to their article, and each cell
+            is that outlet's placement for that driver. Category guides that instead
+            crown a "best for X" per section (Golf Monthly, GolfWRX, Breaking Eighty,
+            GolfLens, Hole19) are deliberately left out of the count — their slot
+            order isn't a quality order — and feed the two sections below instead.
+            The <strong>Consensus</strong> column combines the true rankings with a
+            normalized Borda count; the opinion column shows how much evidence and
+            agreement sits behind each spot. With only a few outlets publishing a
+            genuine ranking, many clubs rest on a single list — read the confidence
+            markers accordingly. Last updated {rankings.generated_date}.
           </p>
 
           <div
@@ -505,23 +519,139 @@ if (isLive) {
               Credits &amp; sources
             </p>
             <ul class="credit-list">
-              {rankings.rankers.map((r: any) => (
+              {creditRankers.map((r: any) => (
                 <li>
                   <a href={r.url} rel="noopener nofollow" target="_blank">
                     {r.name}
                   </a>
+                  <span class:list={["credit-kind", { guide: !r.ranked }]}>
+                    {r.ranked ? "ranking" : "guide"}
+                  </span>
                   <span class="text-dim"> — {r.title}</span>
                 </li>
               ))}
             </ul>
             <p class="text-dim rankings-note">
-              Consensus is a normalized Borda count across the outlets above, each
-              list weighted equally regardless of length. Model variants (e.g.
-              Callaway Quantum Triple Diamond vs. Triple Diamond Max) are kept
-              separate because outlets rate them separately. Sources that publish
-              an unranked showcase rather than an ordinal ranking, or that list
-              prior-generation clubs, are not included.
+              Consensus is a normalized Borda count across the <strong>ranking</strong>
+              outlets only, each list weighted equally regardless of length. Outlets
+              marked <em>guide</em> publish category picks ("best for X"), not a
+              quality order, so they inform the segmented tables, the priority
+              breakdown, and the "also available" list rather than the ranking — this
+              is why a club an outlet named "best for slow swing speeds" is never
+              read as "ranked last." Model variants (e.g. Callaway Quantum Triple
+              Diamond vs. Triple Diamond Max) are kept separate because outlets rate
+              them separately. Sources that publish an unranked showcase, or that list
+              prior-generation clubs, are excluded entirely.
             </p>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Also available: reviewed by category guides, never given an ordinal rank -->
+    {
+      alsoAvailable.length > 0 && (
+        <section class="lab-section" aria-labelledby="also-avail">
+          <p class="eyebrow">Equipment</p>
+          <div class="preview-head">
+            <h2 id="also-avail">Also available — reviewed, not ranked</h2>
+            <span class="sample-badge">{alsoAvailable.length} drivers</span>
+          </div>
+          <p class="text-muted" style="max-width:70ch;margin-bottom:1.25rem;">
+            These 2026 drivers were tested and recommended by the outlets above —
+            but only as a "best for X" category pick, never placed in a true
+            head-to-head ranking, so they can't earn a consensus position. That's
+            an <strong>absence of ranking evidence, not a low ranking</strong>. A
+            club here may be every bit as good as one in the table above; it was
+            simply pitched at a specific player or priority — or has less marketing
+            muscle behind it. Worth a look for its niche.
+          </p>
+          <div
+            class="table-wrap"
+            role="region"
+            aria-label="Reviewed but unranked 2026 drivers"
+            tabindex="0"
+          >
+            <table class="data-table avail-table">
+              <thead>
+                <tr>
+                  <th scope="col">Driver</th>
+                  <th scope="col">Noted for</th>
+                  <th scope="col">Named by</th>
+                </tr>
+              </thead>
+              <tbody>
+                {alsoAvailable.map((d: any) => (
+                  <tr>
+                    <th scope="row">{d.model}</th>
+                    <td class="avail-labels">
+                      {d.labels.length ? (
+                        d.labels.map((l: string) => <span class="avail-tag">{l}</span>)
+                      ) : (
+                        <span class="text-dim">Featured</span>
+                      )}
+                    </td>
+                    <td class="avail-outlets">
+                      {d.outlets.map((id: string, i: number) => {
+                        const o = outletById[id];
+                        return o ? (
+                          <Fragment>
+                            {i > 0 && <span class="text-dim">, </span>}
+                            <a href={o.url} rel="noopener nofollow" target="_blank">
+                              {rankerShort[id] ?? o.name}
+                            </a>
+                          </Fragment>
+                        ) : null;
+                      })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Priority breakdown: forgiveness vs distance vs senior / slow swing -->
+    {
+      breakdown && (
+        <section class="lab-section" aria-labelledby="breakdown">
+          <p class="eyebrow">Equipment</p>
+          <h2 id="breakdown">Forgiveness vs. distance vs. slower swings</h2>
+          <p class="text-muted" style="max-width:70ch;margin-bottom:1.25rem;">
+            The most forgiving driver, the longest driver, and the best driver for
+            a slower swing are rarely the same club. Here's how every outlet's
+            category picks split across the three priorities golfers ask about most,
+            tallied by how many outlets named each club. A{" "}
+            <span class="bk-ranked" aria-hidden="true">✓</span> marks a club that
+            also earns a place in the ranking above.
+          </p>
+          <div class="bk-grid">
+            {breakdownOrder.map((key: string) => {
+              const b = (breakdown as any)[key];
+              return b ? (
+                <article class="card bk-card">
+                  <h3 class="bk-title">{b.label}</h3>
+                  <p class="bk-desc text-muted">{b.desc}</p>
+                  <ul class="bk-list">
+                    {b.picks.map((p: any) => (
+                      <li>
+                        <span class="bk-model">
+                          {p.model}
+                          {p.ranked && (
+                            <span class="bk-ranked" title="Also in the ranking above">
+                              ✓
+                            </span>
+                          )}
+                        </span>
+                        <span class="bk-count tnum">{p.count}×</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ) : null;
+            })}
           </div>
         </section>
       )
@@ -1042,6 +1172,115 @@ if (isLive) {
   .seg-table thead a:hover {
     color: var(--green);
     text-decoration: underline;
+  }
+
+  /* Credit "ranking vs guide" tag */
+  .credit-kind {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green);
+    border: 1px solid var(--green-dim);
+    border-radius: 999px;
+    padding: 0.05rem 0.4rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+  .credit-kind.guide {
+    color: var(--amber);
+    border-color: rgba(255, 207, 92, 0.35);
+  }
+
+  /* Also available (reviewed, not ranked) table */
+  .avail-table th,
+  .avail-table td {
+    text-align: left;
+    white-space: normal;
+    vertical-align: top;
+  }
+  .avail-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .avail-tag {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    padding: 0.12rem 0.5rem;
+    white-space: nowrap;
+  }
+  .avail-outlets a {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .avail-outlets a:hover {
+    text-decoration: underline;
+  }
+
+  /* Priority breakdown cards */
+  .bk-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+  }
+  .bk-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .bk-title {
+    font-size: 1.1rem;
+    color: var(--green);
+  }
+  .bk-desc {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  .bk-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .bk-list li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.6rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .bk-list li:last-child {
+    border-bottom: none;
+  }
+  .bk-model {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.92rem;
+  }
+  .bk-ranked {
+    color: var(--green);
+    margin-left: 0.35rem;
+    font-weight: 700;
+  }
+  .bk-count {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  @media (max-width: 860px) {
+    .bk-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* Sample badge + preview heading */
