@@ -194,7 +194,7 @@ const softwareLd = {
     border-bottom: 1px solid var(--border);
     background: radial-gradient(
       120% 90% at 50% -20%,
-      rgba(61, 220, 132, 0.09),
+      var(--green-tint),
       transparent 60%
     );
   }
@@ -204,7 +204,7 @@ const softwareLd = {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-block: clamp(2.5rem, 6vw, 4rem);
+    padding-block: clamp(2rem, 5vw, 3rem);
   }
   .dl-btn-wrap {
     margin-top: 1.8rem;
@@ -224,7 +224,7 @@ const softwareLd = {
     display: flex;
     flex-direction: column;
     gap: clamp(2.5rem, 6vw, 4rem);
-    padding-block: clamp(2.5rem, 6vw, 4rem);
+    padding-block: clamp(2rem, 5vw, 3rem);
   }
   .dl-section h2 {
     margin-bottom: 1.4rem;
@@ -291,7 +291,7 @@ const softwareLd = {
   }
   .smartscreen {
     border-color: var(--border-strong);
-    background: linear-gradient(180deg, rgba(61,220,132,0.05), var(--bg-elevated));
+    background: linear-gradient(180deg, var(--green-tint), var(--bg-elevated));
   }
   .ss-do {
     display: inline-flex;

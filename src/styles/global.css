@@ -5,44 +5,45 @@
    ========================================================================= */
 
 :root {
-  /* ---- Surfaces (Deep forest charcoal) ---- */
-  --bg: #0c120e;
-  --bg-elevated: #111a14;
-  --surface: #152219;
-  --surface-2: #1a2a1f;
-  --border: #243528;
-  --border-strong: #2f4534;
+  /* ---- Surfaces (Dark Warm Minimalist) ---- */
+  --bg: #141311;
+  --bg-elevated: #1a1917;
+  --surface: #201f1c;
+  --surface-2: #262521;
+  --border: #32302b;
+  --border-strong: #45423b;
 
   /* ---- Text ---- */
-  --text: #e2ede5;
-  --text-muted: #94a397;
-  --text-dim: #647568;
+  --text: #f0eee9;
+  --text-muted: #c2bfb6;
+  --text-dim: #9d9a92;
 
-  /* ---- Accent: Earthy Gold / Amber ---- */
-  --green: #cba358;
-  --green-bright: #e7be6e;
-  --green-dim: #8c6a2d;
-  --green-ink: #1f1807; /* text ON gold */
-  --green-glow: rgba(203, 163, 88, 0.35);
+  /* ---- Accent: Muted Sage ---- */
+  --green: #a4ad8f;
+  --green-bright: #bac2a6;
+  --green-dim: #6d755e;
+  --green-ink: #141311;
+  --green-tint: rgba(164, 173, 143, 0.1);
+  --bg-translucent: rgba(20, 19, 17, 0.72);
 
-  /* ---- Data hues (charts / chips) ---- */
-  --cyan: #63b39b;
-  --amber: #dfb256;
-  --violet: #8e7a5c;
+  /* ---- Data hues ---- */
+  --cyan: #698380;
+  --amber: #a98d66;
+  --violet: #807682;
 
   /* ---- Type ---- */
-  --font-head: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-head: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* ---- Layout ---- */
   --maxw: 1120px;
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 0px;
+  --radius-sm: 0px;
   --gap: clamp(1rem, 2vw, 1.5rem);
   --nav-h: 64px;
 
-  --shadow: 0 12px 36px -12px rgba(0, 0, 0, 0.8);
+  --shadow: none;
   --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
@@ -103,8 +104,8 @@ h3,
 h4 {
   font-family: var(--font-head);
   font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--text);
   text-wrap: balance;
 }
@@ -182,10 +183,16 @@ time {
   padding-inline: clamp(1rem, 4vw, 2rem);
 }
 .section {
-  padding-block: clamp(3.5rem, 8vw, 6rem);
+  padding-block: clamp(2.75rem, 6vw, 4.5rem);
 }
 .section-tight {
-  padding-block: clamp(2.5rem, 5vw, 3.5rem);
+  padding-block: clamp(2rem, 4vw, 2.75rem);
+}
+/* Alternate surfaces between top-level sections so pages read with rhythm
+   instead of one flat tone end to end. */
+main > section.section:nth-of-type(even),
+main > section.section-tight:nth-of-type(even) {
+  background: var(--bg-elevated);
 }
 .eyebrow {
   font-family: var(--font-mono);
@@ -207,78 +214,63 @@ time {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-  padding: 0.85rem 1.4rem;
-  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.4rem;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.3s var(--ease), background 0.3s var(--ease),
-    box-shadow 0.3s var(--ease), border-color 0.3s var(--ease);
+  transition: all 0.3s var(--ease);
+  text-transform: uppercase;
   will-change: transform;
 }
 .btn:active {
   transform: translateY(1px);
 }
 .btn-primary {
-  background: var(--green);
-  color: var(--green-ink);
-  box-shadow: 0 0 0 1px var(--green), 0 8px 24px -10px var(--green-glow);
+  background: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
 }
 .btn-primary:hover {
-  background: var(--green-bright);
-  color: var(--green-ink);
-  box-shadow: 0 0 0 1px var(--green-bright), 0 12px 36px -8px var(--green-glow);
+  background: var(--bg);
+  color: var(--text);
   transform: translateY(-2px);
 }
 .btn-secondary {
-  background: rgba(26, 42, 31, 0.4);
+  background: transparent;
   color: var(--text);
-  border-color: var(--border-strong);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-strong);
 }
 .btn-secondary:hover {
-  color: var(--green);
-  border-color: var(--green);
-  background: rgba(26, 42, 31, 0.8);
+  border-color: var(--text);
   transform: translateY(-2px);
 }
 .btn-coffee {
-  background: #2a3a2f;
-  color: #dfb256;
-  font-weight: 600;
-  border: 1px solid #dfb256;
-  box-shadow: 0 6px 18px -10px rgba(223, 178, 86, 0.4);
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--amber);
 }
 .btn-coffee:hover {
-  background: #354a3b;
-  color: #e7be6e;
-  box-shadow: 0 8px 22px -8px rgba(223, 178, 86, 0.6);
+  background: var(--amber);
+  color: var(--bg);
   transform: translateY(-2px);
 }
 .btn-lg {
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 1rem 1.7rem;
 }
 
 /* ---------- Cards ---------- */
 .card {
-  background: linear-gradient(180deg, rgba(21, 34, 25, 0.5) 0%, rgba(17, 26, 20, 0.7) 100%);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  transition: border-color 0.4s var(--ease), transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
+  padding: 1.75rem 1.5rem;
+  transition: border-color 0.3s var(--ease);
 }
 .card:hover {
-  border-color: var(--green-dim);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px -8px var(--green-glow);
+  border-color: var(--text-muted);
 }
 
 /* ---------- Stat chip (e.g. "SMASH 1.49") ---------- */
@@ -292,21 +284,20 @@ time {
   padding: 0.4rem 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  background: rgba(22, 27, 34, 0.7);
-  color: var(--text-muted);
-  backdrop-filter: blur(6px);
+  background: var(--surface);
+  color: var(--text);
   white-space: nowrap;
 }
 .stat-chip b {
-  color: var(--green);
+  color: var(--green-bright);
   font-weight: 600;
   font-size: 0.95rem;
 }
 .stat-chip .label {
-  color: var(--text-dim);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
 }
 
 /* ---------- Pill / tag ---------- */
@@ -318,7 +309,7 @@ time {
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  color: var(--text-muted);
+  color: var(--text);
   background: var(--surface);
 }
 
@@ -329,7 +320,7 @@ time {
   z-index: 0;
   pointer-events: none;
   background-image: radial-gradient(
-    rgba(203, 163, 88, 0.08) 1px,
+    var(--green-tint) 1px,
     transparent 1.4px
   );
   background-size: 32px 32px;

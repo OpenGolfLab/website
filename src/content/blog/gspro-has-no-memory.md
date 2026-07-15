@@ -31,7 +31,7 @@ None of those can be answered from a number that disappears. They require every 
 We wrote a free Windows app that sits alongside GSPro and quietly does the part GSPro leaves out:
 
 - **It remembers everything, automatically.** Practice Range exports are picked up the instant they hit your Desktop, and live rounds are tracked in real time and archived when they end. There's no import button — you just play.
-- **It turns shots into 15 dashboards.** Dispersion, club gapping, trajectory, swing efficiency, shot shape, speed training, on-course scorecards, live sessions — the historical views GSPro can't give you.
+- **It turns shots into 15 dashboards** — dispersion, gapping, trajectory, and more. See the [full feature tour](/blog/meet-golf-sim-analytics) for what each one covers.
 - **It benchmarks you honestly.** Overlay PGA Tour averages or any handicap level from 5 to 20 with one click, so your numbers have a real target.
 - **It keeps your data yours.** Everything lives in local Parquet files next to the app. Nothing is uploaded, there's no account, and it's completely free.
 

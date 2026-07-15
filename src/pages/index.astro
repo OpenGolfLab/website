@@ -1,6 +1,20 @@
 ---
+import fs from "node:fs";
+import path from "node:path";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
+
+// Real counts, computed at build from the driver lineup dataset — no slogans.
+let lineupsData: any = null;
+try {
+  const rp = path.resolve("public/data/driver-lineups.json");
+  if (fs.existsSync(rp)) lineupsData = JSON.parse(fs.readFileSync(rp, "utf-8"));
+} catch {
+  lineupsData = null;
+}
+const lineups = lineupsData?.lineups ?? [];
+const driverCount = lineups.reduce((n: number, l: any) => n + (l.models?.length ?? 0), 0);
+const brandCount = lineups.length;
 
 // One positive trio — replaces the old "problems" + "framework" sections.
 const ideas = [
@@ -26,36 +40,38 @@ const ideas = [
   <!-- ============================ HERO ============================ -->
   <section class="hero">
     <div class="hero-media" aria-hidden="true">
-      <img
-        src="/images/course_bg.jpg"
-        alt=""
-        width="2400"
-        height="1350"
-        fetchpriority="high"
-      />
+      <picture>
+        <source media="(max-width: 760px)" srcset="/images/course_bg-mobile.jpg" />
+        <img
+          src="/images/course_bg.jpg"
+          alt=""
+          width="2400"
+          height="1350"
+          fetchpriority="high"
+        />
+      </picture>
       <div class="hero-scrim"></div>
     </div>
     <div class="grid-bg"></div>
 
     <div class="container hero-inner">
       <span class="pill hero-openpill">◆ Open &amp; free · community-powered</span>
-      <h1 class="hero-title">Confident gear decisions, backed by data.</h1>
+      <h1 class="hero-title">The Open Engine for Golf Analytics</h1>
       <p class="lede hero-lede">
-        Clubs and balls aren't cheap. OpenGolfLab turns real, standardized
-        community shot data into no-regret buying decisions — so you get it
-        right the first time.
+        Harnessing the power of the sim community so you can stop guessing on
+        your gear purchases.
       </p>
 
       <div class="hero-cta">
-        <a href="/lab" class="btn btn-primary btn-lg">Explore the data</a>
-        <a href="/golf-sim-analytics" class="btn btn-secondary btn-lg">Get the app</a>
+        <a href="/download" class="btn btn-primary btn-lg">Download the free app</a>
+        <a href="/lab" class="btn btn-secondary btn-lg">Preview the Lab ↗</a>
       </div>
 
-      <div class="hero-chips" role="list" aria-label="Why it helps">
-        <span class="stat-chip" role="listitem"><span class="label">Get it right</span><b>First time</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">No-regret</span><b>Purchases</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Backed by</span><b>Data</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Open &amp;</span><b>Free</b></span>
+      <div class="hero-chips" role="list" aria-label="At a glance">
+        <span class="stat-chip" role="listitem"><span class="label">Dashboards</span><b>15</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Drivers tracked</span><b>{driverCount}</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Brands</span><b>{brandCount}</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Price</span><b>$0</b></span>
       </div>
     </div>
   </section>
@@ -66,9 +82,8 @@ const ideas = [
       <p class="eyebrow">Why this exists</p>
       <h2 class="mission-h">Great gear decisions deserve more data</h2>
       <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        Choosing a ball or a driver should lean on real evidence. The more shots,
-        players and consistency behind a comparison, the more you can trust it —
-        and that's exactly the kind of thing a community can build together.
+        One golfer's test is an anecdote. A community testing the same way is
+        evidence.
       </p>
 
       <ol class="idea-grid">
@@ -95,13 +110,13 @@ const ideas = [
     <div class="container">
       <div class="tool card">
         <div class="tool-copy">
-          <p class="eyebrow">How you can help</p>
+          <p class="eyebrow">The instrument</p>
           <h2>{PRODUCT_NAME} is the instrument</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
-            Consistent data needs a consistent way to capture it. Our free
-            Windows app for GSPro records every shot automatically and turns it
-            into 15 dashboards — so you get sharper practice today, and (only if
-            you opt in) can help build the shared dataset tomorrow.
+            {PRODUCT_NAME} — our free GSPro companion — captures every shot
+            automatically and turns it into 15 dashboards, so you get sharper
+            practice today and (only if you opt in) help build the shared
+            dataset tomorrow.
           </p>
           <div class="hero-cta">
             <a href="/golf-sim-analytics" class="btn btn-primary">Explore the app</a>
@@ -158,6 +173,11 @@ const ideas = [
     inset: 0;
     z-index: -2;
   }
+  .hero-media picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
   .hero-media img {
     width: 100%;
     height: 100%;
@@ -168,8 +188,8 @@ const ideas = [
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(13, 17, 23, 0.72) 0%, rgba(13, 17, 23, 0.86) 60%, var(--bg) 100%),
-      radial-gradient(120% 90% at 50% -10%, rgba(61, 220, 132, 0.12), transparent 55%);
+      linear-gradient(180deg, var(--bg-translucent) 0%, rgba(20, 19, 17, 0.86) 60%, var(--bg) 100%),
+      radial-gradient(120% 90% at 50% -10%, var(--green-tint), transparent 55%);
   }
   .hero .grid-bg {
     z-index: -1;
@@ -177,7 +197,7 @@ const ideas = [
   .hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: clamp(4rem, 11vw, 8rem) clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(3rem, 8vw, 6rem) clamp(2.25rem, 5vw, 3.75rem);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -186,12 +206,12 @@ const ideas = [
   .hero-openpill {
     color: var(--green);
     border-color: var(--green-dim);
-    background: rgba(13, 17, 23, 0.5);
+    background: rgba(20, 19, 17, 0.5);
     margin-bottom: 1.2rem;
   }
   .hero-title {
     max-width: 20ch;
-    background: linear-gradient(180deg, #ffffff 0%, #cdd8e2 100%);
+    background: linear-gradient(180deg, #ffffff 0%, var(--text-muted) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -199,7 +219,7 @@ const ideas = [
   .hero-lede {
     margin-top: 1.2rem;
     text-align: center;
-    color: #cbd5e0;
+    color: var(--text-muted);
   }
   .hero-cta {
     display: flex;
@@ -258,7 +278,7 @@ const ideas = [
     overflow: hidden;
   }
   .tool-copy {
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
   }
   .tool-shot {
     position: relative;
@@ -283,7 +303,7 @@ const ideas = [
     overflow: hidden;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: clamp(2rem, 5vw, 3.5rem);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
     text-align: center;
     background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
   }

@@ -125,6 +125,8 @@ const softwareLd = {
       src="/images/screenshots/home.jpg"
       alt="Golf Sim Analytics home dashboard showing a session summary with carry distances, a dispersion plot, and per-club metrics."
       loading="eager"
+      width={2000}
+      height={1194}
       caption="The home dashboard — a live readout of your latest session."
     />
   </section>
@@ -134,11 +136,6 @@ const softwareLd = {
     <div class="container">
       <p class="eyebrow">Why it exists</p>
       <h2 class="app-why-h">GSPro shows you the shot. It doesn't remember it.</h2>
-      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        GSPro is a superb simulator, but the numbers vanish the moment the ball
-        lands. Golf Sim Analytics is the memory and the microscope: it captures
-        every shot and turns it into analytics you can practice against.
-      </p>
 
       <!-- Signature capabilities strip -->
       <ul class="caps">
@@ -191,32 +188,23 @@ const softwareLd = {
         <Screenshot
           src="/images/screenshots/dispersion.jpg"
           alt="Dispersion dashboard plotting shot landing positions with left-right and carry scatter, colored by club, against an ideal target ellipse."
-          caption="Dispersion — the shape and tightness of every club."
+          width={2000}
+          height={1194}
+          caption="Carry 105 yd · Spin 9,451 rpm · Smash 0.95"
         />
         <Screenshot
           src="/images/screenshots/gapping_benchmarks.jpg"
           alt="Club gapping chart with carry-distance bars for each club overlaid with PGA Tour benchmark markers to reveal distance gaps."
-          caption="Club gapping with one-click Tour and handicap benchmarks."
+          width={2000}
+          height={1194}
+          caption="Gap to 5i: +17 yd"
         />
         <Screenshot
           src="/images/screenshots/trajectory.jpg"
           alt="Trajectory dashboard showing flight paths for every club with launch angle, peak height, and descent angle box plots flagged against ideal windows."
-          caption="Trajectory — launch, peak height and descent, flagged vs ideal."
-        />
-        <Screenshot
-          src="/images/screenshots/speed_training.jpg"
-          alt="Speed training dashboard showing cruising clubhead speed, a fatigue curve across a session, and long-term speed progression."
-          caption="Speed training — cruising speed, fatigue and progression."
-        />
-        <Screenshot
-          src="/images/screenshots/live.jpg"
-          alt="Live dashboard updating a dispersion plot in real time as new shots arrive during a GSPro session."
-          caption="Live — real-time dispersion as you hit."
-        />
-        <Screenshot
-          src="/images/screenshots/on_course.jpg"
-          alt="On-course dashboard showing rounds played, a scoring breakdown of eagles through double bogeys, and full-round scores versus par."
-          caption="On-course — automatic scorecards and scoring trends."
+          width={2000}
+          height={1194}
+          caption="Wedges arc past 150 ft; the driver stays flatter, peaking under 100."
         />
       </div>
     </div>
@@ -282,12 +270,12 @@ const softwareLd = {
     position: relative;
     overflow: hidden;
     border-bottom: 1px solid var(--border);
-    background: radial-gradient(110% 90% at 20% -10%, rgba(61, 220, 132, 0.09), transparent 60%);
+    background: radial-gradient(110% 90% at 20% -10%, var(--green-tint), transparent 60%);
   }
   .app-hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2rem, 5vw, 3.5rem);
+    padding-block: clamp(2.25rem, 6vw, 4rem) clamp(1.5rem, 4vw, 2.75rem);
   }
   .app-hero-copy {
     max-width: 62ch;
@@ -347,7 +335,6 @@ const softwareLd = {
     height: 8px;
     border-radius: 2px;
     background: var(--green);
-    box-shadow: 0 0 10px var(--green-glow);
     margin-bottom: 0.5rem;
   }
   .cap-label {
@@ -410,7 +397,7 @@ const softwareLd = {
   .screens-grid {
     margin-top: 2rem;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1.4rem;
   }
 
@@ -439,7 +426,7 @@ const softwareLd = {
   .app-lab {
     position: relative;
     overflow: hidden;
-    padding: clamp(1.75rem, 4vw, 3rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
     background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
   }
   .app-lab-inner {

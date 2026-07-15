@@ -1,163 +1,139 @@
 ---
 import fs from "node:fs";
 import path from "node:path";
-import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import FormattedDate from "../components/FormattedDate.astro";
 import { GITHUB_URL, GITHUB_WATCH_URL } from "../consts";
-
-// Research-category posts surface here, paired with the data.
-const labPosts = (
-  await getCollection("blog", ({ data }) => !data.draft && data.category === "Research")
-).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const title = "The Lab";
 const description =
   "The OpenGolfLab community analytics hub — an open framework where sim golfers contribute anonymized ball and club metrics to build community-driven analytics: real-world ball comparisons, gapping distributions by handicap, and launch/spin norms.";
 
-const pillars = [
-  {
-    title: "Real-world ball comparisons",
-    body: "Aggregate carry, spin and launch across balls and simulators to see how models actually differ — not marketing numbers, but community data.",
-    tag: "Balls",
-  },
-  {
-    title: "Gapping distributions by handicap",
-    body: "What does a 12-handicap's 7-iron carry, really? Distributions built from thousands of shots, sliced by skill band.",
-    tag: "Gapping",
-  },
-  {
-    title: "Launch & spin norms",
-    body: "Trustworthy reference windows for every club — so the app can flag your shots against the community, not just Tour ideals.",
-    tag: "Norms",
-  },
+// 2026 driver lineup spectrum + market pricing
+let lineupsData: any = null;
+try {
+  const rp = path.resolve("public/data/driver-lineups.json");
+  if (fs.existsSync(rp)) lineupsData = JSON.parse(fs.readFileSync(rp, "utf-8"));
+} catch {
+  lineupsData = null;
+}
+const hasLineups = !!(
+  lineupsData &&
+  Array.isArray(lineupsData.lineups) &&
+  lineupsData.lineups.length
+);
+const lineups = hasLineups ? lineupsData.lineups : [];
+
+// All models flattened, for build-time stats and the pricing chart.
+const allModels = lineups.flatMap((l: any) =>
+  (l.models ?? []).map((m: any) => ({ ...m, brand: l.brand }))
+);
+const modelCount = allModels.length;
+const sortedPrices = [...allModels.map((m: any) => m.price)].sort((a, b) => a - b);
+const medianPrice = sortedPrices.length
+  ? sortedPrices.length % 2 === 1
+    ? sortedPrices[(sortedPrices.length - 1) / 2]
+    : Math.round((sortedPrices[sortedPrices.length / 2 - 1] + sortedPrices[sortedPrices.length / 2]) / 2)
+  : 0;
+const discounted = allModels
+  .map((m: any) => ({ ...m, savings: m.msrp - m.price, pct: m.msrp > 0 ? ((m.msrp - m.price) / m.msrp) * 100 : 0 }))
+  .filter((m: any) => m.savings > 0)
+  .sort((a: any, b: any) => b.pct - a.pct);
+const biggestDiscount = discounted[0];
+
+// Pricing chart axis: $0-based, gridlines every $200, rounded up past the max MSRP.
+const maxRawPrice = allModels.reduce((max: number, m: any) => Math.max(max, m.msrp, m.price), 0);
+const axisMaxRounded = Math.max(200, Math.ceil((maxRawPrice + 1) / 200) * 200);
+const axisTicks: number[] = [];
+for (let v = 0; v <= axisMaxRounded; v += 200) axisTicks.push(v);
+const pricingLineups = lineups.map((l: any) => ({
+  brand: l.brand,
+  models: [...(l.models ?? [])].sort((a: any, b: any) => a.price - b.price),
+}));
+
+// Spectrum: sort each brand's models by position, then stagger label height
+// only where neighboring models sit close enough on the track to collide —
+// so labels stay level unless they actually need separating, instead of
+// climbing in lockstep (which made rightmost/"distance" models always sit
+// highest regardless of how much room they actually had).
+const STAGGER_GAP = 16; // position-% below which two labels are considered close
+const spectrumLineups = lineups.map((l: any) => {
+  const models = [...(l.models ?? [])].sort((a: any, b: any) => a.position - b.position);
+  let prevPosition: number | null = null;
+  let stagger = 0;
+  const staggered = models.map((m: any) => {
+    stagger = prevPosition !== null && m.position - prevPosition < STAGGER_GAP ? (stagger + 1) % 3 : 0;
+    prevPosition = m.position;
+    return { ...m, stagger };
+  });
+  return { brand: l.brand, models: staggered };
+});
+
+// ---- Community aggregates (summary.json v2 — tiered) --------------------------
+// Written by the opengolflab-data aggregator. Optional: absent, or present with
+// empty tiers, until enough contributors clear the publish threshold. The page
+// degrades to the "in progress" build-status list until real data exists.
+let summaryData: any = null;
+try {
+  const sp = path.resolve("public/data/summary.json");
+  if (fs.existsSync(sp)) summaryData = JSON.parse(fs.readFileSync(sp, "utf-8"));
+} catch {
+  summaryData = null;
+}
+
+const TIER_META = [
+  { key: "all", src: "community", label: "All", blurb: "Every contributor that clears quality control." },
+  { key: "verified", src: "verified", label: "Verified", blurb: "Spin-measuring monitors, proven contributors." },
+  { key: "reference", src: "reference", label: "Reference", blurb: "A curated core of vetted contributors." },
 ];
 
-// If real community aggregates have been published to public/data/summary.json,
-// read them at build time and render them. Otherwise fall back to the labeled
-// illustrative sample below. (Produced by the aggregator in opengolflab-data.)
-const DEFAULT_BAND = "10-14";
-let live: any = null;
-try {
-  const p = path.resolve("public/data/summary.json");
-  if (fs.existsSync(p)) live = JSON.parse(fs.readFileSync(p, "utf-8"));
-} catch {
-  live = null;
+// A driver dispersion cell → SVG ellipse geometry (the "typical player" spread).
+const DISP = { sx: 2.4, sy: 2.4, k: 1.5, cx0: 110, cy: 88 }; // px/yd, ~1σ look
+function driverEllipse(clubs: any[]) {
+  const dr = clubs.find((c: any) => String(c.club || "").toUpperCase() === "DR");
+  const d = dr?.dispersion;
+  if (!d || d.lateral_mad == null || d.depth_mad == null) return null;
+  return {
+    cx: DISP.cx0 + (d.offline_bias ?? 0) * DISP.sx,
+    cy: DISP.cy,
+    rx: Math.max(5, d.lateral_mad * DISP.k * DISP.sx),
+    ry: Math.max(5, d.depth_mad * DISP.k * DISP.sy),
+    lateral: d.lateral_mad,
+    depth: d.depth_mad,
+    bias: d.offline_bias ?? 0,
+  };
 }
-const isLive = !!(live && live.totals && live.totals.shots > 0 && Array.isArray(live.gapping) && live.gapping.length);
 
-// 2026 driver rankings — aggregated from club-review outlets across the web.
-// Generated by scripts/build-driver-rankings.mjs (run `npm run rankings`).
-let rankings: any = null;
-try {
-  const rp = path.resolve("public/data/driver-rankings.json");
-  if (fs.existsSync(rp)) rankings = JSON.parse(fs.readFileSync(rp, "utf-8"));
-} catch {
-  rankings = null;
-}
-const hasRankings = !!(
-  rankings &&
-  Array.isArray(rankings.rankers) &&
-  rankings.rankers.length &&
-  Array.isArray(rankings.drivers) &&
-  rankings.drivers.length
-);
-// Compact column labels for the (long) outlet names.
-const rankerShort: Record<string, string> = {
-  mygolfspy: "MyGolfSpy",
-  golfmonthly: "Golf Monthly",
-  todaysgolfer: "Today's Golfer",
-  golfwrx: "GolfWRX",
-  breakingeighty: "Breaking 80",
-  hole19: "Hole19",
-  golflens: "GolfLens",
-  independentgolfreviews: "Indep. GR",
-};
-
-// Reviewed-but-unranked clubs + the forgiveness/distance/senior breakdown.
-const alsoAvailable =
-  hasRankings && Array.isArray(rankings.alsoAvailable) ? rankings.alsoAvailable : [];
-const breakdown = hasRankings && rankings.breakdown ? rankings.breakdown : null;
-const breakdownOrder = ["forgiveness", "distance", "senior"];
-const outletById = hasRankings
-  ? Object.fromEntries((rankings.allRankers ?? rankings.rankers).map((r: any) => [r.id, r]))
-  : {};
-const creditRankers = hasRankings ? rankings.allRankers ?? rankings.rankers : [];
-
-// Segmented tables (by priority / by player profile).
-let segments: any = null;
-try {
-  const sp = path.resolve("public/data/driver-segments.json");
-  if (fs.existsSync(sp)) segments = JSON.parse(fs.readFileSync(sp, "utf-8"));
-} catch {
-  segments = null;
-}
-const hasSegments = !!(
-  segments &&
-  Array.isArray(segments.features) &&
-  segments.features.length &&
-  Array.isArray(segments.profiles) &&
-  segments.profiles.length
-);
-
-// --- uncertainty "forest plot" geometry ---
-const UW = 150; // svg width units
-const UH = 26; // svg height units
-const UPAD = 9;
-const UCY = 12; // baseline y
-const ux = (v: number) => UPAD + (v / 100) * (UW - 2 * UPAD);
-const dotR = (ev: string) => (ev === "high" ? 5 : ev === "medium" ? 4 : 3);
-
-const num = (v: number) => Number(v).toLocaleString("en-US");
-
-let previewRows;
-let bandLabel = DEFAULT_BAND;
-let dist: number[];
-let binLabels: string[];
-let distClub = "7 Iron";
-
-if (isLive) {
-  const bands = live.gapping.map((g: any) => g.handicap_band);
-  bandLabel = bands.includes(DEFAULT_BAND) ? DEFAULT_BAND : bands[0];
-  previewRows = live.gapping
-    .filter((g: any) => g.handicap_band === bandLabel)
-    .sort((a: any, b: any) => b.carry - a.carry)
-    .map((r: any) => ({
-      club: r.club,
-      carry: r.carry != null ? String(r.carry) : "—",
-      ball: r.ball != null ? String(r.ball) : "—",
-      launch: r.launch != null ? String(r.launch) : "—",
-      spin: r.spin != null ? num(r.spin) : "—",
-      n: num(r.shots),
-    }));
-  const counts: number[] = live.distribution?.counts ?? [];
-  const max = Math.max(1, ...counts);
-  dist = counts.map((c) => Math.round((c / max) * 100));
-  binLabels = (live.distribution?.bins ?? []).map((b: string, i: number) => (i % 2 === 0 ? b : ""));
-  distClub = live.distribution?.club ?? distClub;
-} else {
-  // Illustrative SAMPLE rows (~10-handicap band). NOT real community data.
-  previewRows = [
-    { club: "Driver", carry: "245", ball: "152", launch: "13.5", spin: "2,650", n: "1,240" },
-    { club: "7 Iron", carry: "152", ball: "115", launch: "18.5", spin: "6,300", n: "1,890" },
-    { club: "PW", carry: "118", ball: "98", launch: "24.6", spin: "8,600", n: "1,510" },
-  ];
-  dist = [6, 14, 28, 55, 82, 100, 86, 60, 32, 12];
-  binLabels = ["135", "", "145", "", "155", "", "165", "", "175", ""];
-}
+const tierViews = TIER_META.map((t) => {
+  const blk = summaryData?.tiers?.[t.src] ?? {};
+  const clubs = Array.isArray(blk?.clubs) ? blk.clubs : [];
+  return {
+    ...t,
+    contributors: blk?.totals?.contributors ?? 0,
+    shots: blk?.totals?.shots ?? 0,
+    clubs,
+    ellipse: driverEllipse(clubs),
+  };
+});
+const hasCommunityData = tierViews.some((t) => t.clubs.length > 0);
+// Default the toggle to the highest-trust tier that actually has data.
+const defaultTierKey =
+  [...tierViews].reverse().find((t) => t.clubs.length > 0)?.key ?? "all";
+const generatedDate = summaryData?.generated_date ?? null;
 ---
 
 <BaseLayout title={title} description={description}>
   <section class="section-tight lab-hero">
     <div class="grid-bg"></div>
     <div class="container lab-hero-inner">
-      <span class="pill lab-status">◐ Coming soon</span>
+      <span class="pill lab-status">◐ Community dataset in progress</span>
       <h1>The Lab</h1>
       <p class="lede" style="margin-top:1rem;">
-        Your data makes your game measurable. Pooled — anonymized and opt-in —
-        it makes the whole simulator community measurable. The Lab is an open
-        framework for turning thousands of sessions into analytics no single
-        golfer could ever produce alone.
+        Every shot from your launch monitor tells a story about your game,
+        but the bigger picture requires a crowd. The Lab aggregates
+        anonymized simulator sessions to build what no individual can:
+        community-driven ball and club comparisons, true gapping by
+        handicap, and launch and spin norms to help you find the absolute
+        best equipment for your game.
       </p>
       <div class="hero-cta" style="margin-top:1.6rem;">
         <a href={GITHUB_WATCH_URL} class="btn btn-primary" rel="noopener">
@@ -174,628 +150,306 @@ if (isLive) {
   </section>
 
   <div class="container lab-body">
-    <!-- Vision pillars -->
-    <section class="lab-section" aria-labelledby="vision">
-      <p class="eyebrow">The vision</p>
-      <h2 id="vision">Three things a shared dataset unlocks</h2>
-      <div class="pillars">
-        {
-          pillars.map((p) => (
-            <article class="card pillar">
-              <span class="pill">{p.tag}</span>
-              <h3>{p.title}</h3>
-              <p class="text-muted">{p.body}</p>
-            </article>
-          ))
-        }
-      </div>
-    </section>
 
-    <!-- How contribution will work -->
-    <section class="lab-section" aria-labelledby="how">
-      <p class="eyebrow">How it will work</p>
-      <h2 id="how">Open, anonymized, opt-in</h2>
-      <ol class="lab-steps">
-        <li class="card">
-          <span class="step-n tnum">01</span>
-          <div>
-            <h3>You opt in</h3>
-            <p class="text-muted">
-              Contribution is off by default. Nothing is shared unless you turn
-              it on — and even then, only stripped-down metrics leave your
-              machine.
-            </p>
-          </div>
-        </li>
-        <li class="card">
-          <span class="step-n tnum">02</span>
-          <div>
-            <h3>Metrics are anonymized</h3>
-            <p class="text-muted">
-              Ball speed, launch, spin, carry and club — never your name, your
-              rounds, or anything that identifies you. The raw data stays local.
-            </p>
-          </div>
-        </li>
-        <li class="card">
-          <span class="step-n tnum">03</span>
-          <div>
-            <h3>The community benefits</h3>
-            <p class="text-muted">
-              Aggregates flow back into open tables and charts anyone can use —
-              and into better benchmarks inside the app itself.
-            </p>
-          </div>
-        </li>
-      </ol>
-    </section>
-
-    <!-- Data preview (structured so real tables/charts slot in later) -->
-    <section class="lab-section" aria-labelledby="preview">
-      <p class="eyebrow">Preview</p>
-      <div class="preview-head">
-        <h2 id="preview">Community gapping — {bandLabel} handicap</h2>
-        {
-          isLive ? (
-            <span class="sample-badge live-badge">
-              {num(live.totals.contributors)} contributors · {num(live.totals.shots)} shots
-            </span>
-          ) : (
-            <span class="sample-badge">Sample data</span>
-          )
-        }
+    <!-- ============ BAND 1: LIVE NOW — MARKET DATA ============ -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <span class="pill lab-band-pill live">Live now</span>
+        <h2>Market data</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          Editorial market snapshots we maintain ourselves — not yet
+          community-sourced. That's a separate effort, in progress below.
+        </p>
       </div>
+
       {
-        isLive ? (
-          <p class="text-muted" style="max-width:62ch;margin-bottom:1.25rem;">
-            Live community aggregates for the <strong>{bandLabel}</strong> handicap
-            band, built from {num(live.totals.shots)} contributed shots.
-            Last updated {live.generated_date}.
-          </p>
-        ) : (
-          <p class="text-muted" style="max-width:62ch;margin-bottom:1.25rem;">
-            A preview of the shape the real dataset will take. The numbers below are
-            <strong>illustrative samples</strong> (roughly a 10-handicap band) — not
-            yet real community data. Once contributions begin, live figures replace
-            them here.
-          </p>
-        )
-      }
+        hasLineups && (
+          <section class="lab-section" aria-labelledby="lineups">
+            <p class="eyebrow">Equipment</p>
+            <h3 id="lineups">2026 Driver Lineup Spectrum</h3>
+            <p class="text-muted" style="max-width:66ch;margin-bottom:1.25rem;">
+              A complete map of every major manufacturer's current driver lineup, plotted across a spectrum from maximum forgiveness to pure distance. Use this matrix to understand exactly where a club sits in a brand's ecosystem.
+            </p>
 
-      <div class="table-wrap" role="region" aria-label="Community gapping sample table" tabindex="0">
-        <table class="data-table">
-          <caption class="sr-only">
-            Community gapping by club — carry, ball speed, launch, spin and
-            sample size.
-          </caption>
-          <thead>
-            <tr>
-              <th scope="col">Club</th>
-              <th scope="col">Carry (yd)</th>
-              <th scope="col">Ball (mph)</th>
-              <th scope="col">Launch (°)</th>
-              <th scope="col">Spin (rpm)</th>
-              <th scope="col">Shots</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              previewRows.map((r) => (
-                <tr>
-                  <th scope="row">{r.club}</th>
-                  <td>{r.carry}</td>
-                  <td>{r.ball}</td>
-                  <td>{r.launch}</td>
-                  <td>{r.spin}</td>
-                  <td>{r.n}</td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
+            <div class="continuum-wrap" role="region" aria-label="2026 driver continuum">
+              <div class="continuum-header">
+                <span>Max Forgiveness</span>
+                <span class="text-dim">Balanced / Core</span>
+                <span>Pure Distance</span>
+              </div>
 
-      <!-- Illustrative distribution chart (inline SVG, no chart library) -->
-      <figure class="dist-chart">
-        <figcaption class="dist-cap">
-          <span>{distClub} carry distribution{isLive ? "" : " — sample"}</span>
-          <span class:list={["sample-badge", { "live-badge": isLive }]}>
-            {isLive ? "Community" : "Illustrative"}
-          </span>
-        </figcaption>
-        <svg
-          viewBox="0 0 800 320"
-          class="dist-svg"
-          role="img"
-          aria-label="Illustrative histogram of 7-iron carry distances, sample data."
-        >
-          <line class="dist-axis" x1="55" y1="275" x2="782" y2="275"></line>
-          <text
-            class="dist-lbl"
-            x="18"
-            y="150"
-            font-size="13"
-            text-anchor="middle"
-            transform="rotate(-90 18 150)">shots</text
-          >
-          {
-            dist.map((v, i) => {
-              const L = 55;
-              const R = 782;
-              const slot = (R - L) / dist.length;
-              const bw = slot * 0.66;
-              const x = L + i * slot + (slot - bw) / 2;
-              const h = (v / 100) * 245;
-              const y = 275 - h;
-              const op = (0.4 + 0.55 * (v / 100)).toFixed(2);
-              return (
-                <g>
-                  <rect class="dist-bar" x={x} y={y} width={bw} height={h} rx="3" style={`opacity:${op}`} />
-                  {binLabels[i] && (
-                    <text class="dist-lbl" x={x + bw / 2} y="295" font-size="12" text-anchor="middle">
-                      {binLabels[i]}
-                    </text>
-                  )}
-                </g>
-              );
-            })
-          }
-          <text class="dist-lbl" x="418" y="314" font-size="12" text-anchor="middle">Carry (yards)</text>
-        </svg>
-      </figure>
-    </section>
-
-    <!-- 2026 driver rankings — aggregated from club-review outlets across the web -->
-    {
-      hasRankings && (
-        <section class="lab-section" aria-labelledby="rankings">
-          <p class="eyebrow">Equipment</p>
-          <div class="preview-head">
-            <h2 id="rankings">2026 driver rankings — the web's consensus</h2>
-            <span class="sample-badge live-badge">
-              {rankings.totals.rankers} ranking outlets · {rankings.totals.drivers} drivers
-            </span>
-          </div>
-          <p class="text-muted" style="max-width:66ch;margin-bottom:1.25rem;">
-            This table counts <strong>only outlets that publish a true ordinal
-            ranking</strong> — where position means overall quality, #1 to last.
-            Each column is one such ranker, linked to their article, and each cell
-            is that outlet's placement for that driver. Category guides that instead
-            crown a "best for X" per section (Golf Monthly, GolfWRX, Breaking Eighty,
-            GolfLens, Hole19) are deliberately left out of the count — their slot
-            order isn't a quality order — and feed the two sections below instead.
-            The <strong>Consensus</strong> column combines the true rankings with a
-            normalized Borda count; the opinion column shows how much evidence and
-            agreement sits behind each spot. With only a few outlets publishing a
-            genuine ranking, many clubs rest on a single list — read the confidence
-            markers accordingly. Last updated {rankings.generated_date}.
-          </p>
-
-          <div
-            class="table-wrap"
-            role="region"
-            aria-label="2026 driver rankings by outlet"
-            tabindex="0"
-          >
-            <table class="data-table rankings-table">
-              <caption class="sr-only">
-                2026 driver rankings: consensus standing, an opinion score with an
-                uncertainty band and sample size, and each outlet's placement per
-                driver.
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">#</th>
-                  <th scope="col">Driver</th>
-                  <th scope="col" class="unc-col-h">Opinion (0–100) &amp; confidence</th>
-                  {rankings.rankers.map((r: any) => (
-                    <th scope="col">
-                      <a
-                        href={r.url}
-                        rel="noopener nofollow"
-                        target="_blank"
-                        title={`${r.title} — ${r.name}`}
-                      >
-                        {rankerShort[r.id] ?? r.name}
-                      </a>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rankings.drivers.map((d: any) => (
-                  <tr class:list={{ "is-podium": d.consensus <= 3 }}>
-                    <td class="tnum rank-consensus">{d.consensus}</td>
-                    <th scope="row">{d.model}</th>
-                    <td class="unc-cell">
-                      <svg
-                        class="unc"
-                        viewBox={`0 0 ${UW} ${UH}`}
-                        role="img"
-                        aria-label={`Opinion score ${d.meanScore} of 100 from ${d.appearances} ${d.appearances === 1 ? "review" : "reviews"}; agreement ${d.agreement}.`}
-                      >
-                        <line class="unc-axis" x1={ux(0)} y1={UCY} x2={ux(100)} y2={UCY} />
-                        {d.appearances > 1 && d.bandLow !== null && (
-                          <Fragment>
-                            <line
-                              class="unc-range"
-                              x1={ux(d.scoreMin)}
-                              y1={UCY}
-                              x2={ux(d.scoreMax)}
-                              y2={UCY}
-                            />
-                            <rect
-                              class="unc-band"
-                              x={ux(d.bandLow)}
-                              y={UCY - 4.5}
-                              width={Math.max(1.5, ux(d.bandHigh) - ux(d.bandLow))}
-                              height="9"
-                              rx="2"
-                            />
-                          </Fragment>
-                        )}
-                        <circle
-                          class:list={["unc-dot", `ev-${d.evidence}`, { single: d.appearances === 1 }]}
-                          cx={ux(d.meanScore)}
-                          cy={UCY}
-                          r={dotR(d.evidence)}
-                        />
-                      </svg>
-                      <span class="unc-meta">
-                        <span class="unc-n tnum">n={d.appearances}</span>
-                        <span class:list={["agree", `a-${d.agreement}`]}>{d.agreement}</span>
-                      </span>
-                    </td>
-                    {rankings.rankers.map((r: any) => (
-                      <td class="tnum">
-                        {d.ranks[r.id] ? (
-                          d.ranks[r.id]
-                        ) : (
-                          <span class="rank-empty">·</span>
-                        )}
-                      </td>
-                    ))}
-                  </tr>
+              <div class="continuum-body">
+                {spectrumLineups.map((lineup: any) => (
+                  <div class="continuum-row">
+                    <div class="continuum-brand">
+                      <strong>{lineup.brand}</strong>
+                    </div>
+                    <div class="continuum-track-area">
+                      <div class="continuum-track-line" aria-hidden="true" />
+                      {[0, 25, 50, 75, 100].map((tick) => (
+                        <span class="continuum-gridline" style={`left:${tick}%`} aria-hidden="true" />
+                      ))}
+                      {lineup.models.map((model: any) => (
+                        <div
+                          class="continuum-node"
+                          style={`left: ${model.position}%; --stagger: ${model.stagger};`}
+                        >
+                          <span class="continuum-node-dot" aria-hidden="true" />
+                          <span class="continuum-node-label">{model.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </div>
 
-          <div class="unc-legend">
-            <p class="eyebrow" style="margin-top:1.4rem;">
-              Reading the opinion column
-            </p>
-            <p class="text-muted" style="max-width:70ch;">
-              Each outlet's placement is turned into a 0–100 opinion score
-              (that outlet's #1 = 100, its last place = 0), so a rank on a
-              short list and a long list are comparable. The graphic then shows
-              how much the outlets agreed, and how much evidence there is:
-            </p>
-            <ul class="unc-key">
-              <li>
-                <svg viewBox={`0 0 ${UW} ${UH}`} class="unc unc-key-svg" aria-hidden="true">
-                  <line class="unc-axis" x1={ux(0)} y1={UCY} x2={ux(100)} y2={UCY} />
-                  <line class="unc-range" x1={ux(25)} y1={UCY} x2={ux(90)} y2={UCY} />
-                  <rect class="unc-band" x={ux(40)} y={UCY - 4.5} width={ux(75) - ux(40)} height="9" rx="2" />
-                  <circle class="unc-dot ev-high" cx={ux(58)} cy={UCY} r="5" />
-                </svg>
-                <span
-                  ><strong>Dot</strong> = average opinion. <strong>Shaded band</strong>
-                  = ±1 SD (how much reviewers disagree). <strong>Thin line</strong>
-                  = full range of placements.</span
-                >
-              </li>
-              <li>
-                <span class="unc-key-dots" aria-hidden="true">
-                  <svg viewBox="0 0 70 20" class="unc-key-svg2">
-                    <circle class="unc-dot ev-low" cx="12" cy="10" r="3" />
-                    <circle class="unc-dot ev-medium" cx="34" cy="10" r="4" />
-                    <circle class="unc-dot ev-high" cx="58" cy="10" r="5" />
-                  </svg>
-                </span>
-                <span
-                  ><strong>Dot size = evidence</strong>: small = 1–2 outlets,
-                  medium = 3–4, large = 5+. A bigger dot means more reviewers
-                  looked at it — a small dot isn't "worse", just less certain.</span
-                >
-              </li>
-              <li>
-                <span class="unc-key-dots" aria-hidden="true">
-                  <svg viewBox="0 0 24 20" class="unc-key-svg2">
-                    <circle class="unc-dot ev-low single" cx="12" cy="10" r="4" />
-                  </svg>
-                </span>
-                <span
-                  ><strong>Hollow dot = single review.</strong> One outlet's
-                  opinion only — treat with caution (wide uncertainty).
-                  Labels <em>tight / mixed / wide</em> summarise the spread.</span
-                >
-              </li>
-            </ul>
-          </div>
+            </div>
 
-          <div class="rankings-credits">
-            <p class="eyebrow" style="margin-top:1.6rem;">
-              Credits &amp; sources
-            </p>
-            <ul class="credit-list">
-              {creditRankers.map((r: any) => (
-                <li>
-                  <a href={r.url} rel="noopener nofollow" target="_blank">
-                    {r.name}
-                  </a>
-                  <span class:list={["credit-kind", { guide: !r.ranked }]}>
-                    {r.ranked ? "ranking" : "guide"}
-                  </span>
-                  <span class="text-dim"> — {r.title}</span>
-                </li>
-              ))}
-            </ul>
-            <p class="text-dim rankings-note">
-              Consensus is a normalized Borda count across the <strong>ranking</strong>
-              outlets only, each list weighted equally regardless of length. Outlets
-              marked <em>guide</em> publish category picks ("best for X"), not a
-              quality order, so they inform the segmented tables, the priority
-              breakdown, and the "also available" list rather than the ranking — this
-              is why a club an outlet named "best for slow swing speeds" is never
-              read as "ranked last." Model variants (e.g. Callaway Quantum Triple
-              Diamond vs. Triple Diamond Max) are kept separate because outlets rate
-              them separately. Sources that publish an unranked showcase, or that list
-              prior-generation clubs, are excluded entirely.
-            </p>
-          </div>
-        </section>
-      )
-    }
-
-    <!-- Also available: reviewed by category guides, never given an ordinal rank -->
-    {
-      alsoAvailable.length > 0 && (
-        <section class="lab-section" aria-labelledby="also-avail">
-          <p class="eyebrow">Equipment</p>
-          <div class="preview-head">
-            <h2 id="also-avail">Also available — reviewed, not ranked</h2>
-            <span class="sample-badge">{alsoAvailable.length} drivers</span>
-          </div>
-          <p class="text-muted" style="max-width:70ch;margin-bottom:1.25rem;">
-            These 2026 drivers were tested and recommended by the outlets above —
-            but only as a "best for X" category pick, never placed in a true
-            head-to-head ranking, so they can't earn a consensus position. That's
-            an <strong>absence of ranking evidence, not a low ranking</strong>. A
-            club here may be every bit as good as one in the table above; it was
-            simply pitched at a specific player or priority — or has less marketing
-            muscle behind it. Worth a look for its niche.
-          </p>
-          <div
-            class="table-wrap"
-            role="region"
-            aria-label="Reviewed but unranked 2026 drivers"
-            tabindex="0"
-          >
-            <table class="data-table avail-table">
-              <thead>
-                <tr>
-                  <th scope="col">Driver</th>
-                  <th scope="col">Noted for</th>
-                  <th scope="col">Named by</th>
-                </tr>
-              </thead>
-              <tbody>
-                {alsoAvailable.map((d: any) => (
-                  <tr>
-                    <th scope="row">{d.model}</th>
-                    <td class="avail-labels">
-                      {d.labels.length ? (
-                        d.labels.map((l: string) => <span class="avail-tag">{l}</span>)
-                      ) : (
-                        <span class="text-dim">Featured</span>
-                      )}
-                    </td>
-                    <td class="avail-outlets">
-                      {d.outlets.map((id: string, i: number) => {
-                        const o = outletById[id];
-                        return o ? (
-                          <Fragment>
-                            {i > 0 && <span class="text-dim">, </span>}
-                            <a href={o.url} rel="noopener nofollow" target="_blank">
-                              {rankerShort[id] ?? o.name}
-                            </a>
-                          </Fragment>
-                        ) : null;
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )
-    }
-
-    <!-- Priority breakdown: forgiveness vs distance vs senior / slow swing -->
-    {
-      breakdown && (
-        <section class="lab-section" aria-labelledby="breakdown">
-          <p class="eyebrow">Equipment</p>
-          <h2 id="breakdown">Forgiveness vs. distance vs. slower swings</h2>
-          <p class="text-muted" style="max-width:70ch;margin-bottom:1.25rem;">
-            The most forgiving driver, the longest driver, and the best driver for
-            a slower swing are rarely the same club. Here's how every outlet's
-            category picks split across the three priorities golfers ask about most,
-            tallied by how many outlets named each club. A{" "}
-            <span class="bk-ranked" aria-hidden="true">✓</span> marks a club that
-            also earns a place in the ranking above.
-          </p>
-          <div class="bk-grid">
-            {breakdownOrder.map((key: string) => {
-              const b = (breakdown as any)[key];
-              return b ? (
-                <article class="card bk-card">
-                  <h3 class="bk-title">{b.label}</h3>
-                  <p class="bk-desc text-muted">{b.desc}</p>
-                  <ul class="bk-list">
-                    {b.picks.map((p: any) => (
+            <!-- Mobile-only fallback: stacked per-brand lists, no forced horizontal scroll. -->
+            <div class="continuum-mobile">
+              {spectrumLineups.map((lineup: any) => (
+                <div class="continuum-mobile-brand">
+                  <strong>{lineup.brand}</strong>
+                  <ul>
+                    {lineup.models.map((model: any) => (
                       <li>
-                        <span class="bk-model">
-                          {p.model}
-                          {p.ranked && (
-                            <span class="bk-ranked" title="Also in the ranking above">
-                              ✓
-                            </span>
-                          )}
-                        </span>
-                        <span class="bk-count tnum">{p.count}×</span>
+                        <span>{model.name}</span>
+                        <span class="continuum-mobile-pos tnum">{model.position}</span>
                       </li>
                     ))}
                   </ul>
-                </article>
-              ) : null;
-            })}
-          </div>
-        </section>
-      )
-    }
-
-    <!-- Segmented views: by player profile and by priority/feature -->
-    {
-      hasSegments && (
-        <section class="lab-section" aria-labelledby="segments">
-          <p class="eyebrow">Equipment</p>
-          <h2 id="segments">Which driver for whom?</h2>
-          <p class="text-muted" style="max-width:66ch;margin-bottom:0.5rem;">
-            A single consensus hides the fact that the "best" driver depends on
-            your swing and what you want from it. These two tables break the same
-            outlets' picks out by player profile and by performance priority. Each
-            cell is what that outlet crowned (linked to their article); the{" "}
-            <strong>Most named</strong> column tallies where outlets agree — and
-            where they don't.
-          </p>
-
-          {[
-            { title: "By player profile", sub: "Swing speed & handicap", rows: segments.profiles, head: "Profile" },
-            { title: "By priority", sub: "What you want most from a driver", rows: segments.features, head: "Priority" },
-          ].map((tbl: any) => (
-            <div class="seg-block">
-              <div class="preview-head" style="margin-top:1.6rem;">
-                <h3 class="seg-title">{tbl.title}</h3>
-                <span class="seg-sub">{tbl.sub}</span>
-              </div>
-              <div class="table-wrap" role="region" aria-label={tbl.title} tabindex="0">
-                <table class="data-table seg-table">
-                  <thead>
-                    <tr>
-                      <th scope="col">{tbl.head}</th>
-                      <th scope="col">Most named</th>
-                      {segments.rankers.map((r: any) => (
-                        <th scope="col">
-                          <a href={r.url} rel="noopener nofollow" target="_blank" title={`${r.title} — ${r.name}`}>
-                            {rankerShort[r.id] ?? r.name}
-                          </a>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tbl.rows.map((row: any) => (
-                      <tr>
-                        <th scope="row">
-                          <span class="seg-label">{row.label}</span>
-                          {row.group && <span class="seg-group">{row.group}</span>}
-                        </th>
-                        <td class="seg-leaders">
-                          {row.count === 0 ? (
-                            <span class="rank-empty">·</span>
-                          ) : (
-                            <Fragment>
-                              <span class="seg-leader-name">{row.leaders.join(" / ")}</span>
-                              {row.leaderCount > 1 && <span class="seg-leader-count">{row.leaderCount}×</span>}
-                            </Fragment>
-                          )}
-                        </td>
-                        {segments.rankers.map((r: any) => {
-                          const cell = row.cells.find((c: any) => c.ranker === r.id);
-                          return (
-                            <td class="seg-cell">
-                              {cell ? (
-                                <a
-                                  href={r.url}
-                                  rel="noopener nofollow"
-                                  target="_blank"
-                                  class:list={["seg-pick", { lead: row.leaders.includes(cell.model) }]}
-                                >
-                                  {cell.model}
-                                </a>
-                              ) : (
-                                <span class="rank-empty">·</span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
 
-          <p class="text-dim rankings-note" style="margin-top:1.1rem;">
-            Cells show each outlet's category winner for 2026, linked to their
-            article. Blank = that outlet didn't name a pick for that segment.
-            Profile picks come from the outlets that break testing out by swing
-            speed or handicap (MyGolfSpy, GolfWRX, Hole19, Golf Monthly, Breaking
-            Eighty, Independent Golf Reviews).
-          </p>
-        </section>
-      )
-    }
-
-    <!-- From the Lab: Research-category articles, paired with the data -->
-    <section class="lab-section" aria-labelledby="writing">
-      <p class="eyebrow">From the Lab</p>
-      <h2 id="writing">Field notes &amp; findings</h2>
-      <p class="text-muted" style="max-width:60ch;margin-bottom:1.5rem;">
-        Write-ups that go with the data — methodology, early results, and the
-        thinking behind the framework.
-      </p>
-
-      {
-        labPosts.length === 0 ? (
-          <div class="card lab-empty">
-            <p class="text-muted">
-              The first findings aren't published yet. Follow the
-              <a href="/blog">blog</a> or watch the
-              <a href={GITHUB_URL} rel="noopener">GitHub repo</a> and you'll see
-              them the moment they land.
+            <p class="lab-caption">
+              Positions are editorial estimates from manufacturer positioning + published MOI; not yet community data.
             </p>
-          </div>
-        ) : (
-          <ul class="lab-posts">
-            {labPosts.map((post) => (
-              <li>
-                <a href={`/blog/${post.id}/`} class="card lab-post">
-                  <div class="lab-post-meta">
-                    <span class="pill lab-post-cat">Research</span>
-                    <FormattedDate date={post.data.pubDate} />
-                  </div>
-                  <h3>{post.data.title}</h3>
-                  <p class="text-muted">{post.data.description}</p>
-                  <span class="lab-post-more">Read →</span>
-                </a>
-              </li>
-            ))}
-          </ul>
+          </section>
         )
       }
 
-      <p class="text-muted" style="margin-top:1.25rem;font-size:0.95rem;">
-        Looking for release notes and product updates? Those live on the
-        <a href="/blog">blog</a>.
-      </p>
+      {
+        hasLineups && (
+          <section class="lab-section" aria-labelledby="pricing">
+            <div class="preview-head">
+              <h3 id="pricing">Market Pricing</h3>
+            </div>
+            <p class="text-muted" style="max-width:66ch;">
+              Today's best retail prices vs. MSRP. Hollow dot = MSRP. Filled dot = lowest price found today, connected by a line — green marks a real discount. Click any row to shop.
+            </p>
+            <p class="lab-stat-line tnum">
+              {modelCount} drivers · median street price ${medianPrice}
+              {biggestDiscount && (
+                <>
+                  {" "}· biggest discount: {biggestDiscount.name} −{Math.round(biggestDiscount.pct)}%
+                </>
+              )}
+            </p>
+
+            <div class="price-chart-wrap" role="region" aria-label="Pricing dumbbell chart">
+              <div class="price-chart-axis" aria-hidden="true">
+                <div class="price-chart-axis-spacer" />
+                <div class="price-chart-axis-ticks">
+                  {axisTicks.map((t) => (
+                    <span class="price-chart-axis-tick" style={`left:${(t / axisMaxRounded) * 100}%`}>${t}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div class="price-chart-body">
+                {pricingLineups.map((lineup: any) => (
+                  <div class="price-chart-group">
+                    <div class="price-chart-brand">{lineup.brand}</div>
+                    <div class="price-chart-bars">
+                      {lineup.models.map((model: any) => {
+                        const msrpPct = (model.msrp / axisMaxRounded) * 100;
+                        const pricePct = (model.price / axisMaxRounded) * 100;
+                        const savings = model.msrp - model.price;
+                        const hasDiscount = savings > 0;
+                        return (
+                          <a
+                            href={model.dealerUrl || "#"}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="price-row"
+                            class:list={[{ discounted: hasDiscount }]}
+                          >
+                            <span class="price-row-model">{model.name}</span>
+                            <div class="price-row-track">
+                              {axisTicks.map((t) => (
+                                <span class="price-chart-gridline" style={`left:${(t / axisMaxRounded) * 100}%`} aria-hidden="true" />
+                              ))}
+                              <span
+                                class="price-row-connector"
+                                style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
+                                aria-hidden="true"
+                              />
+                              <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
+                              <span
+                                class="price-row-dot price"
+                                class:list={[{ discount: hasDiscount }]}
+                                style={`left:${pricePct}%`}
+                                aria-hidden="true"
+                              />
+                            </div>
+                            <span class="price-row-values tnum">
+                              <span class="price-row-price">${model.price}</span>
+                              {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
+                              <span class="price-row-dealer">{model.dealer || "—"}</span>
+                            </span>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+      }
     </section>
 
-    <section class="lab-section lab-cta">
+    <!-- ============ BAND 2: COMMUNITY DATASET ============ -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <span class:list={["pill", "lab-band-pill", hasCommunityData ? "live" : "progress"]}>
+          {hasCommunityData ? "Live now" : "In progress"}
+        </span>
+        <h2>Community dataset</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          {hasCommunityData
+            ? "Launch and spin norms and driver dispersion, built from anonymized, opt-in sessions. Filter by the data-quality tier you trust."
+            : "The real payoff — real ball comparisons, gapping by handicap, and launch/spin norms, built from anonymized, opt-in sessions. Here's where it stands today."}
+        </p>
+      </div>
+
+      {
+        hasCommunityData ? (
+          <div class="tiers">
+            {tierViews.map((t: any) => (
+              <input
+                type="radio"
+                name="tier"
+                id={`tier-${t.key}`}
+                class="tier-radio"
+                checked={t.key === defaultTierKey}
+              />
+            ))}
+
+            <div class="tier-labels" role="group" aria-label="Data-quality tier">
+              {tierViews.map((t: any) => (
+                <label for={`tier-${t.key}`} class="tier-label">
+                  {t.label}
+                  <span class="tier-count tnum">{t.contributors}</span>
+                </label>
+              ))}
+            </div>
+
+            {tierViews.map((t: any) => (
+              <div class:list={["tier-panel", `panel-${t.key}`]}>
+                {t.clubs.length ? (
+                  <div class="tier-inner">
+                    <p class="tier-blurb">
+                      {t.blurb}{" "}
+                      <span class="text-dim">
+                        · {t.contributors} contributors · {t.shots.toLocaleString()} shots
+                      </span>
+                    </p>
+
+                    <div class="norms-wrap">
+                      <table class="norms">
+                        <thead>
+                          <tr>
+                            <th>Club</th>
+                            <th>Carry</th>
+                            <th>Ball</th>
+                            <th>Launch</th>
+                            <th>Spin</th>
+                            <th>Golfers</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {t.clubs.map((c: any) => (
+                            <tr>
+                              <td class="norms-club">{c.club}</td>
+                              <td>
+                                <span class="norms-big tnum">
+                                  {c.carry?.med}
+                                  <span class="norms-unit">yd</span>
+                                </span>
+                                <span class="norms-range tnum">
+                                  {c.carry?.p10}–{c.carry?.p90}
+                                </span>
+                              </td>
+                              <td class="tnum">{c.ball ?? "—"}</td>
+                              <td class="tnum">{c.launch ?? "—"}</td>
+                              <td>
+                                {c.spin?.value != null ? (
+                                  <span class="tnum">{c.spin.value}</span>
+                                ) : (
+                                  <span class="lock" title="Spin publishes at the Verified tier and up — measured, not modeled.">
+                                    Verified+
+                                  </span>
+                                )}
+                              </td>
+                              <td class="tnum norms-n">{c.contributors}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {t.ellipse && (
+                      <div class="disp">
+                        <div class="disp-title">Driver — typical dispersion</div>
+                        <svg viewBox="0 0 220 176" class="disp-svg" role="img"
+                          aria-label={`Typical driver dispersion, about ${Math.round(t.ellipse.lateral * 2)} yards wide and ${Math.round(t.ellipse.depth * 2)} yards deep`}>
+                          <line x1="110" y1="12" x2="110" y2="164" class="disp-axis" />
+                          <line x1="18" y1="88" x2="202" y2="88" class="disp-axis" />
+                          <ellipse cx={t.ellipse.cx} cy={t.ellipse.cy} rx={t.ellipse.rx} ry={t.ellipse.ry} class="disp-ell" />
+                          <circle cx={t.ellipse.cx} cy={t.ellipse.cy} r="2.5" class="disp-center" />
+                        </svg>
+                        <div class="disp-legend">
+                          <span>± {t.ellipse.lateral} yd side</span>
+                          <span>± {t.ellipse.depth} yd depth</span>
+                          {t.ellipse.bias !== 0 && (
+                            <span>{t.ellipse.bias > 0 ? "right" : "left"} bias {Math.abs(t.ellipse.bias)} yd</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p class="tier-empty">
+                    Not enough {t.label !== "All" ? t.label.toLowerCase() + "-tier " : ""}data
+                    yet to publish — need {summaryData?.meta?.min_contributors ?? 8} golfers
+                    per club. Try the All tab.
+                  </p>
+                )}
+              </div>
+            ))}
+
+            <p class="lab-caption">
+              Median of each golfer's own median — one golfer, one vote, so a big
+              session can't skew a number. Ranges are 10th–90th percentile across
+              golfers.{generatedDate && <> Updated {generatedDate}.</>}
+            </p>
+          </div>
+        ) : (
+          <ul class="build-status">
+            <li class="done"><span class="build-mark">✓</span> Capture pipeline</li>
+            <li class="done"><span class="build-mark">✓</span> Schema v1.1</li>
+            <li class="done"><span class="build-mark">✓</span> Aggregation + QA</li>
+            <li class="active"><span class="build-mark">◐</span> First dataset</li>
+          </ul>
+        )
+      }
+    </section>
+
+    <!-- ============ BAND 3: HOW TO HELP ============ -->
+    <section class="lab-band lab-band-cta">
       <div class="card lab-cta-card">
         <h2>Help shape the framework</h2>
         <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
@@ -818,14 +472,14 @@ if (isLive) {
     border-bottom: 1px solid var(--border);
     background: radial-gradient(
       120% 90% at 50% -20%,
-      rgba(61, 220, 132, 0.09),
+      var(--green-tint),
       transparent 60%
     );
   }
   .lab-hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: clamp(2.5rem, 6vw, 4rem);
+    padding-block: clamp(2rem, 5vw, 3rem);
     max-width: 64ch;
   }
   .lab-status {
@@ -842,557 +496,90 @@ if (isLive) {
   .lab-body {
     display: flex;
     flex-direction: column;
-    gap: clamp(2.5rem, 6vw, 4rem);
-    padding-block: clamp(2.5rem, 6vw, 4rem);
-  }
-  .lab-section h2 {
-    margin-bottom: 1.4rem;
+    gap: clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(2rem, 5vw, 3rem);
   }
 
-  .pillars {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.1rem;
-  }
-  .pillar {
+  /* ---- Status bands ---- */
+  .lab-band {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
-    align-items: flex-start;
+    gap: clamp(1.75rem, 4vw, 2.5rem);
   }
-  .pillar h3 {
-    font-size: 1.15rem;
+  .lab-band-head h2 {
+    margin-top: 0.6rem;
+    margin-bottom: 0.5rem;
   }
-
-  .lab-steps {
-    list-style: none;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.1rem;
-  }
-  .lab-steps li {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.9rem;
-    align-items: start;
-  }
-  .lab-steps h3 {
-    font-size: 1.1rem;
-  }
-  .lab-steps p {
-    margin-top: 0.35rem;
-  }
-  .step-n {
-    font-family: var(--font-mono);
-    color: var(--green);
-    font-size: 1rem;
-    letter-spacing: 0.08em;
-    padding-top: 0.15rem;
-  }
-
-  /* Data table */
-  .table-wrap {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow-x: auto;
-    background: var(--surface);
-  }
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-  }
-  .data-table th,
-  .data-table td {
-    padding: 0.85rem 1.1rem;
-    text-align: right;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-  }
-  .data-table thead th {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    font-weight: 600;
-    background: var(--bg-elevated);
-  }
-  .data-table th[scope="col"]:first-child,
-  .data-table th[scope="row"] {
-    text-align: left;
-  }
-  .data-table th[scope="row"] {
-    color: var(--green);
-    font-family: var(--font-head);
+  .lab-band-pill {
     font-weight: 600;
   }
-  .data-table tbody tr:last-child th,
-  .data-table tbody tr:last-child td {
-    border-bottom: none;
-  }
-
-  /* 2026 driver rankings table */
-  .text-dim {
-    color: var(--text-dim);
-  }
-  .rankings-table thead th:nth-child(2) {
-    text-align: left;
-  }
-  .rankings-table thead a {
-    color: var(--text-dim);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .rankings-table thead a:hover,
-  .rankings-table thead a:focus-visible {
+  .lab-band-pill.live {
     color: var(--green);
-    text-decoration: underline;
+    border-color: var(--green-dim);
   }
-  .rankings-table td,
-  .rankings-table th {
-    padding: 0.7rem 0.9rem;
-  }
-  .rank-consensus {
-    color: var(--text);
-    font-weight: 700;
-  }
-  .rankings-table tbody tr.is-podium th[scope="row"] {
-    color: var(--green);
-  }
-  .rankings-table tbody tr.is-podium .rank-consensus {
-    color: var(--green);
-  }
-  .rank-empty {
-    color: var(--border-strong);
-  }
-  .rank-lists {
-    color: var(--text-dim);
-  }
-  .rankings-table tbody tr:hover {
-    background: var(--surface);
-  }
-
-  .credit-list {
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0 0;
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.35rem 1.5rem;
-    font-size: 0.9rem;
-  }
-  .credit-list a {
-    color: var(--green);
-    font-family: var(--font-head);
-    font-weight: 600;
-  }
-  .credit-list .text-dim {
-    font-size: 0.85rem;
-  }
-  .rankings-note {
-    margin-top: 1.1rem;
-    font-size: 0.85rem;
-    max-width: 72ch;
-    line-height: 1.55;
-  }
-  @media (max-width: 720px) {
-    .credit-list {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  /* Uncertainty "forest plot" column */
-  .unc-col-h {
-    min-width: 162px;
-  }
-  .unc-cell {
-    text-align: left !important;
-    padding-top: 0.5rem !important;
-    padding-bottom: 0.5rem !important;
-  }
-  .unc {
-    width: 150px;
-    max-width: 100%;
-    height: 26px;
-    display: block;
-    overflow: visible;
-  }
-  .unc-axis {
-    stroke: var(--border-strong);
-    stroke-width: 1;
-  }
-  .unc-range {
-    stroke: var(--text-dim);
-    stroke-width: 1.5;
-    opacity: 0.55;
-  }
-  .unc-band {
-    fill: rgba(61, 220, 132, 0.22);
-    stroke: rgba(61, 220, 132, 0.5);
-    stroke-width: 0.75;
-  }
-  .unc-dot {
-    fill: var(--green);
-    stroke: var(--bg);
-    stroke-width: 1;
-  }
-  .unc-dot.ev-low {
-    fill: var(--amber);
-  }
-  .unc-dot.single {
-    fill: transparent;
-    stroke: var(--amber);
-    stroke-width: 1.6;
-  }
-  .unc-meta {
-    display: flex;
-    gap: 0.5rem;
-    align-items: baseline;
-    margin-top: 2px;
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-  }
-  .unc-n {
-    color: var(--text-dim);
-  }
-  .agree {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .a-tight {
-    color: var(--green);
-  }
-  .a-mixed {
+  .lab-band-pill.progress {
     color: var(--amber);
+    border-color: var(--amber);
   }
-  .a-wide {
-    color: #ff8f6b;
+  .lab-section h3 {
+    margin-bottom: 0.6rem;
+    font-size: clamp(1.3rem, 2.6vw, 1.7rem);
   }
-  .a-single {
-    color: var(--text-dim);
+  .lab-section + .lab-section {
+    margin-top: clamp(2.5rem, 5vw, 3.5rem);
   }
-
-  /* Uncertainty legend */
-  .unc-key {
-    list-style: none;
-    padding: 0;
-    margin: 0.7rem 0 0;
-    display: grid;
-    gap: 0.7rem;
-    max-width: 74ch;
-  }
-  .unc-key li {
-    display: grid;
-    grid-template-columns: 88px 1fr;
-    gap: 0.9rem;
-    align-items: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-  }
-  .unc-key-svg {
-    width: 88px;
-    height: 22px;
-  }
-  .unc-key-svg2 {
-    height: 20px;
-    width: 70px;
-  }
-  .unc-key strong {
-    color: var(--text);
-  }
-
-  /* Segmented tables (by profile / by priority) */
-  .seg-title {
-    font-size: 1.15rem;
-  }
-  .seg-sub {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .seg-table th,
-  .seg-table td {
-    text-align: left;
-    white-space: normal;
-    vertical-align: top;
-  }
-  .seg-table th[scope="row"] {
-    min-width: 150px;
-  }
-  .seg-label {
-    display: block;
-    font-family: var(--font-head);
-    font-weight: 600;
-    color: var(--green);
-  }
-  .seg-group {
-    display: block;
-    font-family: var(--font-mono);
-    font-size: 0.62rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
-  .seg-leaders {
-    min-width: 150px;
-  }
-  .seg-leader-name {
-    color: var(--text);
-    font-weight: 600;
-  }
-  .seg-leader-count {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    margin-left: 0.3rem;
-  }
-  .seg-pick {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-  }
-  .seg-pick:hover {
-    color: var(--text);
-    text-decoration: underline;
-  }
-  .seg-pick.lead {
-    color: var(--green);
-    font-weight: 600;
-  }
-  .seg-table thead a {
-    color: var(--text-dim);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .seg-table thead a:hover {
-    color: var(--green);
-    text-decoration: underline;
-  }
-
-  /* Credit "ranking vs guide" tag */
-  .credit-kind {
-    font-family: var(--font-mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--green);
-    border: 1px solid var(--green-dim);
-    border-radius: 999px;
-    padding: 0.05rem 0.4rem;
-    margin-left: 0.4rem;
-    vertical-align: middle;
-  }
-  .credit-kind.guide {
-    color: var(--amber);
-    border-color: rgba(255, 207, 92, 0.35);
-  }
-
-  /* Also available (reviewed, not ranked) table */
-  .avail-table th,
-  .avail-table td {
-    text-align: left;
-    white-space: normal;
-    vertical-align: top;
-  }
-  .avail-labels {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-  .avail-tag {
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.04em;
-    color: var(--text-muted);
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    padding: 0.12rem 0.5rem;
-    white-space: nowrap;
-  }
-  .avail-outlets a {
-    color: var(--green);
-    text-decoration: none;
-    font-size: 0.9rem;
-  }
-  .avail-outlets a:hover {
-    text-decoration: underline;
-  }
-
-  /* Priority breakdown cards */
-  .bk-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.1rem;
-  }
-  .bk-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-  .bk-title {
-    font-size: 1.1rem;
-    color: var(--green);
-  }
-  .bk-desc {
-    font-size: 0.85rem;
-    margin-bottom: 0.3rem;
-  }
-  .bk-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.15rem;
-  }
-  .bk-list li {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.6rem;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .bk-list li:last-child {
-    border-bottom: none;
-  }
-  .bk-model {
-    color: var(--text);
-    font-weight: 600;
-    font-size: 0.92rem;
-  }
-  .bk-ranked {
-    color: var(--green);
-    margin-left: 0.35rem;
-    font-weight: 700;
-  }
-  .bk-count {
-    color: var(--text-dim);
+  .lab-caption {
+    margin-top: 1rem;
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    white-space: nowrap;
+    color: var(--text-dim);
   }
-  @media (max-width: 860px) {
-    .bk-grid {
-      grid-template-columns: 1fr;
-    }
+  .lab-stat-line {
+    margin-top: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-dim);
   }
 
-  /* Sample badge + preview heading */
-  .preview-head {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    flex-wrap: wrap;
-  }
-  .sample-badge {
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--amber);
-    border: 1px solid rgba(255, 207, 92, 0.35);
-    background: rgba(255, 207, 92, 0.08);
-    border-radius: 999px;
-    padding: 0.25rem 0.6rem;
-    white-space: nowrap;
-  }
-  .live-badge {
-    color: var(--green);
-    border-color: var(--green-dim);
-    background: rgba(61, 220, 132, 0.08);
-  }
-
-  /* Distribution chart */
-  .dist-chart {
-    margin: 1.25rem 0 0;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--bg-elevated);
-    padding: 1.25rem 1.25rem 0.75rem;
-  }
-  .dist-cap {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-bottom: 0.75rem;
-  }
-  .dist-svg {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .dist-bar {
-    fill: var(--green);
-  }
-  .dist-lbl {
-    fill: var(--text-dim);
-    font-family: var(--font-mono);
-  }
-  .dist-axis {
-    stroke: var(--border-strong);
-    stroke-width: 1;
-  }
-
-  /* From the Lab — articles */
-  .lab-posts {
+  /* ---- Build status list ---- */
+  .build-status {
     list-style: none;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
   }
-  .lab-post {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    height: 100%;
-    color: inherit;
-  }
-  .lab-post:hover {
-    border-color: var(--green-dim);
-  }
-  .lab-post h3 {
-    font-size: 1.2rem;
-  }
-  .lab-post-meta {
+  .build-status li {
     display: flex;
     align-items: center;
     gap: 0.6rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0.9rem 1.1rem;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: 0.88rem;
+  }
+  .build-mark {
+    font-size: 1rem;
+  }
+  .build-status li.done {
+    color: var(--text);
+  }
+  .build-status li.done .build-mark {
+    color: var(--green);
+  }
+  .build-status li.active {
+    color: var(--text);
+    border-color: var(--amber);
+  }
+  .build-status li.active .build-mark {
+    color: var(--amber);
+  }
+  .build-status li.pending {
     color: var(--text-dim);
   }
-  .lab-post-cat {
-    color: var(--green);
-    border-color: var(--green-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.66rem;
-  }
-  .lab-post-more {
-    margin-top: auto;
-    padding-top: 0.4rem;
-    font-family: var(--font-head);
-    font-weight: 600;
-    color: var(--green);
-  }
-  .lab-empty {
-    padding: 1.5rem;
-  }
-  @media (max-width: 720px) {
-    .lab-posts {
-      grid-template-columns: 1fr;
-    }
+  .build-status li.pending .build-mark {
+    color: var(--text-dim);
   }
 
   .lab-cta-card {
@@ -1400,13 +587,491 @@ if (isLive) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
   }
 
-  @media (max-width: 860px) {
-    .pillars,
-    .lab-steps {
-      grid-template-columns: 1fr;
+  /* ---- Continuum / spectrum ---- */
+  .continuum-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.25rem 1.5rem 0.85rem;
+    overflow-x: auto;
+    max-width: 1000px;
+  }
+  .continuum-header {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-left: 140px;
+    margin-bottom: 1.1rem;
+  }
+  .continuum-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+    min-width: 560px;
+  }
+  .continuum-row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .continuum-brand {
+    width: 116px;
+    flex-shrink: 0;
+    color: var(--green);
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .continuum-track-area {
+    flex-grow: 1;
+    position: relative;
+    height: 34px;
+  }
+  .continuum-track-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-strong);
+    transform: translateY(-50%);
+  }
+  .continuum-gridline {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    width: 1px;
+    background: var(--border);
+    opacity: 0.6;
+  }
+  .continuum-node {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .continuum-node-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    border: 2px solid var(--bg-elevated);
+  }
+  .continuum-node-label {
+    position: absolute;
+    bottom: calc(100% + 6px + (var(--stagger, 0) * 16px));
+    font-family: var(--font-mono);
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    background: var(--bg-elevated);
+    padding: 0.1rem 0.35rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.15s ease;
+  }
+  .continuum-node:hover {
+    z-index: 3;
+  }
+  .continuum-node:hover .continuum-node-label {
+    color: var(--green);
+  }
+  /* Mobile-only stacked lists (no forced scroll) */
+  .continuum-mobile {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    .continuum-wrap {
+      display: none;
     }
+    .continuum-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .continuum-mobile-brand strong {
+      color: var(--green);
+      font-family: var(--font-head);
+      font-weight: 600;
+    }
+    .continuum-mobile-brand ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .continuum-mobile-brand li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      font-size: 0.92rem;
+    }
+    .continuum-mobile-pos {
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+    }
+  }
+
+  /* ---- Pricing dumbbell chart ---- */
+  .price-chart-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.5rem 1.5rem 2rem;
+    margin-top: 1.5rem;
+    max-width: 1000px;
+  }
+  .price-chart-axis {
+    display: flex;
+    margin-bottom: 1.5rem;
+  }
+  .price-chart-axis-spacer {
+    width: 160px;
+    flex-shrink: 0;
+  }
+  .price-chart-axis-ticks {
+    flex-grow: 1;
+    position: relative;
+    height: 1rem;
+    padding-right: 150px;
+  }
+  .price-chart-axis-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .price-chart-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  .price-chart-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .price-chart-brand {
+    font-family: var(--font-head);
+    font-size: 0.9rem;
+    color: var(--green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+  }
+  .price-chart-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .price-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    text-decoration: none;
+  }
+  .price-row-model {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    width: 160px;
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s ease;
+  }
+  .price-row:hover .price-row-model {
+    color: var(--text);
+  }
+  .price-row-track {
+    flex-grow: 1;
+    position: relative;
+    height: 20px;
+  }
+  .price-chart-gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+    opacity: 0.6;
+  }
+  .price-row-connector {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    background: var(--border-strong);
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .price-row.discounted .price-row-connector {
+    background: var(--green-dim);
+  }
+  .price-row-dot {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .price-row-dot.msrp {
+    background: var(--bg-elevated);
+    border: 2px solid var(--text-dim);
+  }
+  .price-row-dot.price {
+    background: var(--text-dim);
+    border: 2px solid var(--text-dim);
+  }
+  .price-row-dot.price.discount {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+  }
+  .price-row-values {
+    flex: 0 0 150px;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .price-row-price {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .price-row-msrp {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-decoration: line-through;
+  }
+  .price-row-dealer {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 700px) {
+    .price-chart-wrap {
+      overflow-x: auto;
+    }
+    .price-chart-axis-spacer,
+    .price-row-model {
+      width: 110px;
+    }
+    .price-row-dealer {
+      display: none;
+    }
+  }
+
+  /* ---- Community tiers (CSS-only tabs; no client JS) ---- */
+  .tiers {
+    position: relative;
+  }
+  .tier-radio {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .tier-labels {
+    display: inline-flex;
+    gap: 0.25rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0.25rem;
+    margin-bottom: 1.5rem;
+  }
+  .tier-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.85rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .tier-label:hover {
+    color: var(--text-muted);
+  }
+  .tier-count {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+  }
+  /* active tab (driven by the checked radio) */
+  #tier-all:checked ~ .tier-labels label[for="tier-all"],
+  #tier-verified:checked ~ .tier-labels label[for="tier-verified"],
+  #tier-reference:checked ~ .tier-labels label[for="tier-reference"] {
+    color: var(--green-ink);
+    background: var(--green);
+  }
+  #tier-all:checked ~ .tier-labels label[for="tier-all"] .tier-count,
+  #tier-verified:checked ~ .tier-labels label[for="tier-verified"] .tier-count,
+  #tier-reference:checked ~ .tier-labels label[for="tier-reference"] .tier-count {
+    color: var(--green-ink);
+    background: rgba(20, 19, 17, 0.16);
+  }
+  .tier-radio:focus-visible ~ .tier-labels {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  .tier-panel {
+    display: none;
+  }
+  #tier-all:checked ~ .panel-all,
+  #tier-verified:checked ~ .panel-verified,
+  #tier-reference:checked ~ .panel-reference {
+    display: block;
+  }
+  .tier-blurb {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin-bottom: 1.1rem;
+  }
+  .tier-empty {
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    border: 1px dashed var(--border-strong);
+    padding: 1rem 1.25rem;
+    max-width: 560px;
+  }
+
+  /* norms table */
+  .norms-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    max-width: 760px;
+  }
+  .norms {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 460px;
+  }
+  .norms th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .norms td {
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    vertical-align: baseline;
+  }
+  .norms tr:last-child td {
+    border-bottom: none;
+  }
+  .norms-club {
+    color: var(--green);
+    font-family: var(--font-head);
+    font-weight: 600;
+  }
+  .norms-big {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .norms-unit {
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    margin-left: 0.15rem;
+  }
+  .norms-range {
+    display: block;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+  }
+  .norms-n {
+    color: var(--text-dim);
+  }
+  .lock {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    white-space: nowrap;
+  }
+
+  /* driver dispersion ellipse */
+  .disp {
+    margin-top: 1.75rem;
+    max-width: 260px;
+  }
+  .disp-title {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.5rem;
+  }
+  .disp-svg {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .disp-axis {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+  }
+  .disp-ell {
+    fill: var(--green-tint);
+    stroke: var(--green);
+    stroke-width: 1.5;
+  }
+  .disp-center {
+    fill: var(--green);
+  }
+  .disp-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
   }
 </style>
