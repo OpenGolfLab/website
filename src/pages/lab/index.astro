@@ -1,0 +1,321 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LabNav from "../../components/LabNav.astro";
+import { GITHUB_URL, GITHUB_WATCH_URL } from "../../consts";
+import { loadMarket, loadBallMarket, loadCommunity } from "../../lib/lab";
+import "../../styles/lab.css";
+
+const title = "The Lab";
+const description =
+  "The OpenGolfLab community analytics hub — an open framework where sim golfers contribute anonymized ball and club metrics to build community-driven analytics: real-world ball comparisons, gapping distributions by handicap, and launch/spin norms.";
+
+const market = loadMarket();
+const balls = loadBallMarket();
+const community = loadCommunity();
+
+// Each card states plainly whether its dataset is live, so a first-time visitor
+// can tell what's real from the overview without opening both sections.
+const sections = [
+  {
+    href: "/lab/market",
+    eyebrow: "Section 01",
+    label: "Market Data",
+    live: market.hasLineups,
+    liveText: market.hasLineups
+      ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}${market.brandCount} brands`
+      : "Not published yet",
+    blurb:
+      "Where every driver sits between forgiveness and distance, where every ball sits between soft and max spin, and what it all actually costs today. Editorial snapshots we research and maintain ourselves — the honest starting point while the crowd-sourced numbers build.",
+    covers: [
+      "Driver lineup spectrum",
+      "Street price vs. MSRP",
+      ...(balls.hasLineups ? ["Golf ball spectrum & pricing"] : []),
+    ],
+    planned: [...(balls.hasLineups ? [] : ["Golf balls"]), "Irons"],
+  },
+  {
+    href: "/lab/community",
+    eyebrow: "Section 02",
+    label: "Community Data",
+    live: community.hasCommunityData,
+    liveText: community.hasCommunityData
+      ? `${community.totalContributors} golfers · ${community.totalShots.toLocaleString()} shots`
+      : "Collecting first dataset",
+    blurb:
+      "The real payoff. Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone — one golfer, one vote, so a big session can't skew a result.",
+    covers: ["Launch & spin norms by club", "Driver dispersion", "Quality tiers"],
+    planned: ["Ball comparisons", "Gapping by handicap"],
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight lab-hero">
+    <div class="grid-bg"></div>
+    <div class="container lab-hero-inner">
+      <span class="pill lab-status">◐ Community dataset in progress</span>
+      <h1>The Lab</h1>
+      <p class="lede" style="margin-top:1rem;">
+        Every shot from your launch monitor tells a story about your game, but
+        the bigger picture requires a crowd. The Lab aggregates anonymized
+        simulator sessions to build what no individual can: community-driven
+        ball and club comparisons, true gapping by handicap, and launch and spin
+        norms to help you find the absolute best equipment for your game.
+      </p>
+      <div class="hero-cta" style="margin-top:1.6rem;">
+        <a href={GITHUB_WATCH_URL} class="btn btn-primary" rel="noopener">
+          Watch the repo
+        </a>
+        <a href="/roadmap" class="btn btn-secondary">See the roadmap</a>
+      </div>
+      <p class="lab-noemail">
+        No newsletter, no sign-up. Watch the
+        <a href={GITHUB_URL} rel="noopener">GitHub repo</a> or follow the
+        <a href="/blog">blog</a> and you'll know the moment data goes live.
+      </p>
+    </div>
+  </section>
+
+  <LabNav />
+
+  <div class="container lab-body">
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Two datasets, built differently</p>
+        <h2>What's in the Lab</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          The Lab keeps two kinds of data deliberately separate. Market data is
+          editorial — we research it. Community data is measured — you produce
+          it. Mixing them would make it impossible to tell which is which, so
+          they live in their own sections.
+        </p>
+      </div>
+
+      <div class="lab-cards">
+        {
+          sections.map((s) => (
+            <a href={s.href} class="card lab-card">
+              <div class="lab-card-top">
+                <span class="lab-card-eyebrow">{s.eyebrow}</span>
+                <span
+                  class:list={[
+                    "pill",
+                    "lab-band-pill",
+                    s.live ? "live" : "progress",
+                  ]}
+                >
+                  {s.live ? "Live now" : "In progress"}
+                </span>
+              </div>
+              <h3>{s.label}</h3>
+              <p class="lab-card-stat tnum">{s.liveText}</p>
+              <p class="lab-card-blurb">{s.blurb}</p>
+              <ul class="lab-card-list">
+                {/* A ✓ would overclaim on a section that's built but has no
+                    data in it yet — those get ◐, matching the section pill. */}
+                {s.covers.map((c) => (
+                  <li class:list={[s.live ? "done" : "waiting"]}>
+                    <span class="build-mark">{s.live ? "✓" : "◐"}</span>
+                    {c}
+                  </li>
+                ))}
+                {s.planned.map((c) => (
+                  <li class="pending">
+                    <span class="build-mark">○</span>
+                    {c}
+                  </li>
+                ))}
+              </ul>
+              {!s.live && (
+                <p class="lab-card-note">Built and tested — waiting on data.</p>
+              )}
+              <span class="lab-card-go">Open {s.label} →</span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">How it works</p>
+        <h2>From your bay to the dataset</h2>
+      </div>
+      <ol class="lab-flow">
+        <li>
+          <span class="lab-flow-n tnum">01</span>
+          <h3>You play</h3>
+          <p>
+            <a href="/golf-sim-analytics">Golf Sim Analytics</a> captures every
+            GSPro session automatically. Everything stays on your machine by
+            default — the app is fully useful without ever contributing.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">02</span>
+          <h3>You opt in</h3>
+          <p>
+            If you choose to, the app exports an anonymized bundle: ball and
+            club metrics plus your launch monitor model. No name, no account, no
+            course, no scores. See <a href="/privacy">data &amp; privacy</a>.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">03</span>
+          <h3>We aggregate</h3>
+          <p>
+            Quality control drops mislabeled and implausible shots. Each golfer
+            is reduced to one summary per club — one golfer, one vote — then
+            combined with robust medians so no single big session can move a
+            number.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">04</span>
+          <h3>Everyone gets it back</h3>
+          <p>
+            Results publish here, free and open, split into quality tiers so you
+            can decide how much trust a number has earned.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="lab-band lab-band-cta">
+      <div class="card lab-cta-card">
+        <h2>Help shape the framework</h2>
+        <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
+          The Lab is being built in the open. Ideas about schema, privacy, or
+          which analytics matter most are welcome on GitHub.
+        </p>
+        <div class="hero-cta" style="margin-top:1.2rem;">
+          <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">
+            Open on GitHub
+          </a>
+          <a href="/download" class="btn btn-secondary">Get the app</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .lab-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--gap);
+  }
+  .lab-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    color: inherit;
+  }
+  .lab-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .lab-card-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .lab-card h3 {
+    margin-top: 0.3rem;
+    color: var(--text);
+  }
+  .lab-card-stat {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--green);
+  }
+  .lab-card-blurb {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .lab-card-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .lab-card-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+  }
+  .lab-card-list li.done {
+    color: var(--text-muted);
+  }
+  .lab-card-list li.done .build-mark {
+    color: var(--green);
+  }
+  .lab-card-list li.waiting {
+    color: var(--text-muted);
+  }
+  .lab-card-list li.waiting .build-mark {
+    color: var(--amber);
+  }
+  .lab-card-list li.pending {
+    color: var(--text-dim);
+  }
+  .lab-card-list li.pending .build-mark {
+    color: var(--text-dim);
+  }
+  .lab-card-note {
+    margin-top: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+  }
+  .lab-card-go {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--green);
+    transition: transform 0.15s var(--ease);
+  }
+  .lab-card:hover .lab-card-go {
+    color: var(--green-bright);
+  }
+
+  /* ---- How it works ---- */
+  .lab-flow {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: var(--gap);
+    counter-reset: flow;
+  }
+  .lab-flow li {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .lab-flow-n {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .lab-flow h3 {
+    font-size: 1.05rem;
+  }
+  .lab-flow p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+</style>

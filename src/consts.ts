@@ -42,5 +42,29 @@ export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/golf-sim-analytics", label: "Golf Sim Analytics" },
   { href: "/lab", label: "The Lab" },
+  { href: "/roadmap", label: "Roadmap" },
   { href: "/blog", label: "Blog" },
+] as const;
+
+/**
+ * The Lab's own section nav. Two kinds of data live under /lab and they are
+ * built completely differently — keep them on separate routes so each has a
+ * shareable URL and room to grow (balls, irons, wedges) without one long page.
+ */
+export const LAB_SECTIONS = [
+  {
+    href: "/lab",
+    label: "Overview",
+    blurb: "What the Lab is and where each dataset stands.",
+  },
+  {
+    href: "/lab/market",
+    label: "Market Data",
+    blurb: "Editorial snapshots of what's for sale — lineups and street prices.",
+  },
+  {
+    href: "/lab/community",
+    label: "Community Data",
+    blurb: "Crowd-sourced norms from anonymized, opt-in GSPro sessions.",
+  },
 ] as const;

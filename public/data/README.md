@@ -1,31 +1,36 @@
 # public/data
 
-`summary.json` here is **generated** — do not edit it by hand.
+## summary.json (generated — do not edit)
 
-It is the aggregated, anonymized community summary produced by `aggregate.py` in
-the private `opengolflab-data` repo, and it is the only community data that is
-public. The Lab page (`src/pages/lab.astro`) reads it at build time and renders
-it; when it's absent, the Lab shows clearly-labeled sample data instead.
+The aggregated, anonymized community summary produced by `aggregate.py` in the
+private `opengolflab-data` repo; it is the only community data that is public.
+The Lab's Community page reads it at build time; when it's absent, the section
+shows an honest "collecting first dataset" state instead of zeros.
 
 To refresh it: run `aggregate.py` in the data repo (it writes here automatically
 when the two repos are checked out side by side), then commit and push this repo.
 
-## driver-rankings.json
+## driver-lineups.json (hand-curated)
 
-`driver-rankings.json` here is **also generated** — do not edit it by hand.
+The 2026 driver lineup spectrum + street pricing shown on Lab · Market.
+`position` is 0 (max forgiveness) → 100 (pure distance), an editorial estimate.
+Prices are checked by hand; `scripts/update_prices.cjs` is a scraper prototype
+that can refresh them.
 
-It is the aggregated 2026 driver-ranking table shown on the Lab page: every major
-club-review outlet's published ranking, tallied into one driver × ranker matrix
-with a consensus column. It is produced by `scripts/build-driver-rankings.mjs`
-from the hand-curated `scripts/driver-rankings.sources.json`.
+## ball-lineups.json (hand-curated)
 
-To refresh it (after adding a new outlet or updating a ranking in the sources
-file): run `npm run rankings`, then commit and push this repo. The same command
-also emits the per-driver uncertainty stats (opinion score, ±1 SD band, n).
+The 2026 golf-ball spectrum + per-dozen street pricing shown on Lab · Market.
+Same shape as the driver file, plus `construction` and `compression` per model.
+`position` is 0 (low spin / soft) → 100 (max spin / tour), an editorial estimate
+from construction, cover material, compression, and published robot data.
 
-## driver-segments.json
+⚠️ Prices were seeded editorially — **verify against retailers before deploy**,
+same drill as the driver file.
 
-`driver-segments.json` is **also generated** by `npm run rankings` — do not edit
-by hand. It holds the "by player profile" and "by priority" matrices (each
-outlet's category winners) shown under the main ranking table, built from the
-hand-curated `scripts/driver-segments.sources.json`.
+## speed-journey.csv (illustrative)
+
+The monthly dataset behind the "95 to 130" blog post — an artificial
+reconstruction of a two-year speed-training log (avg-best-5 speed, session max,
+median carry, handicap index, phase). The post's charts are generated from this
+file and note the reconstruction in their footers. Not community data; keep it
+out of any aggregation.

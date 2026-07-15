@@ -4,17 +4,25 @@ import path from "node:path";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
 
-// Real counts, computed at build from the driver lineup dataset — no slogans.
-let lineupsData: any = null;
-try {
-  const rp = path.resolve("public/data/driver-lineups.json");
-  if (fs.existsSync(rp)) lineupsData = JSON.parse(fs.readFileSync(rp, "utf-8"));
-} catch {
-  lineupsData = null;
+// Real counts, computed at build from the lineup datasets — no slogans.
+function readLineups(rel: string): any[] {
+  try {
+    const rp = path.resolve(rel);
+    if (fs.existsSync(rp))
+      return JSON.parse(fs.readFileSync(rp, "utf-8"))?.lineups ?? [];
+  } catch {
+    /* absent/malformed → count as zero */
+  }
+  return [];
 }
-const lineups = lineupsData?.lineups ?? [];
+const lineups = readLineups("public/data/driver-lineups.json");
+const ballLineups = readLineups("public/data/ball-lineups.json");
 const driverCount = lineups.reduce((n: number, l: any) => n + (l.models?.length ?? 0), 0);
-const brandCount = lineups.length;
+const ballCount = ballLineups.reduce((n: number, l: any) => n + (l.models?.length ?? 0), 0);
+// Brands = union across both datasets, so it stays honest as sections ship.
+const brandCount = new Set(
+  [...lineups, ...ballLineups].map((l: any) => l.brand),
+).size;
 
 // One positive trio — replaces the old "problems" + "framework" sections.
 const ideas = [
@@ -70,6 +78,9 @@ const ideas = [
       <div class="hero-chips" role="list" aria-label="At a glance">
         <span class="stat-chip" role="listitem"><span class="label">Dashboards</span><b>15</b></span>
         <span class="stat-chip" role="listitem"><span class="label">Drivers tracked</span><b>{driverCount}</b></span>
+        {ballCount > 0 && (
+          <span class="stat-chip" role="listitem"><span class="label">Balls tracked</span><b>{ballCount}</b></span>
+        )}
         <span class="stat-chip" role="listitem"><span class="label">Brands</span><b>{brandCount}</b></span>
         <span class="stat-chip" role="listitem"><span class="label">Price</span><b>$0</b></span>
       </div>
