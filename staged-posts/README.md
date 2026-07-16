@@ -1,7 +1,13 @@
 # Staged blog posts
 
 Posts pulled from the live site (2026-07-15) to be rolled out one at a time.
-Only `introducing-opengolflab.md` remains published.
+Published so far: `introducing-opengolflab.md`, plus the first pair on
+2026-07-16 — `gspro-has-no-memory.md` + `meet-golf-sim-analytics.md` (moved
+back to `src/content/blog/`).
+
+Suggested remaining order: `speed-training-95-to-130` next (its only link
+target is now live). The final four cross-link heavily (see table below), so
+publish them as a batch — or one at a time, accepting temporary dead links.
 
 **To publish one:** move it back to `src/content/blog/` — the blog index, RSS
 feed, and post page pick it up automatically. Consider bumping its `pubDate`

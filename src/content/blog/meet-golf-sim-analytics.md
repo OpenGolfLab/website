@@ -1,8 +1,8 @@
 ---
 title: "Meet Golf Sim Analytics: zero-click analytics for GSPro"
 description: "A closer look at the free Windows app — how automatic capture works, what the 15 dashboards cover, and why everything stays on your machine."
-pubDate: 2026-07-08
-heroImage: "/images/blog/meet-golf-sim-analytics.jpg"
+pubDate: 2026-07-16
+heroImage: "/images/screenshots/home.jpg"
 category: "Product"
 tags: ["release", "product", "gspro"]
 ---

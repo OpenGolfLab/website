@@ -25,9 +25,9 @@ export const SITE_TITLE = "OpenGolfLab";
 export const SITE_TAGLINE = "Every shot. Every insight.";
 /** Mission-level line for the home page / brand. */
 export const SITE_MISSION =
-  "Open, crowd-sourced golf equipment testing — standardized so every shot counts.";
+  "GSPro-driven community analytics — open, crowd-sourced equipment testing where every shot counts.";
 export const SITE_DESCRIPTION =
-  "OpenGolfLab is an open, free effort to build robust, crowd-sourced comparisons of golf balls and clubs — standardized so everyone tests the same way. Powered by Golf Sim Analytics, a free Windows app for GSPro.";
+  "OpenGolfLab is GSPro-driven community analytics: an open, free effort to build robust, crowd-sourced comparisons of golf balls and clubs — standardized so everyone tests the same way. Powered by Golf Sim Analytics, a free Windows app for GSPro.";
 
 /** Canonical production origin (no trailing slash). */
 export const SITE_URL = "https://opengolflab.com";
