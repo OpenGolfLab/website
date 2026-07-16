@@ -22,7 +22,7 @@ export const KOFI_URL = "https://ko-fi.com/opengolflab";
 
 /** Site identity. */
 export const SITE_TITLE = "OpenGolfLab";
-export const SITE_TAGLINE = "Every shot. Every insight.";
+export const SITE_TAGLINE = "Your sim is the lab. Your swings are the data.";
 /** Mission-level line for the home page / brand. */
 export const SITE_MISSION =
   "GSPro-driven community analytics — open, crowd-sourced equipment testing where every shot counts.";
