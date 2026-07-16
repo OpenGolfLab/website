@@ -47,21 +47,16 @@ export const NAV_LINKS = [
 ] as const;
 
 /**
- * The Lab's own section nav. Overview frames the effort, the Roadmap says
- * where it's headed, and Community Data is the crowd-sourced payoff — each on
- * its own route so it has a shareable URL. (The researched Gear Guide graduated
- * to its own top-level section; see GEAR_SECTIONS.)
+ * The Lab's own section nav. Overview frames the effort and carries the
+ * merged roadmap (/lab#roadmap); Community Data is the crowd-sourced payoff.
+ * (The researched Gear Guide graduated to its own top-level section; see
+ * GEAR_SECTIONS.)
  */
 export const LAB_SECTIONS = [
   {
     href: "/lab",
     label: "Overview",
-    blurb: "What the Lab is and where each dataset stands.",
-  },
-  {
-    href: "/lab/roadmap",
-    label: "Roadmap",
-    blurb: "What's shipped, building, and planned — no dates.",
+    blurb: "The vision, how contribution works, and where it's headed.",
   },
   {
     href: "/lab/community",

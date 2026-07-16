@@ -97,4 +97,41 @@ const year = new Date().getFullYear();
     font-family: var(--font-mono);
     font-size: 0.78rem;
     letter-spacing: 0.16em;
-    text-tran
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+  }
+  .footer-col a {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .footer-col a:hover {
+    color: var(--green);
+  }
+  .footer-base {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-block: 1.25rem 2rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.85rem;
+  }
+  .footer-mono {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+  @media (max-width: 720px) {
+    .footer-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+    .footer-cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

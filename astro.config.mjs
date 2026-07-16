@@ -12,8 +12,9 @@ export default defineConfig({
     // Lab sub-section to its own top-level /gear page. Keep both old links live.
     "/lab/market": "/gear",
     "/lab/gear": "/gear",
-    // The Roadmap moved under The Lab.
-    "/roadmap": "/lab/roadmap",
+    // The Roadmap moved under The Lab, then merged into the Lab overview.
+    // (/lab/roadmap itself is a redirect stub page → /lab#roadmap.)
+    "/roadmap": "/lab#roadmap",
   },
   // Static output is the default: no adapter, no SSR, no server code.
   build: {

@@ -2,50 +2,60 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LabNav from "../../components/LabNav.astro";
 import { GITHUB_URL, GITHUB_WATCH_URL } from "../../consts";
-import { loadMarket, loadBallMarket, loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
 const title = "The Lab";
 const description =
-  "The OpenGolfLab community analytics hub — an open framework where sim golfers contribute anonymized ball and club metrics to build community-driven analytics: real-world ball comparisons, gapping distributions by handicap, and launch/spin norms.";
+  "The OpenGolfLab community analytics hub — the vision and roadmap for open, crowd-sourced golf analytics: real-world ball comparisons, gapping by handicap, and launch/spin norms built from anonymized sim sessions.";
 
-const market = loadMarket();
-const balls = loadBallMarket();
-const community = loadCommunity();
-
-// Each card states plainly whether its dataset is live, so a first-time visitor
-// can tell what's real from the overview without opening both sections.
-const sections = [
+// The plan in three acts — the old /lab/roadmap page, distilled into a story.
+// Deliberately no dates: this is a free project built in spare time; a missed
+// date is a broken promise, an ordered list is not.
+const acts = [
   {
-    href: "/gear",
-    eyebrow: "Companion guide",
-    label: "Gear Guide",
-    live: market.hasLineups,
-    liveText: market.hasLineups
-      ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}irons · wedges`
-      : "Not published yet",
-    blurb:
-      "Where every driver, iron, wedge and ball sits — forgiveness to distance, blades to max game improvement, soft to max spin — and what it all actually costs today. Placements researched by hand, prices tracked against live retailer listings. It's now its own top-level section, the honest starting point while the crowd-sourced numbers build.",
-    covers: [
-      "Driver lineup spectrum",
-      "Iron & wedge maps",
-      ...(balls.hasLineups ? ["Golf ball map"] : []),
-      "Street price vs. MSRP",
-    ],
-    planned: ["Fairway woods, hybrids & putters"],
+    mark: "✓",
+    state: "done",
+    stateLabel: "Shipped",
+    title: "Build the instruments",
+    body: "Golf Sim Analytics captures every GSPro shot automatically, free. The Gear Guide maps every major driver, iron, wedge and ball against live street prices. And the contribution pipeline — consent-gated, anonymized, quality-controlled — is built and tested end to end.",
   },
   {
-    href: "/lab/community",
-    eyebrow: "The Lab's own dataset",
-    label: "Community Data",
-    live: community.hasCommunityData,
-    liveText: community.hasCommunityData
-      ? `${community.totalContributors} golfers · ${community.totalShots.toLocaleString()} shots`
-      : "Collecting first dataset",
-    blurb:
-      "The real payoff. Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone — one golfer, one vote, so a big session can't skew a result.",
-    covers: ["Launch & spin norms by club", "Driver dispersion", "Quality tiers"],
-    planned: ["Ball comparisons", "Gapping by handicap"],
+    mark: "◐",
+    state: "now",
+    stateLabel: "Happening now",
+    title: "Collect the first dataset",
+    body: "Everything upstream works. What's left is contributors: no club publishes until enough golfers have submitted it, so the numbers are worth trusting on day one. Every opt-in session moves the bar.",
+  },
+  {
+    mark: "○",
+    state: "next",
+    stateLabel: "What it unlocks",
+    title: "Answer what nobody else can",
+    body: "Once the dataset clears its thresholds, the questions that started this project get real answers:",
+  },
+];
+
+// Act III payoffs — the reason to get excited.
+const payoffs = [
+  {
+    name: "Ball comparisons",
+    detail:
+      "What a premium ball actually does for your game — measured across thousands of real shots, not a robot and a marketing budget. The question that started this project.",
+  },
+  {
+    name: "Gapping by handicap",
+    detail:
+      "What real distance gaps look like at your level, so you can tell a genuine hole in your set from a magazine number.",
+  },
+  {
+    name: "Norms by swing speed",
+    detail:
+      "Launch, spin and dispersion norms sliced by driver speed — a 95 mph twelve and a 108 mph twelve need different answers.",
+  },
+  {
+    name: "Old club vs. new",
+    detail:
+      "What does a 2020 driver actually give up to a 2026? Real golfers and real shots, instead of robot tests.",
   },
 ];
 ---
@@ -64,10 +74,10 @@ const sections = [
         norms to help you find the absolute best equipment for your game.
       </p>
       <div class="hero-cta" style="margin-top:1.6rem;">
-        <a href={GITHUB_WATCH_URL} class="btn btn-primary" rel="noopener">
+        <a href="/download" class="btn btn-primary">Get the app</a>
+        <a href={GITHUB_WATCH_URL} class="btn btn-secondary" rel="noopener">
           Watch the repo
         </a>
-        <a href="/lab/roadmap" class="btn btn-secondary">See the roadmap</a>
       </div>
       <p class="lab-noemail">
         No newsletter, no sign-up. Watch the
@@ -80,64 +90,6 @@ const sections = [
   <LabNav />
 
   <div class="container lab-body">
-    <section class="lab-band">
-      <div class="lab-band-head">
-        <p class="eyebrow">Researched vs. measured</p>
-        <h2>What's in the Lab</h2>
-        <p class="text-muted" style="max-width:66ch;">
-          Two kinds of data, kept deliberately separate. The Gear Guide is
-          researched — we compile it from published specs and live retailer
-          prices — and now lives in its own top-level section. Community data is
-          measured — you produce it — and is the Lab's own effort. Mixing them
-          would make it impossible to tell which is which.
-        </p>
-      </div>
-
-      <div class="lab-cards">
-        {
-          sections.map((s) => (
-            <a href={s.href} class="card lab-card">
-              <div class="lab-card-top">
-                <span class="lab-card-eyebrow">{s.eyebrow}</span>
-                <span
-                  class:list={[
-                    "pill",
-                    "lab-band-pill",
-                    s.live ? "live" : "progress",
-                  ]}
-                >
-                  {s.live ? "Live now" : "In progress"}
-                </span>
-              </div>
-              <h3>{s.label}</h3>
-              <p class="lab-card-stat tnum">{s.liveText}</p>
-              <p class="lab-card-blurb">{s.blurb}</p>
-              <ul class="lab-card-list">
-                {/* A ✓ would overclaim on a section that's built but has no
-                    data in it yet — those get ◐, matching the section pill. */}
-                {s.covers.map((c) => (
-                  <li class:list={[s.live ? "done" : "waiting"]}>
-                    <span class="build-mark">{s.live ? "✓" : "◐"}</span>
-                    {c}
-                  </li>
-                ))}
-                {s.planned.map((c) => (
-                  <li class="pending">
-                    <span class="build-mark">○</span>
-                    {c}
-                  </li>
-                ))}
-              </ul>
-              {!s.live && (
-                <p class="lab-card-note">Built and tested — waiting on data.</p>
-              )}
-              <span class="lab-card-go">Open {s.label} →</span>
-            </a>
-          ))
-        }
-      </div>
-    </section>
-
     <section class="lab-band">
       <div class="lab-band-head">
         <p class="eyebrow">How it works</p>
@@ -183,12 +135,55 @@ const sections = [
       </ol>
     </section>
 
+    <section class="lab-band" id="roadmap">
+      <div class="lab-band-head">
+        <p class="eyebrow">The plan</p>
+        <h2>Where this is headed</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          No dates — this is a free project built in spare time, and a missed
+          date is a broken promise. Order is a real signal; timing isn't.
+        </p>
+      </div>
+
+      <ol class="acts">
+        {
+          acts.map((a) => (
+            <li class:list={["act", `is-${a.state}`]}>
+              <span class="act-mark" aria-hidden="true">{a.mark}</span>
+              <div class="act-body">
+                <p class="act-state">{a.stateLabel}</p>
+                <h3>{a.title}</h3>
+                <p class="act-detail">{a.body}</p>
+                {a.state === "next" && (
+                  <ul class="payoffs">
+                    {payoffs.map((p) => (
+                      <li class="card payoff">
+                        <h4>{p.name}</h4>
+                        <p>{p.detail}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="exploring text-muted">
+        Further out, ideas we like but haven't committed to: handicap tracking
+        and a voice caddy. <a href={GITHUB_URL} rel="noopener">Open an issue</a>
+        if one matters to you — that's how it moves up.
+      </p>
+    </section>
+
     <section class="lab-band lab-band-cta">
       <div class="card lab-cta-card">
-        <h2>Help shape the framework</h2>
+        <h2>Help shape what comes next</h2>
         <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
-          The Lab is being built in the open. Ideas about what data to collect,
-          privacy, or which analytics matter most are welcome on GitHub.
+          The Lab is built in the open, and this plan is shaped by what people
+          actually ask for. Feature requests, opinions on what data to collect,
+          and privacy scrutiny are all equally welcome.
         </p>
         <div class="hero-cta" style="margin-top:1.2rem;">
           <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">
@@ -202,95 +197,6 @@ const sections = [
 </BaseLayout>
 
 <style>
-  .lab-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: var(--gap);
-  }
-  .lab-card {
-    display: flex;
-    flex-direction: column;
-    gap: 0.55rem;
-    color: inherit;
-  }
-  .lab-card-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-  }
-  .lab-card-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-  }
-  .lab-card h3 {
-    margin-top: 0.3rem;
-    color: var(--text);
-  }
-  .lab-card-stat {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--green);
-  }
-  .lab-card-blurb {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-  }
-  .lab-card-list {
-    list-style: none;
-    padding: 0;
-    margin-top: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-  .lab-card-list li {
-    display: flex;
-    align-items: center;
-    gap: 0.55rem;
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-  }
-  .lab-card-list li.done {
-    color: var(--text-muted);
-  }
-  .lab-card-list li.done .build-mark {
-    color: var(--green);
-  }
-  .lab-card-list li.waiting {
-    color: var(--text-muted);
-  }
-  .lab-card-list li.waiting .build-mark {
-    color: var(--amber);
-  }
-  .lab-card-list li.pending {
-    color: var(--text-dim);
-  }
-  .lab-card-list li.pending .build-mark {
-    color: var(--text-dim);
-  }
-  .lab-card-note {
-    margin-top: 0.55rem;
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--text-dim);
-  }
-  .lab-card-go {
-    margin-top: auto;
-    padding-top: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    letter-spacing: 0.06em;
-    color: var(--green);
-    transition: transform 0.15s var(--ease);
-  }
-  .lab-card:hover .lab-card-go {
-    color: var(--green-bright);
-  }
-
   /* ---- How it works ---- */
   .lab-flow {
     list-style: none;
@@ -319,5 +225,88 @@ const sections = [
   .lab-flow p {
     color: var(--text-dim);
     font-size: 0.9rem;
+  }
+
+  /* ---- The plan: three acts ---- */
+  .acts {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .act {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.9rem;
+    padding-block: 1.4rem;
+  }
+  .act + .act {
+    border-top: 1px solid var(--border);
+  }
+  .act-mark {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .is-done .act-mark {
+    color: var(--green);
+  }
+  .is-now .act-mark {
+    color: var(--amber);
+  }
+  .is-next .act-mark {
+    color: var(--text-dim);
+  }
+  .act-state {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.25rem;
+  }
+  .is-done .act-state {
+    color: var(--green);
+  }
+  .is-now .act-state {
+    color: var(--amber);
+  }
+  .act h3 {
+    font-size: 1.3rem;
+  }
+  .act-detail {
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 66ch;
+  }
+
+  .payoffs {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+  .payoff h4 {
+    font-size: 1.02rem;
+  }
+  .payoff p {
+    margin-top: 0.35rem;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+
+  .exploring {
+    margin-top: 1.4rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 700px) {
+    .payoffs {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

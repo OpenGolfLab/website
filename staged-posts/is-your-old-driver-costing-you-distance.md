@@ -41,6 +41,6 @@ Golf Sim Analytics has an [A/B fitting dashboard](/golf-sim-analytics) built for
 
 ## Where this is going
 
-One golfer's A/B test is an anecdote with good intentions. What I actually want to know is what *thousands* of these comparisons say — does a 2020 head really give up 20% of its miss protection to a 2026 head at a 12-handicap's strike quality, or is that number marketing all the way down? That's a question only community data can answer, and it's [on the roadmap](/roadmap): club model and year are coming to contributions, so the Lab can eventually publish old-vs-new deltas measured on real golfers instead of robots.
+One golfer's A/B test is an anecdote with good intentions. What I actually want to know is what *thousands* of these comparisons say — does a 2020 head really give up 20% of its miss protection to a 2026 head at a 12-handicap's strike quality, or is that number marketing all the way down? That's a question only community data can answer, and it's [on the roadmap](/lab#roadmap): club model and year are coming to contributions, so the Lab can eventually publish old-vs-new deltas measured on real golfers instead of robots.
 
 Until then: the [driver spectrum](/lab/gear) shows where every current head sits between forgiveness and distance, and the [street-price chart](/lab/gear#pricing) shows what patience is worth — last year's "innovation" is this year's discount. My advice, having done the test: buy width, not length. Length is mostly already in your swing. Width is what they've actually been building.

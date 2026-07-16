@@ -11,7 +11,7 @@ import {
 } from "../consts";
 
 const title = "Golf Sim Analytics";
-const description = `${PRODUCT_NAME} is a free Windows app for GSPro — zero-click capture, 15 interactive dashboards, deep per-shot metrics, and PGA Tour benchmarks. Local-first and private.`;
+const description = `${PRODUCT_NAME} is a free Windows app for GSPro — zero-click capture, 15 interactive dashboards, live rounds, speed training, and unlimited local history. Free, open source, no account.`;
 
 // Hero feature chips — the app's signature capabilities, at a glance.
 const heroChips = [
@@ -34,6 +34,45 @@ const heroChips = [
   {
     label: "No account · $0 forever",
     icon: "M12 2v20m5-17H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
+  },
+];
+
+// What a manual-entry phone app can't do — the sim-rig exclusives.
+const simOnly = [
+  {
+    title: "Live rounds",
+    body: "Shots stream onto a live dispersion chart as you hit — then the round archives itself when you finish.",
+    icon: "M2 12h4l3-8 4 16 3-8h6",
+  },
+  {
+    title: "Automatic scorecards",
+    body: "Every sim round scored hole-by-hole — birdies, scoring breakdown, longest drives. You never type a number.",
+    icon: "M4 22V4c4-2 8 2 12 0v12c-4 2-8-2-12 0",
+  },
+  {
+    title: "Speed training",
+    body: "Cruising speed, fatigue curve, and long-term progression, tracked across every session you've ever hit.",
+    icon: "m12 14 4-4M3.34 19a10 10 0 1 1 17.32 0",
+  },
+];
+
+// Local-first guarantees — the "your data, your rules" grid.
+const dataRules = [
+  {
+    title: "Local Parquet files",
+    body: "Every shot lives on your PC, right next to the app. No cloud, no account, works offline.",
+  },
+  {
+    title: "Reversible edits",
+    body: "Hide a session or reassign a mis-clubbed shot and it's stored as a sidecar — your archived data is never touched.",
+  },
+  {
+    title: "Yours after uninstall",
+    body: "Removing the app leaves your entire shot history on disk, exactly where it was.",
+  },
+  {
+    title: "Honest install",
+    body: "The installer is unsigned, so Windows shows a one-time SmartScreen caution — explained plainly in the install guide.",
   },
 ];
 
@@ -181,8 +220,34 @@ const softwareLd = {
     />
   </section>
 
-  <!-- ==================== DASHBOARDS (killer tiles) ==================== -->
+  <!-- ======================= THREE FEATURES ======================= -->
   <section class="section">
+    <div class="container">
+      <h2>Three core features</h2>
+      <ul class="features">
+        {
+          features.map((f) => (
+            <li class="feature card">
+              <svg class="feature-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d={f.icon}
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <h3>{f.title}</h3>
+              <p class="text-muted">{f.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ==================== DASHBOARDS (killer tiles) ==================== -->
+  <section class="section" style="padding-top:0;">
     <div class="container">
       <h2>15 dashboards across six areas</h2>
       <p class="lede" style="margin-top:0.75rem;max-width:60ch;">
@@ -206,16 +271,64 @@ const softwareLd = {
           ))
         }
       </div>
+
+      <p class="bench-note text-muted">
+        And yes — one click overlays PGA Tour averages or any 5–20 handicap
+        benchmark on your own numbers.
+      </p>
     </div>
   </section>
 
-  <!-- ======================= THREE FEATURES ======================= -->
+  <!-- ======================= FITTING BAY ======================= -->
   <section class="section" style="padding-top:0;">
     <div class="container">
-      <h2>Three core features</h2>
+      <div class="fitbay card">
+        <div class="fitbay-copy">
+          <p class="eyebrow">Club fitting</p>
+          <h2>A free fitting bay in your garage</h2>
+          <p class="text-muted" style="margin-top:0.85rem;max-width:54ch;">
+            Set up a head-to-head — two shafts, two adapter settings — and hit.
+            Each configuration is captured live and plotted against the other,
+            so the dispersion makes the call before your wallet does. Elsewhere
+            this is the paid tier; here it's just another dashboard.
+          </p>
+          <p class="text-muted" style="margin-top:0.75rem;max-width:54ch;">
+            Choosing between club <em>models</em>? That's what the Lab's
+            community data is for — thousands of pooled shots, one open protocol.
+          </p>
+          <div class="hero-cta">
+            <a href="/gear" class="btn btn-secondary">Open the Gear Guide</a>
+            <a href="/lab/community" class="btn btn-secondary">Community data ↗</a>
+          </div>
+        </div>
+        <div class="fitbay-shot">
+          <!-- TODO: swap in a dedicated fitting-bay (club_compare) screenshot when available -->
+          <img
+            src="/images/screenshots/dispersion.jpg"
+            alt="Dispersion chart comparing shot patterns, the view used to judge two club configurations head-to-head."
+            width="2000"
+            height="1194"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== ONLY POSSIBLE IN A SIM ==================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">Only possible in a sim</p>
+      <h2>Analytics a phone app can't reach</h2>
+      <p class="lede" style="margin-top:0.75rem;max-width:62ch;">
+        Manual-entry apps top out at a handful of typed-in shots. Your rig
+        produces hundreds per session — captured automatically, round after
+        round.
+      </p>
       <ul class="features">
         {
-          features.map((f) => (
+          simOnly.map((f) => (
             <li class="feature card">
               <svg class="feature-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
@@ -228,6 +341,24 @@ const softwareLd = {
               </svg>
               <h3>{f.title}</h3>
               <p class="text-muted">{f.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===================== YOUR DATA, YOUR RULES ===================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">Local-first</p>
+      <h2>Your data, your rules</h2>
+      <ul class="features rules">
+        {
+          dataRules.map((r) => (
+            <li class="feature card">
+              <h3>{r.title}</h3>
+              <p class="text-muted">{r.body}</p>
             </li>
           ))
         }
@@ -267,6 +398,10 @@ const softwareLd = {
         <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">Download for Windows</a>
         <a href="/download" class="btn btn-secondary btn-lg">System requirements</a>
       </div>
+      <p class="sample-note text-muted">
+        No sim yet? Install anyway — ⚙ Settings → “Use sample data” loads two
+        bundled datasets to explore every dashboard.
+      </p>
     </div>
   </section>
 </BaseLayout>
@@ -407,6 +542,48 @@ const softwareLd = {
     font-size: 1.2rem;
   }
 
+  .bench-note {
+    margin-top: 1.4rem;
+    font-size: 0.95rem;
+  }
+
+  /* Fitting bay split card */
+  .fitbay {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  .fitbay-copy {
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .fitbay-shot {
+    position: relative;
+    border-left: 1px solid var(--border);
+    background: var(--bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+  }
+  .fitbay-shot img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Data-rules 2×2 grid */
+  .rules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sample-note {
+    margin-top: 1.1rem;
+    font-size: 0.95rem;
+  }
+
   .app-lab {
     position: relative;
     overflow: hidden;
@@ -431,5 +608,21 @@ const softwareLd = {
     .features {
       grid-template-columns: repeat(2, 1fr);
     }
+    .fitbay {
+      grid-template-columns: 1fr;
+    }
+    .fitbay-shot {
+      border-left: none;
+      border-top: 1px solid var(--border);
+      min-height: 220px;
+      order: -1;
+    }
   }
-  @med
+  @media (max-width: 680px) {
+    .dash-grid,
+    .features,
+    .rules {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
