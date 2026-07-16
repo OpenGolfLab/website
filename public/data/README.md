@@ -27,6 +27,19 @@ from construction, cover material, compression, and published robot data.
 ⚠️ Prices were seeded editorially — **verify against retailers before deploy**,
 same drill as the driver file.
 
+## iron-lineups.json (hand-curated)
+
+The 2026 iron quadrant map + per-set pricing shown on Lab · Gear Guide.
+Same shape as the driver file, plus per model: `category` (one of `blade`,
+`players-cb`, `players-distance`, `game-improvement`, `max-gi`), `loft7`
+(manufacturer's standard 7-iron loft in degrees — the anti-loft-jacking axis),
+and `construction`. `position` is 0 (max forgiveness) → 100 (max
+workability/precision), an editorial estimate. Prices are MSRP for a 7-club
+steel set.
+
+⚠️ Prices were seeded editorially from MSRPs — **verify against retailers
+before deploy**. PXG and the DTC brands discount aggressively.
+
 ## speed-journey.csv (illustrative)
 
 The monthly dataset behind the "95 to 130" blog post — an artificial

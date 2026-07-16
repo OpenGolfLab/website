@@ -40,24 +40,30 @@ const groups: Group[] = [
         name: "Driver lineup spectrum",
         detail:
           "Every major 2026 driver mapped from maximum forgiveness to pure distance, brand by brand.",
-        where: "Lab · Market",
+        where: "Lab · Gear Guide",
       },
       {
-        name: "Market pricing",
+        name: "Driver street pricing",
         detail:
           "Street price against MSRP for every driver in the lineup, with the dealer named and no commission taken.",
-        where: "Lab · Market",
+        where: "Lab · Gear Guide",
       },
       {
-        name: "Golf balls in Market Data",
+        name: "Golf balls in the Gear Guide",
         detail:
           "Every major ball mapped from soft-and-straight to max tour spin — construction, compression, and per-dozen street pricing, same treatment as the drivers.",
-        where: "Lab · Market",
+        where: "Lab · Gear Guide",
+      },
+      {
+        name: "Irons in the Gear Guide",
+        detail:
+          "Every major iron lineup mapped from max game improvement to blades, with real 7-iron lofts called out so the loft-jacking is visible — plus per-set pricing.",
+        where: "Lab · Gear Guide",
       },
       {
         name: "Contribution pipeline",
         detail:
-          "Consent-gated, anonymized export from the app through to aggregation — schema v1.1, quality control, and per-contributor summaries.",
+          "Consent-gated, anonymized export from the app through to aggregation — a versioned data format, quality control, and per-contributor summaries.",
         where: "Lab · Community",
       },
     ],
@@ -101,16 +107,16 @@ const groups: Group[] = [
         where: "Lab · Community",
       },
       {
-        name: "Club model & year in the schema",
+        name: "Club model & year in contributions",
         detail:
           "An optional club make/model/year field in contributions, so the Lab can eventually answer \"what does a 2020 driver actually give up to a 2026?\" with real golfers instead of robots.",
         where: "Lab · Community",
       },
       {
-        name: "Irons in Market Data",
+        name: "Wedges in the Gear Guide",
         detail:
-          "Player's through game-improvement lineups on a forgiveness-to-workability spectrum, with lofts called out.",
-        where: "Lab · Market",
+          "Loft, bounce and grind mapped so you can build a short-game setup that matches your turf and technique.",
+        where: "Lab · Gear Guide",
       },
     ],
   },
@@ -190,8 +196,8 @@ const groups: Group[] = [
       <h2>Something missing?</h2>
       <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
         This list is shaped by what people actually ask for. Open an issue on
-        GitHub — feature requests, schema arguments and privacy scrutiny are all
-        equally welcome.
+        GitHub — feature requests, opinions on what data we should collect, and
+        privacy scrutiny are all equally welcome.
       </p>
       <div class="hero-cta" style="margin-top:1.2rem;">
         <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">
@@ -306,7 +312,7 @@ const groups: Group[] = [
   }
   .road-where {
     font-family: var(--font-mono);
-    font-size: 0.66rem;
+    font-size: 0.74rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-dim);

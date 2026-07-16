@@ -129,6 +129,11 @@ export function loadBallMarket() {
   return loadLineupMarket("public/data/ball-lineups.json", 10);
 }
 
+/** 2026 iron lineups + per-set (7-club, steel) street pricing. */
+export function loadIronMarket() {
+  return loadLineupMarket("public/data/iron-lineups.json", 500);
+}
+
 // ---- Community: summary.json v2 (tiered) ----------------------------------
 // Written by the opengolflab-data aggregator. Optional: absent, or present with
 // empty tiers, until enough contributors clear the publish threshold.
