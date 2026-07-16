@@ -150,23 +150,18 @@ function placeQuadrantLabels(
   // this is what untangles crossing leaders in the dense clusters.
   const nDots = ordered.length;
   const boxIndexOffset = boxes.length - nDots;
-  for (let iter = 0; iter < 3; iter++) {
+  for (let iter = 0; iter < 8; iter++) {
     const order = picks
       .map((p: any, i: number) => ({ i, len: Math.hypot(p.seg.x2 - p.seg.x1, p.seg.y2 - p.seg.y1) }))
       .sort((a, b) => b.len - a.len);
     for (const { i } of order) {
       const d = ordered[i];
-      const saved = boxes[boxIndexOffset + i];
       boxes[boxIndexOffset + i] = { x1: -99, y1: -99, x2: -98, y2: -98 };
-      const savedLead = placedLeads[i];
       placedLeads[i] = null;
       const pick = findSlot(d, i);
-      // Keep whichever slot scores better under full knowledge.
       boxes[boxIndexOffset + i] = pick.box;
       placedLeads[i] = pick.seg;
       picks[i] = pick;
-      void saved;
-      void savedLead;
     }
   }
 
@@ -183,6 +178,131 @@ function placeQuadrantLabels(
   });
 }
 
+// ---- Edge-column label layout ---------------------------------------------
+// Reference-chart style: instead of floating each label near its dot, every
+// label is parked in a tidy vertical column in the margin — the left gutter
+// for dots left of centre, the right gutter for dots right of centre — and
+// tied back to its dot with a single straight leader.
+//
+// Each column owns a fixed ladder of label slots (sorted by the dots' heights,
+// then spread just far enough apart to never touch). Which dot lands in which
+// slot is then decided by a crossing-minimising pass: starting from height
+// order, adjacent slots trade dots whenever the swap removes more leader
+// crossings than it adds. That untangles the fans that appear wherever several
+// dots share a height (common on the iron map, where many sets share a loft)
+// without any hand-tuned tie-break rule.
+function placeColumnLabels(
+  dots: any[],
+  W: number,
+  H: number,
+  PAD: any,
+  splitX: number,
+) {
+  const ROW_H = 17; // vertical pitch between stacked labels
+  const GAP = 8; // gutter breathing room between label text and plot edge
+  const topY = PAD.t + 14;
+  const botY = H - PAD.b - 4;
+  const leftEdge = PAD.l; // right edge of the left-hand label column
+  const rightEdge = W - PAD.r; // left edge of the right-hand label column
+
+  // Proper segment crossing (shared endpoints don't count — leaders never
+  // share one anyway, since dots and slots are all distinct).
+  const orient = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) =>
+    Math.sign((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
+  const segsCross = (p: any, q: any) => {
+    const o1 = orient(p.x1, p.y1, p.x2, p.y2, q.x1, q.y1);
+    const o2 = orient(p.x1, p.y1, p.x2, p.y2, q.x2, q.y2);
+    const o3 = orient(q.x1, q.y1, q.x2, q.y2, p.x1, p.y1);
+    const o4 = orient(q.x1, q.y1, q.x2, q.y2, p.x2, p.y2);
+    return o1 !== o2 && o3 !== o4 && o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0;
+  };
+
+  const layoutSide = (side: any[], edgeX: number) => {
+    // Slot ladder: targets are the dots' own heights, relaxed so no two labels
+    // sit closer than ROW_H (down-sweep, then up-sweep off the bottom, then a
+    // top clamp).
+    const slots = side
+      .map((d: any) => d.y)
+      .sort((a: number, b: number) => a - b);
+    for (let i = 1; i < slots.length; i++) {
+      if (slots[i] < slots[i - 1] + ROW_H) slots[i] = slots[i - 1] + ROW_H;
+    }
+    for (let i = slots.length - 1; i >= 0; i--) {
+      const maxY = i === slots.length - 1 ? botY : slots[i + 1] - ROW_H;
+      if (slots[i] > maxY) slots[i] = maxY;
+    }
+    for (let i = 0; i < slots.length; i++) {
+      const minY = i === 0 ? topY : slots[i - 1] + ROW_H;
+      if (slots[i] < minY) slots[i] = minY;
+    }
+
+    // Assign dots to slots, starting in height order, then untangle by trading
+    // dots between adjacent slots whenever it nets out fewer crossings.
+    const assign = side
+      .slice()
+      .sort((a: any, b: any) => a.y - b.y)
+      .map((d: any, i: number) => ({ d, sy: slots[i] }));
+    const seg = (a: any) => ({ x1: edgeX, y1: a.sy, x2: a.d.x, y2: a.d.y });
+    const involve = (k: number) => {
+      let c = 0;
+      for (let m = 0; m < assign.length; m++) {
+        if (m !== k && segsCross(seg(assign[k]), seg(assign[m]))) c++;
+      }
+      return c;
+    };
+    // A dot may only move a few slots from its height-sorted position, so the
+    // label stays near its dot; within that window any improving trade is
+    // taken. The small window is enough to untangle the same-height fans while
+    // keeping leaders short.
+    const WIN = 6;
+    for (let pass = 0; pass < 60; pass++) {
+      let improved = false;
+      for (let k = 0; k < assign.length - 1; k++) {
+        for (let j = k + 1; j <= Math.min(k + WIN, assign.length - 1); j++) {
+          const adj = segsCross(seg(assign[k]), seg(assign[j])) ? 1 : 0;
+          const before = involve(k) + involve(j) - adj;
+          const t = assign[k].d;
+          assign[k].d = assign[j].d;
+          assign[j].d = t;
+          const adj2 = segsCross(seg(assign[k]), seg(assign[j])) ? 1 : 0;
+          const after = involve(k) + involve(j) - adj2;
+          if (after < before) improved = true;
+          else {
+            const t2 = assign[k].d;
+            assign[k].d = assign[j].d;
+            assign[j].d = t2;
+          }
+        }
+      }
+      if (!improved) break;
+    }
+    return assign;
+  };
+
+  const out: any[] = [];
+  for (const it of layoutSide(dots.filter((d: any) => d.x < splitX), leftEdge - GAP)) {
+    out.push({
+      ...it.d,
+      lblX: leftEdge - GAP,
+      lblY: it.sy + 4,
+      anchor: "end",
+      leadX: leftEdge - GAP,
+      leadY: it.sy,
+    });
+  }
+  for (const it of layoutSide(dots.filter((d: any) => d.x >= splitX), rightEdge + GAP)) {
+    out.push({
+      ...it.d,
+      lblX: rightEdge + GAP,
+      lblY: it.sy + 4,
+      anchor: "start",
+      leadX: rightEdge + GAP,
+      leadY: it.sy,
+    });
+  }
+  return out;
+}
+
 // ---- Ball quadrant map ----------------------------------------------------
 // One plot that carries the whole buying decision:
 //   x — spin, decreasing left → right (spectrum position, reversed)
@@ -192,8 +312,10 @@ function placeQuadrantLabels(
 const ballMap = (() => {
   if (!balls.hasLineups) return null;
   const W = 960;
-  const H = 820;
-  const PAD = { l: 40, r: 18, t: 30, b: 46 };
+  const H = 858;
+  // Wide left/right pads carve out the two label gutters; the tall bottom pad
+  // reserves a clear band below the plot for the lower quadrant captions.
+  const PAD = { l: 220, r: 228, t: 30, b: 84 };
   const pw = W - PAD.l - PAD.r;
   const ph = H - PAD.t - PAD.b;
 
@@ -231,10 +353,10 @@ const ballMap = (() => {
   const qcaps = [
     { t: "Fast swing, tour spin", a: "start", x: PAD.l + 10, y: PAD.t + 18 },
     { t: "Fast swing, low spin", a: "end", x: W - PAD.r - 10, y: PAD.t + 18 },
-    { t: "Slower swing, soft with spin", a: "start", x: PAD.l + 10, y: H - PAD.b - 6 },
-    { t: "Slower swing, straight and soft", a: "end", x: W - PAD.r - 10, y: H - PAD.b - 6 },
+    { t: "Slower swing, soft with spin", a: "start", x: PAD.l + 10, y: H - PAD.b + 34 },
+    { t: "Slower swing, straight and soft", a: "end", x: W - PAD.r - 10, y: H - PAD.b + 34 },
   ];
-  const labeled = placeQuadrantLabels(dots, qcaps, W, H, PAD);
+  const labeled = placeColumnLabels(dots, W, H, PAD, toX(X_MID));
 
   return {
     W, H, PAD,
@@ -314,8 +436,10 @@ const IRON_CATS: Record<string, { label: string; cls: string; blurb: string }> =
 const ironMap = (() => {
   if (!irons.hasLineups) return null;
   const W = 960;
-  const H = 940;
-  const PAD = { l: 40, r: 18, t: 30, b: 46 };
+  const H = 985;
+  // Wide left/right pads carve out the two label gutters; the tall bottom pad
+  // reserves a clear band below the plot for the lower quadrant captions.
+  const PAD = { l: 235, r: 192, t: 30, b: 91 };
   const pw = W - PAD.l - PAD.r;
   const ph = H - PAD.t - PAD.b;
 
@@ -353,8 +477,8 @@ const ironMap = (() => {
   const qcaps = [
     { t: "Max help, juiced lofts", a: "start", x: PAD.l + 10, y: PAD.t + 18 },
     { t: "Compact looks, hidden speed", a: "end", x: W - PAD.r - 10, y: PAD.t + 18 },
-    { t: "Forgiving, honest lofts", a: "start", x: PAD.l + 10, y: H - PAD.b - 6 },
-    { t: "Feel, flight control, workability", a: "end", x: W - PAD.r - 10, y: H - PAD.b - 6 },
+    { t: "Forgiving, honest lofts", a: "start", x: PAD.l + 10, y: H - PAD.b + 34 },
+    { t: "Feel, flight control, workability", a: "end", x: W - PAD.r - 10, y: H - PAD.b + 34 },
   ];
 
   return {
@@ -363,7 +487,7 @@ const ironMap = (() => {
     yMid: toY(Y_MID),
     right: W - PAD.r,
     bottom: H - PAD.b,
-    dots: placeQuadrantLabels(dots, qcaps, W, H, PAD),
+    dots: placeColumnLabels(dots, W, H, PAD, toX(X_MID)),
     qcaps,
   };
 })();
@@ -679,15 +803,13 @@ const ironProfiles = [
                   {ballMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
                       <title>{`${d.brand} ${d.name} — ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
-                      {d.far && (
-                        <line
-                          class="ballmap-lead"
-                          x1={d.x}
-                          y1={d.y}
-                          x2={d.leadX}
-                          y2={d.leadY}
-                        />
-                      )}
+                      <line
+                        class="ballmap-lead"
+                        x1={d.x}
+                        y1={d.y}
+                        x2={d.leadX}
+                        y2={d.leadY}
+                      />
                       <circle
                         class:list={["ballmap-dot", d.premium ? "premium" : "value"]}
                         cx={d.x}
@@ -696,9 +818,9 @@ const ironProfiles = [
                       />
                       <text
                         class="ballmap-lbl"
-                        x={d.x + d.lbl.dx}
-                        y={d.y + d.lbl.dy}
-                        text-anchor={d.lbl.anchor}
+                        x={d.lblX}
+                        y={d.lblY}
+                        text-anchor={d.anchor}
                       >
                         {d.label}
                       </text>
@@ -896,15 +1018,13 @@ const ironProfiles = [
                   {ironMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
                       <title>{`${d.brand} ${d.name} — ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} (${d.config})`}</title>
-                      {d.far && (
-                        <line
-                          class="ballmap-lead"
-                          x1={d.x}
-                          y1={d.y}
-                          x2={d.leadX}
-                          y2={d.leadY}
-                        />
-                      )}
+                      <line
+                        class="ballmap-lead"
+                        x1={d.x}
+                        y1={d.y}
+                        x2={d.leadX}
+                        y2={d.leadY}
+                      />
                       <circle
                         class:list={["ballmap-dot", d.cls]}
                         cx={d.x}
@@ -913,9 +1033,9 @@ const ironProfiles = [
                       />
                       <text
                         class="ballmap-lbl"
-                        x={d.x + d.lbl.dx}
-                        y={d.y + d.lbl.dy}
-                        text-anchor={d.lbl.anchor}
+                        x={d.lblX}
+                        y={d.lblY}
+                        text-anchor={d.anchor}
                       >
                         {d.label}
                       </text>
@@ -1268,15 +1388,16 @@ const ironProfiles = [
   .ballmap-dot.value {
     fill: var(--cyan);
   }
-  /* Iron map category colors — the brighter the green, the purer the player. */
+  /* Iron map category colors — one distinct hue per category, running from the
+     player's end (green → cyan → violet) to the forgiveness end (amber → grey). */
   .ballmap-dot.cat-blade {
     fill: var(--green-bright);
   }
   .ballmap-dot.cat-pcb {
-    fill: var(--green);
+    fill: var(--cyan);
   }
   .ballmap-dot.cat-pd {
-    fill: var(--cyan);
+    fill: var(--violet);
   }
   .ballmap-dot.cat-gi {
     fill: var(--amber);
@@ -1301,10 +1422,11 @@ const ironProfiles = [
   .ballmap-legend {
     display: flex;
     flex-wrap: wrap;
-    gap: 1.25rem;
-    margin-top: 0.75rem;
+    gap: 0.25rem 1rem;
+    margin-top: 0.4rem;
     font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-size: 0.82rem;
+    line-height: 1.3;
     color: var(--text-muted);
   }
   .ballmap-key {
@@ -1324,10 +1446,10 @@ const ironProfiles = [
     background: var(--green-bright);
   }
   .ballmap-key.cat-pcb {
-    background: var(--green);
+    background: var(--cyan);
   }
   .ballmap-key.cat-pd {
-    background: var(--cyan);
+    background: var(--violet);
   }
   .ballmap-key.cat-gi {
     background: var(--amber);
