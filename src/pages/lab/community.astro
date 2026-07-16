@@ -205,50 +205,19 @@ const {
       }
     </section>
 
-    {/* ---- Method ---- */}
+    {/* ---- Method (details live on /lab/methodology) ---- */}
     <section class="lab-band">
       <div class="lab-band-head">
         <p class="eyebrow">Method</p>
         <h2>Why you can trust these numbers</h2>
         <p class="text-muted" style="max-width:66ch;">
-          Crowd-sourced data is easy to do badly. Here's how these numbers are
-          made, in plain English — and every one of these rules is enforced in
-          code anyone can read.
+          Every value on this page comes out of a six-stage pipeline — consent
+          gate, in-app anonymization, quality screening, one golfer one vote,
+          robust medians, and a publish threshold — with every rule versioned
+          and enforced in code anyone can read. The
+          <a href="/lab/methodology"> full methodology</a> spells out each
+          stage, the trust tiers, and the limits we publish alongside the data.
         </p>
-      </div>
-      <div class="method-grid">
-        <div class="method">
-          <h3>Everyone counts once</h3>
-          <p>
-            Before anything is combined, each golfer is boiled down to their own
-            typical result per club. Whether you contributed 5 drives or 500,
-            you move the final number exactly as much as everyone else.
-          </p>
-        </div>
-        <div class="method">
-          <h3>Typical, not average</h3>
-          <p>
-            We publish the middle result, not the average. Averages get dragged
-            around by one perfect drive or one cold top — the middle value
-            doesn't budge.
-          </p>
-        </div>
-        <div class="method">
-          <h3>Impossible shots get thrown out</h3>
-          <p>
-            A "7-iron" that carried 280 yards was really a driver with the wrong
-            club selected. Shots that can't be what they claim are dropped
-            before they touch the numbers.
-          </p>
-        </div>
-        <div class="method">
-          <h3>Spin only when it's truly measured</h3>
-          <p>
-            Some launch monitors estimate spin instead of measuring it. Spin
-            numbers only publish from hardware that measures it directly —
-            that's what the Verified tier means.
-          </p>
-        </div>
       </div>
     </section>
 
@@ -301,25 +270,6 @@ const {
   }
   .empty-cta h3 {
     margin-bottom: 0.5rem;
-  }
-
-  /* ---- Method ---- */
-  .method-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: var(--gap);
-  }
-  .method {
-    border-top: 1px solid var(--border-strong);
-    padding-top: 1rem;
-  }
-  .method h3 {
-    font-size: 1.05rem;
-    margin-bottom: 0.4rem;
-  }
-  .method p {
-    color: var(--text-dim);
-    font-size: 0.9rem;
   }
 
   /* ---- Community tiers (CSS-only tabs; no client JS) ---- */

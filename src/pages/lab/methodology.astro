@@ -1,0 +1,320 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LabNav from "../../components/LabNav.astro";
+import { GITHUB_URL } from "../../consts";
+import { loadCommunity } from "../../lib/lab";
+import "../../styles/lab.css";
+
+const title = "Methodology — The Lab";
+const description =
+  "The exact rules behind OpenGolfLab's community data: consent gating, in-app anonymization, quality control, one-golfer-one-vote aggregation, robust medians, publish thresholds, and trust tiers — all versioned and enforced in open code.";
+
+const { minContributors } = loadCommunity();
+
+// The pipeline, stage by stage. Precise rules — the narrative version lives on
+// the Lab overview; the privacy details live on /privacy. No overlap.
+const stages = [
+  {
+    n: "01",
+    title: "Consent gate",
+    body: `Contribution is off by default. The export path refuses to run without a recorded consent (policy v1.0) — there is no code path that shares data without it. Withdrawing consent stops future exports immediately.`,
+  },
+  {
+    n: "02",
+    title: "Anonymize at the source",
+    body: `The bundle is built inside the app, on your machine, before anything is transmitted — anonymization is not a server-side promise. Only mapped shot metrics are included (data format v1.1); names, paths and timestamps are dropped by construction. A random, persisted id exists solely to de-duplicate submissions.`,
+    link: { href: "/privacy", label: "Exactly what's in a bundle →" },
+  },
+  {
+    n: "03",
+    title: "Validate & screen",
+    body: `A submission must carry the core measurements — ball speed, launch angle, spin and carry, per club — or it doesn't enter the pool. Plausibility screens then drop mislabeled and impossible shots (the 280-yard "7-iron") before they can touch a published number.`,
+  },
+  {
+    n: "04",
+    title: "One golfer, one vote",
+    body: `Each contributor is reduced to a single summary per club before pooling. Five drives or five hundred, every golfer moves the result equally — volume buys no influence.`,
+  },
+  {
+    n: "05",
+    title: "Robust aggregation",
+    body: `Published values are medians with P10–P90 ranges, never means. One perfect drive or one cold top can drag an average; it cannot budge the middle value of a crowd.`,
+  },
+  {
+    n: "06",
+    title: "Publish threshold",
+    body: `No club publishes until at least ${minContributors} golfers have contributed it. Below the threshold, the number simply doesn't exist publicly — a thin sample is worse than no sample.`,
+  },
+];
+
+// Trust tiers: how declared hardware and track record gate what publishes.
+const tiers = [
+  {
+    name: "All",
+    who: "Every contribution that clears validation and screening.",
+    adds: "Carry, launch and dispersion norms from the widest pool.",
+  },
+  {
+    name: "Verified",
+    who: "Contributors on spin-measuring hardware (camera units and high-end radar), with a consistent submission history.",
+    adds: "Spin publishes here and above — measured, not modeled.",
+  },
+  {
+    name: "Reference",
+    who: "A curated core of vetted, long-running contributors.",
+    adds: "The benchmark cut: highest-confidence numbers, smallest pool.",
+  },
+];
+
+// Honest limits. Publishing these is part of the method.
+const limits = [
+  {
+    title: "Instruments are self-declared",
+    body: "The app can't inspect your launch monitor. A declared model is spoofable — which is why it only gates a contribution's ceiling tier, never its acceptance, and why the spin-measuring allowlist is kept deliberately conservative.",
+  },
+  {
+    title: "It's simulator golf",
+    body: "Sessions come from indoor bays: mats, controlled air, GSPro's flight model for anything past impact. Carry and launch measurements transfer well; total distance and rollout are model outputs, and the numbers are read accordingly.",
+  },
+  {
+    title: "The crowd is self-selected",
+    body: "Sim owners skew more equipment-invested than golf at large. Norms describe this population honestly; they are not a census of all golfers.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight lab-hero">
+    <div class="grid-bg"></div>
+    <div class="container lab-hero-inner">
+      <span class="pill lab-status">Versioned · enforced in code</span>
+      <h1>Methodology</h1>
+      <p class="lede" style="margin-top:1rem;">
+        Crowd-sourced data is easy to do badly, so every rule here is specific,
+        versioned, and enforced in code anyone can read. Nothing on this page
+        is aspirational — each stage exists in the shipped pipeline today.
+      </p>
+      <div class="hero-cta" style="margin-top:1.6rem;">
+        <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">Read the code</a>
+        <a href="/lab/community" class="btn btn-secondary">See the numbers</a>
+      </div>
+    </div>
+  </section>
+
+  <LabNav />
+
+  <div class="container lab-body">
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">The pipeline</p>
+        <h2>Six stages, in order</h2>
+      </div>
+      <ol class="stages">
+        {
+          stages.map((s) => (
+            <li class="stage">
+              <span class="stage-n tnum">{s.n}</span>
+              <div class="stage-body">
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+                {s.link && <a class="stage-link" href={s.link.href}>{s.link.label}</a>}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Trust tiers</p>
+        <h2>Hardware gates trust, never acceptance</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          Every accepted contribution counts somewhere. What a declared launch
+          monitor changes is how far up the trust ladder its numbers can
+          publish.
+        </p>
+      </div>
+      <div class="tiers-table" role="table" aria-label="Trust tiers">
+        <div class="tiers-row tiers-head" role="row">
+          <span role="columnheader">Tier</span>
+          <span role="columnheader">Who's in it</span>
+          <span role="columnheader">What it adds</span>
+        </div>
+        {
+          tiers.map((t) => (
+            <div class="tiers-row" role="row">
+              <span class="tier-name" role="cell">{t.name}</span>
+              <span role="cell">{t.who}</span>
+              <span role="cell">{t.adds}</span>
+            </div>
+          ))
+        }
+      </div>
+      <p class="tiers-note text-muted">
+        Spin is the tier system's sharpest edge: some monitors estimate spin
+        rather than measure it, so spin values publish only from the Verified
+        tier up. The allowlist of spin-measuring hardware is maintained in the
+        open and errs toward exclusion.
+      </p>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Change control</p>
+        <h2>Versioned, dated, regenerated</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          The data format (v1.1) and consent policy (v1.0) are explicitly
+          versioned — if either changes, the version bumps, the in-app consent
+          screen and <a href="/privacy">privacy page</a> update to match, and
+          the change applies going forward only. Published aggregates carry
+          their generation date, and the whole dataset is regenerated rather
+          than patched, so a published number is always reproducible from the
+          rules that made it.
+        </p>
+      </div>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Known limits</p>
+        <h2>What this data can't claim</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          Publishing the limits is part of the method. Three we consider
+          structural:
+        </p>
+      </div>
+      <div class="limits">
+        {
+          limits.map((l) => (
+            <div class="limit card">
+              <h3>{l.title}</h3>
+              <p>{l.body}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="lab-band lab-band-cta">
+      <div class="card lab-cta-card">
+        <h2>Scrutiny welcome</h2>
+        <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
+          If a rule here seems weak, or a failure mode isn't covered, that's
+          exactly the kind of issue we want opened. The method improves in
+          public or not at all.
+        </p>
+        <div class="hero-cta" style="margin-top:1.2rem;">
+          <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">Open an issue</a>
+          <a href="/lab" class="btn btn-secondary">Back to the Lab</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .stages {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: 0.9rem;
+    padding-block: 1.15rem;
+  }
+  .stage + .stage {
+    border-top: 1px solid var(--border);
+  }
+  .stage-n {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+    padding-top: 0.2rem;
+  }
+  .stage h3 {
+    font-size: 1.15rem;
+  }
+  .stage p {
+    margin-top: 0.4rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 68ch;
+  }
+  .stage-link {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--green);
+  }
+
+  /* Trust tiers table */
+  .tiers-table {
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .tiers-row {
+    display: grid;
+    grid-template-columns: 7rem 1.4fr 1fr;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    background: var(--surface);
+  }
+  .tiers-row + .tiers-row {
+    border-top: 1px solid var(--border);
+  }
+  .tiers-head {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+  }
+  .tier-name {
+    font-family: var(--font-mono);
+    font-weight: 600;
+    color: var(--green);
+  }
+  .tiers-note {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    max-width: 68ch;
+  }
+
+  /* Limits */
+  .limits {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .limit h3 {
+    font-size: 1.05rem;
+  }
+  .limit p {
+    margin-top: 0.4rem;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 860px) {
+    .limits {
+      grid-template-columns: 1fr;
+    }
+    .tiers-row {
+      grid-template-columns: 5rem 1fr;
+    }
+    .tiers-row span[role="cell"]:last-child,
+    .tiers-head span:last-child {
+      grid-column: 2;
+    }
+  }
+</style>

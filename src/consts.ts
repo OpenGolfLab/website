@@ -59,6 +59,11 @@ export const LAB_SECTIONS = [
     blurb: "The vision, how contribution works, and where it's headed.",
   },
   {
+    href: "/lab/methodology",
+    label: "Methodology",
+    blurb: "The exact aggregation rules — versioned, enforced in open code.",
+  },
+  {
     href: "/lab/community",
     label: "Community Data",
     blurb: "Crowd-sourced norms from anonymized, opt-in GSPro sessions.",
