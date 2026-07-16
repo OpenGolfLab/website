@@ -24,12 +24,16 @@ const heroChips = [
     icon: "M4 20V10m6 10V4m6 16v-7m4 7H2",
   },
   {
-    label: "Tour benchmarks",
-    icon: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0-4h.01",
+    label: "Unlimited history",
+    icon: "M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
   },
   {
     label: "Local-first & private",
     icon: "M7 10V7a5 5 0 0 1 10 0v3m-11 0h12a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z",
+  },
+  {
+    label: "No account · $0 forever",
+    icon: "M12 2v20m5-17H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
   },
 ];
 
@@ -130,8 +134,8 @@ const softwareLd = {
         <h1>Golf Sim Analytics</h1>
         <p class="lede" style="margin-top:1.1rem;">
           A free Windows app that turns every GSPro session into deep,
-          interactive analytics — automatically. No imports, no accounts,
-          nothing leaves your machine.
+          interactive analytics — automatically. No photo scans, no CSV
+          wrangling, no account — and nothing leaves your machine.
         </p>
         <div class="hero-cta">
           <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">
@@ -161,7 +165,7 @@ const softwareLd = {
             ))
           }
         </div>
-        <p class="app-free-note">Free · {PRODUCT_OS} · No account required</p>
+        <p class="app-free-note">Free · {PRODUCT_OS} · Open source</p>
       </div>
     </div>
   </section>
@@ -428,10 +432,4 @@ const softwareLd = {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-  @media (max-width: 680px) {
-    .dash-grid,
-    .features {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
+  @med

@@ -64,16 +64,21 @@ const ideas = [
 
     <div class="container hero-inner">
       <span class="pill hero-openpill">◆ Open &amp; free · community-powered</span>
-      <h1 class="hero-title">The Open Engine for Golf Analytics</h1>
+      <h1 class="hero-title">Every shot captured. Every gear question answered.</h1>
       <p class="lede hero-lede">
-        Harnessing the power of the sim community so you can stop guessing on
-        your gear purchases.
+        Golf Sim Analytics logs every GSPro shot on your rig automatically —
+        and the community's pooled shots answer what no single golfer can:
+        which gear actually performs.
       </p>
 
       <div class="hero-cta">
         <a href="/download" class="btn btn-primary btn-lg">Download the free app</a>
         <a href="/lab" class="btn btn-secondary btn-lg">Preview the Lab ↗</a>
       </div>
+
+      <p class="hero-contrast" role="note">
+        No photo scans · No CSV wrangling · No subscription · No account
+      </p>
 
       <div class="hero-chips" role="list" aria-label="At a glance">
         <span class="stat-chip" role="listitem"><span class="label">Dashboards</span><b>15</b></span>
@@ -82,6 +87,7 @@ const ideas = [
           <span class="stat-chip" role="listitem"><span class="label">Balls tracked</span><b>{ballCount}</b></span>
         )}
         <span class="stat-chip" role="listitem"><span class="label">Brands</span><b>{brandCount}</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">History</span><b>Unlimited</b></span>
         <span class="stat-chip" role="listitem"><span class="label">Price</span><b>$0</b></span>
       </div>
     </div>
@@ -239,6 +245,14 @@ const ideas = [
     margin-top: 1.8rem;
     justify-content: center;
   }
+  .hero-contrast {
+    margin-top: 1.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    text-align: center;
+  }
   .hero-chips {
     display: flex;
     flex-wrap: wrap;
@@ -315,29 +329,4 @@ const ideas = [
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
     padding: clamp(1.5rem, 4vw, 2.75rem);
-    text-align: center;
-    background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
-  }
-  .openfree-inner {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  @media (max-width: 900px) {
-    .idea-grid {
-      grid-template-columns: 1fr;
-    }
-    .tool {
-      grid-template-columns: 1fr;
-    }
-    .tool-shot {
-      border-left: none;
-      border-top: 1px solid var(--border);
-      min-height: 220px;
-      order: -1;
-    }
-  }
-</style>
+    text-
