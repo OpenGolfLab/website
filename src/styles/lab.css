@@ -1,5 +1,5 @@
 /* =========================================================================
-   The Lab — chrome shared across /lab, /lab/market, /lab/community.
+   The Lab — chrome shared across /lab, /lab/gear, /lab/community.
    Section-specific chart CSS stays scoped in its own page.
    ========================================================================= */
 
@@ -38,7 +38,7 @@
 }
 
 /* Two sticky bars stack here (site nav + Lab section nav, ~114px). Without
-   this, a deep link like /lab/market#pricing parks its heading underneath
+   this, a deep link like /lab/gear#pricing parks its heading underneath
    them. */
 .lab-body :is(h1, h2, h3)[id] {
   scroll-margin-top: calc(var(--nav-h) + 64px);
@@ -74,14 +74,20 @@
 }
 .lab-caption {
   margin-top: 1rem;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
   color: var(--text-dim);
+}
+/* When a caption sits directly in a band, cancel most of the band's flex gap
+   so the caption hugs the chart it describes instead of floating between
+   sections. */
+.lab-band > .lab-caption {
+  margin-top: calc(0.6rem - clamp(1.75rem, 4vw, 2.5rem));
 }
 .lab-stat-line {
   margin-top: 0.6rem;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
   color: var(--text-dim);
 }
 
@@ -165,7 +171,7 @@
   max-width: 62ch;
 }
 .lab-planned-pill {
-  font-size: 0.66rem;
+  font-size: 0.74rem;
   color: var(--text-dim);
   border-color: var(--border-strong);
   background: var(--bg-elevated);

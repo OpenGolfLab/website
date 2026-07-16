@@ -7,6 +7,10 @@ import sitemap from "@astrojs/sitemap";
 export default defineConfig({
   site: "https://opengolflab.com",
   integrations: [sitemap()],
+  redirects: {
+    // The section was renamed from "Market Data"; keep old links working.
+    "/lab/market": "/lab/gear",
+  },
   // Static output is the default: no adapter, no SSR, no server code.
   build: {
     // Emit /page/index.html so URLs are clean (/download, /blog, ...).

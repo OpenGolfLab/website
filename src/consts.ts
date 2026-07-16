@@ -58,8 +58,8 @@ export const LAB_SECTIONS = [
     blurb: "What the Lab is and where each dataset stands.",
   },
   {
-    href: "/lab/market",
-    label: "Market Data",
+    href: "/lab/gear",
+    label: "Gear Guide",
     blurb: "Editorial snapshots of what's for sale — lineups and street prices.",
   },
   {

@@ -8,7 +8,8 @@
         { "name": "Tour Speed", "position": 48, "construction": "3-piece TPU", "compression": 85, "msrp": 40, "price": 40, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" },
         { "name": "AVX", "position": 58, "construction": "3-piece urethane", "compression": 80, "msrp": 50, "price": 50, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" },
         { "name": "Pro V1", "position": 78, "construction": "3-piece urethane", "compression": 87, "msrp": 55, "price": 55, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" },
-        { "name": "Pro V1x", "position": 86, "construction": "4-piece urethane", "compression": 97, "msrp": 55, "price": 55, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" }
+        { "name": "Pro V1x", "position": 86, "construction": "4-piece urethane", "compression": 97, "msrp": 55, "price": 55, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" },
+        { "name": "Pro V1x Left Dash", "position": 46, "construction": "4-piece urethane", "compression": 102, "msrp": 55, "price": 55, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/golf-balls", "url": "https://www.titleist.com/golf-balls" }
       ]
     },
     {
@@ -25,6 +26,7 @@
       "brand": "TaylorMade",
       "models": [
         { "name": "Distance+", "position": 6, "construction": "2-piece ionomer", "compression": 77, "msrp": 20, "price": 20, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/golf-balls/", "url": "https://www.taylormadegolf.com/golf-balls/" },
+        { "name": "Noodle Long & Soft", "position": 3, "construction": "2-piece ionomer", "compression": 34, "msrp": 17, "price": 17, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/golf-balls/", "url": "https://www.taylormadegolf.com/golf-balls/" },
         { "name": "Soft Response", "position": 22, "construction": "3-piece ionomer", "compression": 50, "msrp": 30, "price": 30, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/golf-balls/", "url": "https://www.taylormadegolf.com/golf-balls/" },
         { "name": "Tour Response", "position": 55, "construction": "3-piece urethane", "compression": 70, "msrp": 40, "price": 33, "dealer": "Golf Galaxy", "dealerUrl": "https://www.golfgalaxy.com/", "url": "https://www.taylormadegolf.com/golf-balls/" },
         { "name": "TP5", "position": 76, "construction": "5-piece urethane", "compression": 85, "msrp": 55, "price": 55, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/golf-balls/", "url": "https://www.taylormadegolf.com/golf-balls/" },
@@ -34,6 +36,7 @@
     {
       "brand": "Srixon",
       "models": [
+        { "name": "UltiSpeed", "position": 9, "construction": "2-piece ionomer", "compression": 80, "msrp": 22, "price": 22, "dealer": "Srixon", "dealerUrl": "https://www.srixon.com/golf-balls", "url": "https://www.srixon.com/golf-balls" },
         { "name": "Soft Feel", "position": 12, "construction": "2-piece ionomer", "compression": 60, "msrp": 23, "price": 23, "dealer": "Srixon", "dealerUrl": "https://www.srixon.com/golf-balls", "url": "https://www.srixon.com/golf-balls" },
         { "name": "Q-Star Tour", "position": 50, "construction": "3-piece urethane", "compression": 72, "msrp": 33, "price": 28, "dealer": "PGA TOUR Superstore", "dealerUrl": "https://www.pgatoursuperstore.com/", "url": "https://www.srixon.com/golf-balls" },
         { "name": "Z-Star", "position": 74, "construction": "3-piece urethane", "compression": 88, "msrp": 45, "price": 45, "dealer": "Srixon", "dealerUrl": "https://www.srixon.com/golf-balls", "url": "https://www.srixon.com/golf-balls" },
@@ -44,6 +47,7 @@
     {
       "brand": "Bridgestone",
       "models": [
+        { "name": "e6", "position": 10, "construction": "2-piece ionomer", "compression": 45, "msrp": 23, "price": 23, "dealer": "Bridgestone", "dealerUrl": "https://www.bridgestonegolf.com/golf-balls", "url": "https://www.bridgestonegolf.com/golf-balls" },
         { "name": "e12 Contact", "position": 18, "construction": "3-piece ionomer", "compression": 60, "msrp": 30, "price": 30, "dealer": "Bridgestone", "dealerUrl": "https://www.bridgestonegolf.com/golf-balls", "url": "https://www.bridgestonegolf.com/golf-balls" },
         { "name": "Tour B RX", "position": 56, "construction": "3-piece urethane", "compression": 66, "msrp": 50, "price": 43, "dealer": "PGA TOUR Superstore", "dealerUrl": "https://www.pgatoursuperstore.com/", "url": "https://www.bridgestonegolf.com/golf-balls" },
         { "name": "Tour B RXS", "position": 66, "construction": "3-piece urethane", "compression": 64, "msrp": 50, "price": 50, "dealer": "Bridgestone", "dealerUrl": "https://www.bridgestonegolf.com/golf-balls", "url": "https://www.bridgestonegolf.com/golf-balls" },
@@ -63,6 +67,7 @@
     {
       "brand": "Maxfli",
       "models": [
+        { "name": "StraightFli", "position": 4, "construction": "2-piece ionomer", "compression": 55, "msrp": 23, "price": 23, "dealer": "DICK'S Sporting Goods", "dealerUrl": "https://www.dickssportinggoods.com/", "url": "https://www.dickssportinggoods.com/" },
         { "name": "Tour", "position": 70, "construction": "3-piece urethane", "compression": 90, "msrp": 40, "price": 35, "dealer": "DICK'S Sporting Goods", "dealerUrl": "https://www.dickssportinggoods.com/", "url": "https://www.dickssportinggoods.com/" },
         { "name": "Tour X", "position": 80, "construction": "4-piece urethane", "compression": 101, "msrp": 40, "price": 35, "dealer": "DICK'S Sporting Goods", "dealerUrl": "https://www.dickssportinggoods.com/", "url": "https://www.dickssportinggoods.com/" }
       ]
@@ -77,7 +82,7 @@
     {
       "brand": "Kirkland",
       "models": [
-        { "name": "Performance+", "position": 62, "construction": "3-piece urethane", "compression": 90, "msrp": 15, "price": 15, "dealer": "Costco", "dealerUrl": "https://www.costco.com/", "url": "https://www.costco.com/" }
+        { "name": "Signature V3", "position": 62, "construction": "3-piece urethane", "compression": 90, "msrp": 15, "price": 15, "dealer": "Costco", "dealerUrl": "https://www.costco.com/", "url": "https://www.costco.com/" }
       ]
     },
     {

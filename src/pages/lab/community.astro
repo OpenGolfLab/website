@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LabNav from "../../components/LabNav.astro";
-import { GITHUB_URL } from "../../consts";
 import { loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
@@ -165,9 +164,10 @@ const {
             ))}
 
             <p class="lab-caption">
-              Median of each golfer's own median — one golfer, one vote, so a big
-              session can't skew a number. Ranges are 10th–90th percentile across
-              golfers.{generatedDate && <> Updated {generatedDate}.</>}
+              Each number is the typical golfer's typical shot — every
+              contributor counts once, so one marathon session can't skew a
+              result. The small range under each carry shows where most golfers
+              (the middle 80%) land.{generatedDate && <> Updated {generatedDate}.</>}
             </p>
           </div>
         ) : (
@@ -183,7 +183,7 @@ const {
             </div>
             <ul class="build-status">
               <li class="done"><span class="build-mark">✓</span> Capture pipeline</li>
-              <li class="done"><span class="build-mark">✓</span> Schema v1.1</li>
+              <li class="done"><span class="build-mark">✓</span> Data format v1.1</li>
               <li class="done"><span class="build-mark">✓</span> Aggregation + QA</li>
               <li class="active"><span class="build-mark">◐</span> First dataset</li>
             </ul>
@@ -197,7 +197,7 @@ const {
               </p>
               <div class="hero-cta" style="margin-top:1.1rem;">
                 <a href="/download" class="btn btn-primary">Get the app</a>
-                <a href={GITHUB_URL} class="btn btn-secondary" rel="noopener">Read the schema</a>
+                <a href="/privacy" class="btn btn-secondary">See what gets shared</a>
               </div>
             </div>
           </>
@@ -211,40 +211,42 @@ const {
         <p class="eyebrow">Method</p>
         <h2>Why you can trust these numbers</h2>
         <p class="text-muted" style="max-width:66ch;">
-          Crowd-sourced data is easy to do badly. These are the rules that keep
-          it honest — all of them enforced in code you can read.
+          Crowd-sourced data is easy to do badly. Here's how these numbers are
+          made, in plain English — and every one of these rules is enforced in
+          code anyone can read.
         </p>
       </div>
       <div class="method-grid">
         <div class="method">
-          <h3>One golfer, one vote</h3>
+          <h3>Everyone counts once</h3>
           <p>
-            Each contributor is collapsed to a single summary per club before
-            anything is combined. Hit 500 drivers or 5 — you move the number
-            exactly as much as everyone else.
+            Before anything is combined, each golfer is boiled down to their own
+            typical result per club. Whether you contributed 5 drives or 500,
+            you move the final number exactly as much as everyone else.
           </p>
         </div>
         <div class="method">
-          <h3>Robust statistics</h3>
+          <h3>Typical, not average</h3>
           <p>
-            Medians and MAD throughout, never means. One thinned 340-yard drive
-            can't drag a club's carry number upward.
+            We publish the middle result, not the average. Averages get dragged
+            around by one perfect drive or one cold top — the middle value
+            doesn't budge.
           </p>
         </div>
         <div class="method">
-          <h3>Mislabel catching</h3>
+          <h3>Impossible shots get thrown out</h3>
           <p>
-            Per-club carry and ball-speed envelopes drop shots that can't be what
-            they claim — the 7-iron that carried 280 was a driver with the wrong
-            club selected.
+            A "7-iron" that carried 280 yards was really a driver with the wrong
+            club selected. Shots that can't be what they claim are dropped
+            before they touch the numbers.
           </p>
         </div>
         <div class="method">
-          <h3>Spin is gated</h3>
+          <h3>Spin only when it's truly measured</h3>
           <p>
-            Many launch monitors model spin rather than measure it. Spin only
-            publishes at the Verified tier and up, where we know the hardware
-            actually measured it.
+            Some launch monitors estimate spin instead of measuring it. Spin
+            numbers only publish from hardware that measures it directly —
+            that's what the Verified tier means.
           </p>
         </div>
       </div>
@@ -354,7 +356,7 @@ const {
     color: var(--text-muted);
   }
   .tier-count {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     color: var(--text-dim);
     background: var(--bg-elevated);
     padding: 0.05rem 0.4rem;
@@ -414,7 +416,7 @@ const {
   .norms th {
     text-align: left;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-dim);
@@ -443,20 +445,20 @@ const {
   }
   .norms-unit {
     color: var(--text-dim);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     margin-left: 0.15rem;
   }
   .norms-range {
     display: block;
     color: var(--text-dim);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
   }
   .norms-n {
     color: var(--text-dim);
   }
   .lock {
     font-family: var(--font-mono);
-    font-size: 0.68rem;
+    font-size: 0.76rem;
     color: var(--amber);
     border: 1px solid var(--amber);
     border-radius: 999px;
@@ -471,7 +473,7 @@ const {
   }
   .disp-title {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-dim);
@@ -500,7 +502,7 @@ const {
     gap: 0.75rem;
     margin-top: 0.5rem;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    color: var(--text-dim);
+    font-size: 0.82rem;
+    color: var(--text-muted);
   }
 </style>

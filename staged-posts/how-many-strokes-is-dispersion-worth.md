@@ -42,6 +42,6 @@ And unlike distance, width pays compound interest on bad days. Distance helps mo
 - 10 yards **narrower**: ~0.5–0.8 strokes a round, more if your course punishes misses.
 - Both together over a 40-round season: **the narrower one is worth about twice as many strokes**, and nobody has ever made a commercial about it.
 
-This is why the [driver spectrum](/lab/market) runs from *max forgiveness* to *pure distance*, and why — for most golfers, most handicaps, most budgets — the correct end to shop is the boring one on the left. Distance already peaked when the face-spring rules were written and when your swing speed was set (though [that one's negotiable](/blog/speed-training-95-to-130)). Width is the axis where equipment still meaningfully varies, where your particular miss pattern decides the answer, and where [a 40-shot A/B in your garage](/blog/run-your-own-club-fitting-in-your-sim) will tell you more than any ad.
+This is why the [driver spectrum](/lab/gear) runs from *max forgiveness* to *pure distance*, and why — for most golfers, most handicaps, most budgets — the correct end to shop is the boring one on the left. Distance already peaked when the face-spring rules were written and when your swing speed was set (though [that one's negotiable](/blog/speed-training-95-to-130)). Width is the axis where equipment still meaningfully varies, where your particular miss pattern decides the answer, and where [a 40-shot A/B in your garage](/blog/run-your-own-club-fitting-in-your-sim) will tell you more than any ad.
 
 You score in strokes. Shop in them too.

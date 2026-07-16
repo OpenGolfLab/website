@@ -17,9 +17,9 @@ const community = loadCommunity();
 // can tell what's real from the overview without opening both sections.
 const sections = [
   {
-    href: "/lab/market",
+    href: "/lab/gear",
     eyebrow: "Section 01",
-    label: "Market Data",
+    label: "Gear Guide",
     live: market.hasLineups,
     liveText: market.hasLineups
       ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}${market.brandCount} brands`
@@ -84,10 +84,10 @@ const sections = [
         <p class="eyebrow">Two datasets, built differently</p>
         <h2>What's in the Lab</h2>
         <p class="text-muted" style="max-width:66ch;">
-          The Lab keeps two kinds of data deliberately separate. Market data is
-          editorial — we research it. Community data is measured — you produce
-          it. Mixing them would make it impossible to tell which is which, so
-          they live in their own sections.
+          The Lab keeps two kinds of data deliberately separate. The Gear Guide
+          is editorial — we research it. Community data is measured — you
+          produce it. Mixing them would make it impossible to tell which is
+          which, so they live in their own sections.
         </p>
       </div>
 
@@ -185,8 +185,8 @@ const sections = [
       <div class="card lab-cta-card">
         <h2>Help shape the framework</h2>
         <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
-          The Lab is being built in the open. Ideas about schema, privacy, or
-          which analytics matter most are welcome on GitHub.
+          The Lab is being built in the open. Ideas about what data to collect,
+          privacy, or which analytics matter most are welcome on GitHub.
         </p>
         <div class="hero-cta" style="margin-top:1.2rem;">
           <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">
@@ -219,7 +219,7 @@ const sections = [
   }
   .lab-card-eyebrow {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--text-dim);
@@ -230,7 +230,7 @@ const sections = [
   }
   .lab-card-stat {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     color: var(--green);
   }
   .lab-card-blurb {
@@ -273,14 +273,14 @@ const sections = [
   .lab-card-note {
     margin-top: 0.55rem;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     color: var(--text-dim);
   }
   .lab-card-go {
     margin-top: auto;
     padding-top: 1rem;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     letter-spacing: 0.06em;
     color: var(--green);
     transition: transform 0.15s var(--ease);
@@ -307,7 +307,7 @@ const sections = [
   }
   .lab-flow-n {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--green);
     letter-spacing: 0.1em;
   }

@@ -10,26 +10,26 @@
   --bg-elevated: #1a1917;
   --surface: #201f1c;
   --surface-2: #262521;
-  --border: #32302b;
-  --border-strong: #45423b;
+  --border: #3a3833;
+  --border-strong: #514e46;
 
-  /* ---- Text ---- */
-  --text: #f0eee9;
-  --text-muted: #c2bfb6;
-  --text-dim: #9d9a92;
+  /* ---- Text (all tiers ≥ 7:1 on --bg; dim is for de-emphasis, not decoration) ---- */
+  --text: #f4f3ef;
+  --text-muted: #cfccc3;
+  --text-dim: #aaa79e;
 
-  /* ---- Accent: Muted Sage ---- */
-  --green: #a4ad8f;
-  --green-bright: #bac2a6;
-  --green-dim: #6d755e;
+  /* ---- Accent: Fairway Green (6.4:1 on --bg as text) ---- */
+  --green: #6fa64e;
+  --green-bright: #97cd72;
+  --green-dim: #4c7635;
   --green-ink: #141311;
-  --green-tint: rgba(164, 173, 143, 0.1);
+  --green-tint: rgba(111, 166, 78, 0.12);
   --bg-translucent: rgba(20, 19, 17, 0.72);
 
-  /* ---- Data hues ---- */
-  --cyan: #698380;
-  --amber: #a98d66;
-  --violet: #807682;
+  /* ---- Data hues (CVD-validated categorical set with --green) ---- */
+  --cyan: #3ba0c0;
+  --amber: #bd873c;
+  --violet: #9a7bd4;
 
   /* ---- Type ---- */
   --font-head: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
@@ -129,6 +129,17 @@ a {
 a:hover {
   color: var(--green-bright);
 }
+/* In-copy links get an underline so they never rely on color alone. */
+p a,
+li a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--green-dim);
+}
+p a:hover,
+li a:hover {
+  text-decoration-color: var(--green-bright);
+}
 
 /* Numbers should be tabular wherever they appear as data. */
 .tnum,
@@ -196,7 +207,7 @@ main > section.section-tight:nth-of-type(even) {
 }
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--green);
@@ -297,14 +308,14 @@ main > section.section-tight:nth-of-type(even) {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 /* ---------- Pill / tag ---------- */
 .pill {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.06em;
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
