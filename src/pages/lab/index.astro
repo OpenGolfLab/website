@@ -17,25 +17,26 @@ const community = loadCommunity();
 // can tell what's real from the overview without opening both sections.
 const sections = [
   {
-    href: "/lab/gear",
-    eyebrow: "Section 01",
+    href: "/gear",
+    eyebrow: "Companion guide",
     label: "Gear Guide",
     live: market.hasLineups,
     liveText: market.hasLineups
-      ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}${market.brandCount} brands`
+      ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}irons · wedges`
       : "Not published yet",
     blurb:
-      "Where every driver sits between forgiveness and distance, where every ball sits between soft and max spin, and what it all actually costs today. Editorial snapshots we research and maintain ourselves — the honest starting point while the crowd-sourced numbers build.",
+      "Where every driver, iron, wedge and ball sits — forgiveness to distance, blades to max game improvement, soft to max spin — and what it all actually costs today. Placements researched by hand, prices tracked against live retailer listings. It's now its own top-level section, the honest starting point while the crowd-sourced numbers build.",
     covers: [
       "Driver lineup spectrum",
+      "Iron & wedge maps",
+      ...(balls.hasLineups ? ["Golf ball map"] : []),
       "Street price vs. MSRP",
-      ...(balls.hasLineups ? ["Golf ball spectrum & pricing"] : []),
     ],
-    planned: [...(balls.hasLineups ? [] : ["Golf balls"]), "Irons"],
+    planned: ["Fairway woods, hybrids & putters"],
   },
   {
     href: "/lab/community",
-    eyebrow: "Section 02",
+    eyebrow: "The Lab's own dataset",
     label: "Community Data",
     live: community.hasCommunityData,
     liveText: community.hasCommunityData
@@ -66,7 +67,7 @@ const sections = [
         <a href={GITHUB_WATCH_URL} class="btn btn-primary" rel="noopener">
           Watch the repo
         </a>
-        <a href="/roadmap" class="btn btn-secondary">See the roadmap</a>
+        <a href="/lab/roadmap" class="btn btn-secondary">See the roadmap</a>
       </div>
       <p class="lab-noemail">
         No newsletter, no sign-up. Watch the
@@ -81,13 +82,14 @@ const sections = [
   <div class="container lab-body">
     <section class="lab-band">
       <div class="lab-band-head">
-        <p class="eyebrow">Two datasets, built differently</p>
+        <p class="eyebrow">Researched vs. measured</p>
         <h2>What's in the Lab</h2>
         <p class="text-muted" style="max-width:66ch;">
-          The Lab keeps two kinds of data deliberately separate. The Gear Guide
-          is editorial — we research it. Community data is measured — you
-          produce it. Mixing them would make it impossible to tell which is
-          which, so they live in their own sections.
+          Two kinds of data, kept deliberately separate. The Gear Guide is
+          researched — we compile it from published specs and live retailer
+          prices — and now lives in its own top-level section. Community data is
+          measured — you produce it — and is the Lab's own effort. Mixing them
+          would make it impossible to tell which is which.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 /* =========================================================================
-   The Lab — chrome shared across /lab, /lab/gear, /lab/community.
+   The Lab — chrome shared across /lab, /lab/roadmap, /lab/community and the
+   top-level /gear guide (which reuses this hero/body/band scaffolding).
    Section-specific chart CSS stays scoped in its own page.
    ========================================================================= */
 
@@ -37,10 +38,11 @@
   padding-block: clamp(2rem, 5vw, 3rem);
 }
 
-/* Two sticky bars stack here (site nav + Lab section nav, ~114px). Without
-   this, a deep link like /lab/gear#pricing parks its heading underneath
-   them. */
-.lab-body :is(h1, h2, h3)[id] {
+/* Two sticky bars stack here (site nav + section nav, ~114px). Without this, a
+   deep link like /gear#irons parks its target underneath them. Applies to both
+   headings with ids and the section wrappers the Gear jump-nav points at. */
+.lab-body :is(h1, h2, h3)[id],
+.lab-body section[id] {
   scroll-margin-top: calc(var(--nav-h) + 64px);
 }
 

@@ -1,12 +1,17 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import LabNav from "../../components/LabNav.astro";
-import { loadMarket, loadBallMarket, loadIronMarket } from "../../lib/lab";
-import "../../styles/lab.css";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GearNav from "../components/GearNav.astro";
+import {
+  loadMarket,
+  loadBallMarket,
+  loadIronMarket,
+  loadWedgeMarket,
+} from "../lib/lab";
+import "../styles/lab.css";
 
-const title = "Gear Guide — The Lab";
+const title = "Gear Guide";
 const description =
-  "What clubs and balls exist, what they're designed to do, and what they actually cost today. Every 2026 driver mapped from forgiveness to distance, every ball mapped by spin and compression, every iron lineup mapped from blades to max game improvement with the real 7-iron lofts. Editorial gear snapshots from OpenGolfLab.";
+  "What clubs and balls exist, what they're designed to do, and what they actually cost today. Every 2026 driver mapped from forgiveness to distance, every iron and wedge mapped by head type and real lofts, and every ball mapped by spin and compression — with street prices for the whole bag. Independently researched gear snapshots from OpenGolfLab.";
 
 const {
   hasLineups,
@@ -22,6 +27,7 @@ const {
 
 const balls = loadBallMarket();
 const irons = loadIronMarket();
+const wedges = loadWedgeMarket();
 
 // ---- Shared quadrant-map label layout --------------------------------------
 // Hurricane-chart style: every dot carries its full label, placed on a fixed
@@ -198,7 +204,7 @@ function placeColumnLabels(
   PAD: any,
   splitX: number,
 ) {
-  const ROW_H = 17; // vertical pitch between stacked labels
+  const ROW_H = 18; // vertical pitch between stacked labels (label glyphs ~17px)
   const GAP = 8; // gutter breathing room between label text and plot edge
   const topY = PAD.t + 14;
   const botY = H - PAD.b - 4;
@@ -520,6 +526,116 @@ const ironProfiles = [
     quadrant: "↘ Shop the bottom-right: feel and workability",
   },
 ];
+
+// ---- Wedge quadrant map ----------------------------------------------------
+// One plot for the short-game buying decision:
+//   x — head type, max forgiveness (cavity) left → compact tour blade right
+//   y — sole bounce, low (firm turf / shallow attack) bottom → high (soft turf
+//       / steep attack) top
+// So the forgiving cavity wedges land left, tour blades right, and every model
+// stacks by how much bounce its signature sole carries.
+const WEDGE_CATS: Record<string, { label: string; cls: string; blurb: string }> = {
+  "tour": {
+    label: "Tour / blade",
+    cls: "cat-blade",
+    blurb: "compact and workable, full grind range",
+  },
+  "forged": {
+    label: "Forged players",
+    cls: "cat-pcb",
+    blurb: "soft forged feel in a tour shape",
+  },
+  "full-face": {
+    label: "Full-face / high-toe",
+    cls: "cat-pd",
+    blurb: "extra toe surface for open-face spin",
+  },
+  "game-improvement": {
+    label: "Game-improvement cavity",
+    cls: "cat-gi",
+    blurb: "cavity-back forgiveness for the short game",
+  },
+};
+
+const wedgeMap = (() => {
+  if (!wedges.hasLineups) return null;
+  const W = 960;
+  const H = 720;
+  // Wide left/right pads carve out the two label gutters; the tall bottom pad
+  // reserves a clear band below the plot for the lower quadrant captions.
+  const PAD = { l: 225, r: 220, t: 30, b: 84 };
+  const pw = W - PAD.l - PAD.r;
+  const ph = H - PAD.t - PAD.b;
+
+  const pts = wedges.spectrumLineups.flatMap((l: any) =>
+    l.models.map((m: any) => ({ ...m, brand: l.brand })),
+  );
+  const X_MID = 45; // spectrum position separating cavity help from tour precision
+  const Y_MID = 11; // bounce splitting low (firm turf) from high (soft turf)
+  const B_MIN = 6;
+  const B_MAX = 17;
+
+  const toX = (pos: number) => PAD.l + (pos / 100) * pw;
+  // Higher bounce sits higher on the plot.
+  const toY = (bounce: number) =>
+    PAD.t + ((B_MAX - bounce) / (B_MAX - B_MIN)) * ph;
+
+  const dots = pts.map((p: any) => ({
+    ...p,
+    x: toX(p.position),
+    y: toY(p.bounce),
+    cls: WEDGE_CATS[p.category]?.cls ?? "cat-gi",
+    label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
+      ? p.name
+      : `${p.brand} ${p.name}`,
+  }));
+
+  const qcaps = [
+    { t: "Max forgiveness, soft turf", a: "start", x: PAD.l + 10, y: PAD.t + 18 },
+    { t: "Tour spin, soft turf", a: "end", x: W - PAD.r - 10, y: PAD.t + 18 },
+    { t: "Forgiving, firm turf", a: "start", x: PAD.l + 10, y: H - PAD.b + 34 },
+    { t: "Shot-making, firm turf", a: "end", x: W - PAD.r - 10, y: H - PAD.b + 34 },
+  ];
+
+  return {
+    W, H, PAD,
+    xMid: toX(X_MID),
+    yMid: toY(Y_MID),
+    right: W - PAD.r,
+    bottom: H - PAD.b,
+    dots: placeColumnLabels(dots, W, H, PAD, toX(X_MID)),
+    qcaps,
+  };
+})();
+
+// "Find yourself on the map" — each profile points at the wedge region that
+// matches a turf/technique combination, mirroring the quadrant captions.
+const wedgeProfiles = [
+  {
+    tag: "Higher handicap · fat & thin chips",
+    title: "The improver",
+    body: "Cavity-back wedges add forgiveness and wide, high-bounce soles that skid through fat strikes instead of digging — the short-game safety net.",
+    quadrant: "↖ Shop the top-left: forgiving cavity, plenty of bounce",
+  },
+  {
+    tag: "Steep swing · lush turf & soft bunkers",
+    title: "The digger",
+    body: "A steep attack takes big divots, so you need bounce to keep the leading edge from burying. Tour heads with high-bounce soles still let you work the face.",
+    quadrant: "↗ Shop the top-right: tour head, high bounce",
+  },
+  {
+    tag: "Slower swing · wants help around greens",
+    title: "The forgiving picker",
+    body: "A shallow, sweeping swing on normal turf over-bounces a wide sole. A forgiving head with less bounce sits flusher behind the ball at address.",
+    quadrant: "↙ Shop the bottom-left: forgiving, lower bounce",
+  },
+  {
+    tag: "Shallow sweeper · firm turf, tight lies",
+    title: "The shot-maker",
+    body: "You pick it clean off tight lies and open the face for spin. Low-bounce tour blades and full-face heads sit flush and reward hands and face control.",
+    quadrant: "↘ Shop the bottom-right: tour blade, low bounce",
+  },
+];
 ---
 
 <BaseLayout title={title} description={description}>
@@ -530,39 +646,32 @@ const ironProfiles = [
       <h1>Gear Guide</h1>
       <p class="lede" style="margin-top:1rem;">
         What clubs and balls exist? What are they designed to do? And what do
-        they actually cost today? Editorial snapshots we research and maintain
-        ourselves — the community-measured numbers are the
+        they actually cost today? Every placement is researched by hand from
+        published specs, and every price is tracked against live retailer
+        listings — the community-measured numbers are the
         <a href="/lab/community">separate effort next door</a>.
       </p>
       {
         hasLineups && (
           <p class="lab-stat-line tnum">
-            {modelCount} drivers · {brandCount} brands · median street price{" "}
-            {`$${medianPrice}`}
-            {balls.hasLineups && (
-              <>
-                {" "}· {balls.modelCount} balls · median {`$${balls.medianPrice}`}/dz
-              </>
-            )}
-            {irons.hasLineups && (
-              <>
-                {" "}· {irons.modelCount} iron sets · median {`$${irons.medianPrice}`}
-              </>
-            )}
+            {modelCount} drivers
+            {balls.hasLineups && <>{" "}· {balls.modelCount} balls</>}
+            {irons.hasLineups && <>{" "}· {irons.modelCount} iron sets</>}
+            {wedges.hasLineups && <>{" "}· {wedges.modelCount} wedges</>}
           </p>
         )
       }
     </div>
   </section>
 
-  <LabNav />
+  <GearNav />
 
   <div class="container lab-body">
     {
       hasLineups ? (
         <>
           {/* ---- Driver spectrum ---- */}
-          <section class="lab-band">
+          <section class="lab-band" id="drivers">
             <div class="lab-band-head">
               <p class="eyebrow">Equipment</p>
               <h2 id="lineups">2026 Driver Lineup Spectrum</h2>
@@ -625,7 +734,7 @@ const ironProfiles = [
             </div>
 
             <p class="lab-caption">
-              Positions are editorial estimates from manufacturer positioning +
+              Positions are researched estimates from manufacturer positioning +
               published MOI; not yet community data.
             </p>
 
@@ -755,224 +864,12 @@ const ironProfiles = [
             </p>
           </section>
 
-          {/* ---- Golf ball map (quadrant plot) ---- */}
-          {balls.hasLineups && ballMap && (
-            <section class="lab-band">
-              <div class="lab-band-head">
-                <p class="eyebrow">Equipment</p>
-                <h2 id="balls">2026 Golf Ball Map</h2>
-                <p class="text-muted" style="max-width:66ch;">
-                  Every major ball on the two axes that actually decide the
-                  fit: how much it spins (right = less) and how firm it is
-                  (up = firmer, built for faster swings). Find your quadrant
-                  below, then shop the dots inside it. Hover any ball for its
-                  construction.
-                </p>
-              </div>
-
-              <div class="ballmap-wrap" role="region" aria-label="2026 golf ball map">
-                <svg
-                  viewBox={`0 0 ${ballMap.W} ${ballMap.H}`}
-                  class="ballmap"
-                  role="img"
-                  aria-label="Scatter plot of golf balls with spin decreasing left to right and compression increasing bottom to top. Firm low-spin distance balls sit top right; soft straight-flying balls sit bottom right; firm tour balls sit top left."
-                >
-                  {/* midlines */}
-                  <line class="ballmap-mid" x1={ballMap.xMid} y1={ballMap.PAD.t} x2={ballMap.xMid} y2={ballMap.bottom} />
-                  <line class="ballmap-mid" x1={ballMap.PAD.l} y1={ballMap.yMid} x2={ballMap.right} y2={ballMap.yMid} />
-
-                  {/* quadrant labels */}
-                  {ballMap.qcaps.map((c: any) => (
-                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
-                  ))}
-
-                  {/* axis captions: one per axis, arrows point along the scale */}
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    x={(ballMap.PAD.l + ballMap.right) / 2}
-                    y={ballMap.H - 12}
-                  >← More spin&#8195;·&#8195;Straighter →</text>
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    transform={`translate(14 ${(ballMap.PAD.t + ballMap.bottom) / 2}) rotate(-90)`}
-                  >← Softer&#8195;·&#8195;Firmer →</text>
-
-                  {/* balls */}
-                  {ballMap.dots.map((d: any) => (
-                    <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name} — ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
-                      <line
-                        class="ballmap-lead"
-                        x1={d.x}
-                        y1={d.y}
-                        x2={d.leadX}
-                        y2={d.leadY}
-                      />
-                      <circle
-                        class:list={["ballmap-dot", d.premium ? "premium" : "value"]}
-                        cx={d.x}
-                        cy={d.y}
-                        r="6"
-                      />
-                      <text
-                        class="ballmap-lbl"
-                        x={d.lblX}
-                        y={d.lblY}
-                        text-anchor={d.anchor}
-                      >
-                        {d.label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-
-                <div class="ballmap-legend">
-                  <span><i class="ballmap-key premium" aria-hidden="true"></i> urethane cover — grippier, so naturally more spin: greenside control</span>
-                  <span><i class="ballmap-key value" aria-hidden="true"></i> ionomer / hybrid cover — less grippy, so naturally lower spin: distance &amp; budget</span>
-                </div>
-              </div>
-
-              {/* Mobile-only fallback: stacked per-brand lists. */}
-              <div class="continuum-mobile">
-                {balls.spectrumLineups.map((lineup: any) => (
-                  <div class="continuum-mobile-brand">
-                    <strong>{lineup.brand}</strong>
-                    <ul>
-                      {lineup.models.map((model: any) => (
-                        <li>
-                          <span>
-                            {model.name}
-                            <span class="continuum-mobile-sub">
-                              {model.construction} · compression ~{model.compression}
-                            </span>
-                          </span>
-                          <span class="continuum-mobile-pos tnum">{model.position}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-
-              <p class="lab-caption">
-                Placements are editorial estimates from construction, cover
-                material, compression and published robot data — not yet
-                community data. Real, crowd-measured ball comparisons are{" "}
-                <a href="/roadmap">next on the roadmap</a>.
-              </p>
-
-              {/* Which quadrant are you? */}
-              <div class="ball-profiles">
-                {ballProfiles.map((p) => (
-                  <div class="card ball-profile">
-                    <span class="ball-profile-tag">{p.tag}</span>
-                    <h3>{p.title}</h3>
-                    <p class="text-muted">{p.body}</p>
-                    <p class="ball-profile-picks tnum">{p.quadrant}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* ---- Ball pricing ---- */}
-          {balls.hasLineups && (
-            <section class="lab-band">
-              <div class="lab-band-head">
-                <p class="eyebrow">Pricing</p>
-                <h2 id="ball-pricing">Ball Pricing — per dozen</h2>
-                <p class="text-muted" style="max-width:66ch;">
-                  Today's best street price per dozen vs. MSRP. Hollow dot =
-                  MSRP. Filled dot = lowest price found today — green marks a
-                  real discount. Click any row to shop.
-                </p>
-                <p class="lab-stat-line tnum">
-                  {balls.modelCount} balls · median ${balls.medianPrice}/dozen
-                  {balls.biggestDiscount && (
-                    <>
-                      {" "}· biggest discount: {balls.biggestDiscount.name} −
-                      {Math.round(balls.biggestDiscount.pct)}%
-                    </>
-                  )}
-                </p>
-              </div>
-
-              <div class="price-chart-wrap" role="region" aria-label="Ball pricing dumbbell chart">
-                <div class="price-chart-axis" aria-hidden="true">
-                  <div class="price-chart-axis-spacer" />
-                  <div class="price-chart-axis-ticks">
-                    {balls.axisTicks.map((t: number) => (
-                      <span class="price-chart-axis-tick" style={`left:${(t / balls.axisMaxRounded) * 100}%`}>${t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="price-chart-body">
-                  {balls.pricingLineups.map((lineup: any) => (
-                    <div class="price-chart-group">
-                      <div class="price-chart-brand">{lineup.brand}</div>
-                      <div class="price-chart-bars">
-                        {lineup.models.map((model: any) => {
-                          const msrpPct = (model.msrp / balls.axisMaxRounded) * 100;
-                          const pricePct = (model.price / balls.axisMaxRounded) * 100;
-                          const savings = model.msrp - model.price;
-                          const hasDiscount = savings > 0;
-                          return (
-                            <a
-                              href={model.dealerUrl || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="price-row"
-                              class:list={[{ discounted: hasDiscount }]}
-                            >
-                              <span class="price-row-model">{model.name}</span>
-                              <div class="price-row-track">
-                                {balls.axisTicks.map((t: number) => (
-                                  <span class="price-chart-gridline" style={`left:${(t / balls.axisMaxRounded) * 100}%`} aria-hidden="true" />
-                                ))}
-                                <span
-                                  class="price-row-connector"
-                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
-                                  aria-hidden="true"
-                                />
-                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                                <span
-                                  class="price-row-dot price"
-                                  class:list={[{ discount: hasDiscount }]}
-                                  style={`left:${pricePct}%`}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <span class="price-row-values tnum">
-                                <span class="price-row-price">${model.price}</span>
-                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                                <span class="price-row-dealer">{model.dealer || "—"}</span>
-                              </span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <p class="lab-caption">
-                Single-dozen prices — bulk and subscription deals (looking at
-                you, direct-to-consumer brands) can run lower. Checked by hand,
-                will drift, no commission taken.
-              </p>
-            </section>
-          )}
-
           {/* ---- Iron map (quadrant plot) ---- */}
           {irons.hasLineups && ironMap && (
-            <section class="lab-band">
+            <section class="lab-band" id="irons">
               <div class="lab-band-head">
                 <p class="eyebrow">Equipment</p>
-                <h2 id="irons">2026 Iron Map</h2>
+                <h2 id="iron-map">2026 Iron Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
                   Every major iron lineup on the two axes that actually decide
                   the fit: how much help the head gives you (right = less) and
@@ -1074,7 +971,7 @@ const ironProfiles = [
 
               <p class="lab-caption">
                 Covers the major OEMs plus the direct-to-consumer brands people
-                actually shop. Placements are editorial estimates from head
+                actually shop. Placements are researched estimates from head
                 construction, published specs and stated positioning; 7-iron
                 lofts are manufacturer standard specs — not yet community data.
               </p>
@@ -1188,6 +1085,440 @@ const ironProfiles = [
               </p>
             </section>
           )}
+
+          {/* ---- Wedge map (quadrant plot) ---- */}
+          {wedges.hasLineups && wedgeMap && (
+            <section class="lab-band" id="wedges">
+              <div class="lab-band-head">
+                <p class="eyebrow">Equipment</p>
+                <h2 id="wedge-map">2026 Wedge Map</h2>
+                <p class="text-muted" style="max-width:66ch;">
+                  Every major wedge on the two axes that actually decide the
+                  fit: how forgiving the head is (right = less, more workable)
+                  and how much bounce its signature sole carries (up = more).
+                  Bounce is the setting most golfers get wrong — too little and
+                  the leading edge digs on soft turf and steep swings; too much
+                  and it skips off firm turf and tight lies. Color marks the
+                  head type. Hover any wedge for its bounce, grind and price.
+                </p>
+              </div>
+
+              <div class="ballmap-wrap" role="region" aria-label="2026 wedge map">
+                <svg
+                  viewBox={`0 0 ${wedgeMap.W} ${wedgeMap.H}`}
+                  class="ballmap"
+                  role="img"
+                  aria-label="Scatter plot of wedge models with forgiveness decreasing left to right and sole bounce increasing bottom to top. Forgiving cavity wedges sit left; tour blades right; high-bounce soft-turf wedges toward the top and low-bounce firm-turf wedges toward the bottom."
+                >
+                  {/* midlines */}
+                  <line class="ballmap-mid" x1={wedgeMap.xMid} y1={wedgeMap.PAD.t} x2={wedgeMap.xMid} y2={wedgeMap.bottom} />
+                  <line class="ballmap-mid" x1={wedgeMap.PAD.l} y1={wedgeMap.yMid} x2={wedgeMap.right} y2={wedgeMap.yMid} />
+
+                  {/* quadrant labels */}
+                  {wedgeMap.qcaps.map((c: any) => (
+                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
+                  ))}
+
+                  {/* axis captions: one per axis, arrows point along the scale */}
+                  <text
+                    class="ballmap-axis"
+                    text-anchor="middle"
+                    x={(wedgeMap.PAD.l + wedgeMap.right) / 2}
+                    y={wedgeMap.H - 12}
+                  >← More forgiving&#8195;·&#8195;More workable →</text>
+                  <text
+                    class="ballmap-axis"
+                    text-anchor="middle"
+                    transform={`translate(14 ${(wedgeMap.PAD.t + wedgeMap.bottom) / 2}) rotate(-90)`}
+                  >← Low bounce&#8195;·&#8195;High bounce →</text>
+
+                  {/* wedges */}
+                  {wedgeMap.dots.map((d: any) => (
+                    <g class="ballmap-pt">
+                      <title>{`${d.brand} ${d.name} — ${WEDGE_CATS[d.category]?.label ?? d.category}, ${d.construction}, ${d.loft}° · ${d.bounce}° bounce, $${d.price}`}</title>
+                      <line
+                        class="ballmap-lead"
+                        x1={d.x}
+                        y1={d.y}
+                        x2={d.leadX}
+                        y2={d.leadY}
+                      />
+                      <circle
+                        class:list={["ballmap-dot", d.cls]}
+                        cx={d.x}
+                        cy={d.y}
+                        r="6"
+                      />
+                      <text
+                        class="ballmap-lbl"
+                        x={d.lblX}
+                        y={d.lblY}
+                        text-anchor={d.anchor}
+                      >
+                        {d.label}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+
+                <div class="ballmap-legend">
+                  {Object.values(WEDGE_CATS).map((c) => (
+                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()} — {c.blurb}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Mobile-only fallback: stacked per-brand lists. */}
+              <div class="continuum-mobile">
+                {wedges.spectrumLineups.map((lineup: any) => (
+                  <div class="continuum-mobile-brand">
+                    <strong>{lineup.brand}</strong>
+                    <ul>
+                      {lineup.models.map((model: any) => (
+                        <li>
+                          <span>
+                            {model.name}
+                            <span class="continuum-mobile-sub">
+                              {WEDGE_CATS[model.category]?.label ?? model.category} · {model.loft}° · {model.bounce}° bounce · {model.grind}
+                            </span>
+                          </span>
+                          <span class="continuum-mobile-pos tnum">{model.position}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <p class="lab-caption">
+                Covers the major OEMs plus the direct-to-consumer brands people
+                actually shop. Each wedge is plotted at its 56° option's
+                signature bounce; most models offer a range of lofts, bounces
+                and grinds, so hover for the sole options. Placements are
+                researched estimates from construction and stated positioning —
+                not yet community data.
+              </p>
+
+              {/* Which quadrant are you? */}
+              <div class="ball-profiles">
+                {wedgeProfiles.map((p) => (
+                  <div class="card ball-profile">
+                    <span class="ball-profile-tag">{p.tag}</span>
+                    <h3>{p.title}</h3>
+                    <p class="text-muted">{p.body}</p>
+                    <p class="ball-profile-picks tnum">{p.quadrant}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ---- Wedge pricing ---- */}
+          {wedges.hasLineups && (
+            <section class="lab-band">
+              <div class="lab-band-head">
+                <p class="eyebrow">Pricing</p>
+                <h2 id="wedge-pricing">Wedge Pricing — per wedge</h2>
+                <p class="text-muted" style="max-width:66ch;">
+                  Wedges are sold one at a time, so this is the price of a single
+                  head as the linked page lists it. Hover a row for the bounce
+                  and grind behind the number. Hollow dot = list price. Filled
+                  dot = price at the link today; green marks a real discount.
+                  Click any row to shop.
+                </p>
+                <p class="lab-stat-line tnum">
+                  {wedges.modelCount} wedges · median ${wedges.medianPrice}
+                  {wedges.biggestDiscount && (
+                    <>
+                      {" "}· biggest discount: {wedges.biggestDiscount.name} −
+                      {Math.round(wedges.biggestDiscount.pct)}%
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <div class="price-chart-wrap" role="region" aria-label="Wedge pricing dumbbell chart">
+                <div class="price-chart-axis" aria-hidden="true">
+                  <div class="price-chart-axis-spacer" />
+                  <div class="price-chart-axis-ticks">
+                    {wedges.axisTicks.map((t: number) => (
+                      <span class="price-chart-axis-tick" style={`left:${(t / wedges.axisMaxRounded) * 100}%`}>${t}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="price-chart-body">
+                  {wedges.pricingLineups.map((lineup: any) => (
+                    <div class="price-chart-group">
+                      <div class="price-chart-brand">{lineup.brand}</div>
+                      <div class="price-chart-bars">
+                        {lineup.models.map((model: any) => {
+                          const msrpPct = (model.msrp / wedges.axisMaxRounded) * 100;
+                          const pricePct = (model.price / wedges.axisMaxRounded) * 100;
+                          const savings = model.msrp - model.price;
+                          const hasDiscount = savings > 0;
+                          return (
+                            <a
+                              href={model.dealerUrl || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="price-row"
+                              class:list={[{ discounted: hasDiscount }]}
+                              title={`${lineup.brand} ${model.name} — ${model.bounce}° bounce, ${model.grind}`}
+                            >
+                              <span class="price-row-model">{model.name}</span>
+                              <div class="price-row-track">
+                                {wedges.axisTicks.map((t: number) => (
+                                  <span class="price-chart-gridline" style={`left:${(t / wedges.axisMaxRounded) * 100}%`} aria-hidden="true" />
+                                ))}
+                                <span
+                                  class="price-row-connector"
+                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
+                                  aria-hidden="true"
+                                />
+                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
+                                <span
+                                  class="price-row-dot price"
+                                  class:list={[{ discount: hasDiscount }]}
+                                  style={`left:${pricePct}%`}
+                                  aria-hidden="true"
+                                />
+                              </div>
+                              <span class="price-row-values tnum">
+                                <span class="price-row-price">${model.price}</span>
+                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
+                                <span class="price-row-dealer">{model.dealer || "—"}</span>
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p class="lab-caption">
+                Single-wedge prices, checked by hand against the linked page and
+                sure to drift — the direct-to-consumer brands in particular run
+                frequent promos, and premium finishes or custom grinds add cost.
+                Always confirm at the retailer; no commission taken on any link.
+              </p>
+            </section>
+          )}
+
+          {/* ---- Golf ball map (quadrant plot) ---- */}
+          {balls.hasLineups && ballMap && (
+            <section class="lab-band" id="balls">
+              <div class="lab-band-head">
+                <p class="eyebrow">Equipment</p>
+                <h2 id="ball-map">2026 Golf Ball Map</h2>
+                <p class="text-muted" style="max-width:66ch;">
+                  Every major ball on the two axes that actually decide the
+                  fit: how much it spins (right = less) and how firm it is
+                  (up = firmer, built for faster swings). Find your quadrant
+                  below, then shop the dots inside it. Hover any ball for its
+                  construction.
+                </p>
+              </div>
+
+              <div class="ballmap-wrap" role="region" aria-label="2026 golf ball map">
+                <svg
+                  viewBox={`0 0 ${ballMap.W} ${ballMap.H}`}
+                  class="ballmap"
+                  role="img"
+                  aria-label="Scatter plot of golf balls with spin decreasing left to right and compression increasing bottom to top. Firm low-spin distance balls sit top right; soft straight-flying balls sit bottom right; firm tour balls sit top left."
+                >
+                  {/* midlines */}
+                  <line class="ballmap-mid" x1={ballMap.xMid} y1={ballMap.PAD.t} x2={ballMap.xMid} y2={ballMap.bottom} />
+                  <line class="ballmap-mid" x1={ballMap.PAD.l} y1={ballMap.yMid} x2={ballMap.right} y2={ballMap.yMid} />
+
+                  {/* quadrant labels */}
+                  {ballMap.qcaps.map((c: any) => (
+                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
+                  ))}
+
+                  {/* axis captions: one per axis, arrows point along the scale */}
+                  <text
+                    class="ballmap-axis"
+                    text-anchor="middle"
+                    x={(ballMap.PAD.l + ballMap.right) / 2}
+                    y={ballMap.H - 12}
+                  >← More spin&#8195;·&#8195;Straighter →</text>
+                  <text
+                    class="ballmap-axis"
+                    text-anchor="middle"
+                    transform={`translate(14 ${(ballMap.PAD.t + ballMap.bottom) / 2}) rotate(-90)`}
+                  >← Softer&#8195;·&#8195;Firmer →</text>
+
+                  {/* balls */}
+                  {ballMap.dots.map((d: any) => (
+                    <g class="ballmap-pt">
+                      <title>{`${d.brand} ${d.name} — ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
+                      <line
+                        class="ballmap-lead"
+                        x1={d.x}
+                        y1={d.y}
+                        x2={d.leadX}
+                        y2={d.leadY}
+                      />
+                      <circle
+                        class:list={["ballmap-dot", d.premium ? "premium" : "value"]}
+                        cx={d.x}
+                        cy={d.y}
+                        r="6"
+                      />
+                      <text
+                        class="ballmap-lbl"
+                        x={d.lblX}
+                        y={d.lblY}
+                        text-anchor={d.anchor}
+                      >
+                        {d.label}
+                      </text>
+                    </g>
+                  ))}
+                </svg>
+
+                <div class="ballmap-legend">
+                  <span><i class="ballmap-key premium" aria-hidden="true"></i> urethane cover — grippier, so naturally more spin: greenside control</span>
+                  <span><i class="ballmap-key value" aria-hidden="true"></i> ionomer / hybrid cover — less grippy, so naturally lower spin: distance &amp; budget</span>
+                </div>
+              </div>
+
+              {/* Mobile-only fallback: stacked per-brand lists. */}
+              <div class="continuum-mobile">
+                {balls.spectrumLineups.map((lineup: any) => (
+                  <div class="continuum-mobile-brand">
+                    <strong>{lineup.brand}</strong>
+                    <ul>
+                      {lineup.models.map((model: any) => (
+                        <li>
+                          <span>
+                            {model.name}
+                            <span class="continuum-mobile-sub">
+                              {model.construction} · compression ~{model.compression}
+                            </span>
+                          </span>
+                          <span class="continuum-mobile-pos tnum">{model.position}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+
+              <p class="lab-caption">
+                Placements are researched estimates from construction, cover
+                material, compression and published robot data — not yet
+                community data. Real, crowd-measured ball comparisons are{" "}
+                <a href="/lab/roadmap">next on the roadmap</a>.
+              </p>
+
+              {/* Which quadrant are you? */}
+              <div class="ball-profiles">
+                {ballProfiles.map((p) => (
+                  <div class="card ball-profile">
+                    <span class="ball-profile-tag">{p.tag}</span>
+                    <h3>{p.title}</h3>
+                    <p class="text-muted">{p.body}</p>
+                    <p class="ball-profile-picks tnum">{p.quadrant}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* ---- Ball pricing ---- */}
+          {balls.hasLineups && (
+            <section class="lab-band">
+              <div class="lab-band-head">
+                <p class="eyebrow">Pricing</p>
+                <h2 id="ball-pricing">Ball Pricing — per dozen</h2>
+                <p class="text-muted" style="max-width:66ch;">
+                  Today's best street price per dozen vs. MSRP. Hollow dot =
+                  MSRP. Filled dot = lowest price found today — green marks a
+                  real discount. Click any row to shop.
+                </p>
+                <p class="lab-stat-line tnum">
+                  {balls.modelCount} balls · median ${balls.medianPrice}/dozen
+                  {balls.biggestDiscount && (
+                    <>
+                      {" "}· biggest discount: {balls.biggestDiscount.name} −
+                      {Math.round(balls.biggestDiscount.pct)}%
+                    </>
+                  )}
+                </p>
+              </div>
+
+              <div class="price-chart-wrap" role="region" aria-label="Ball pricing dumbbell chart">
+                <div class="price-chart-axis" aria-hidden="true">
+                  <div class="price-chart-axis-spacer" />
+                  <div class="price-chart-axis-ticks">
+                    {balls.axisTicks.map((t: number) => (
+                      <span class="price-chart-axis-tick" style={`left:${(t / balls.axisMaxRounded) * 100}%`}>${t}</span>
+                    ))}
+                  </div>
+                </div>
+
+                <div class="price-chart-body">
+                  {balls.pricingLineups.map((lineup: any) => (
+                    <div class="price-chart-group">
+                      <div class="price-chart-brand">{lineup.brand}</div>
+                      <div class="price-chart-bars">
+                        {lineup.models.map((model: any) => {
+                          const msrpPct = (model.msrp / balls.axisMaxRounded) * 100;
+                          const pricePct = (model.price / balls.axisMaxRounded) * 100;
+                          const savings = model.msrp - model.price;
+                          const hasDiscount = savings > 0;
+                          return (
+                            <a
+                              href={model.dealerUrl || "#"}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              class="price-row"
+                              class:list={[{ discounted: hasDiscount }]}
+                            >
+                              <span class="price-row-model">{model.name}</span>
+                              <div class="price-row-track">
+                                {balls.axisTicks.map((t: number) => (
+                                  <span class="price-chart-gridline" style={`left:${(t / balls.axisMaxRounded) * 100}%`} aria-hidden="true" />
+                                ))}
+                                <span
+                                  class="price-row-connector"
+                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
+                                  aria-hidden="true"
+                                />
+                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
+                                <span
+                                  class="price-row-dot price"
+                                  class:list={[{ discount: hasDiscount }]}
+                                  style={`left:${pricePct}%`}
+                                  aria-hidden="true"
+                                />
+                              </div>
+                              <span class="price-row-values tnum">
+                                <span class="price-row-price">${model.price}</span>
+                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
+                                <span class="price-row-dealer">{model.dealer || "—"}</span>
+                              </span>
+                            </a>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <p class="lab-caption">
+                Single-dozen prices — bulk and subscription deals (looking at
+                you, direct-to-consumer brands) can run lower. Checked by hand,
+                will drift, no commission taken.
+              </p>
+            </section>
+          )}
+
         </>
       ) : (
         <section class="lab-band">
@@ -1202,24 +1533,31 @@ const ironProfiles = [
         <span class="pill lab-band-pill progress">Next up</span>
         <h2>Coming to the Gear Guide</h2>
         <p class="text-muted" style="max-width:66ch;">
-          Drivers came first because that's where the marketing noise is
-          loudest, balls followed because it's the one piece of equipment you
-          use on every shot, and irons are now live above. The same treatment
-          is planned for the rest of the bag — see the{" "}
-          <a href="/roadmap">full roadmap</a> for where this sits.
+          Drivers, irons, wedges and balls are all mapped and priced above. The
+          same treatment is planned for the rest of the bag — see the{" "}
+          <a href="/lab/roadmap">full roadmap</a> for where this sits.
         </p>
       </div>
 
       <div class="lab-planned-grid">
         <div class="lab-planned">
           <div class="lab-planned-head">
-            <h3>Wedges</h3>
+            <h3>Fairway woods &amp; hybrids</h3>
             <span class="pill lab-planned-pill">Planned</span>
           </div>
           <p>
-            Loft, bounce and grind mapped so you can build a short-game setup
-            that matches your turf and technique — plus the same street-price
-            treatment as the rest of the bag.
+            The long-game gap-fillers mapped from forgiveness to speed, with the
+            same street-price treatment as the rest of the bag.
+          </p>
+        </div>
+        <div class="lab-planned">
+          <div class="lab-planned-head">
+            <h3>Putters</h3>
+            <span class="pill lab-planned-pill">Planned</span>
+          </div>
+          <p>
+            Head style, hosel and balance mapped so you can match a putter to
+            your stroke — blade to mallet, and everything between.
           </p>
         </div>
       </div>

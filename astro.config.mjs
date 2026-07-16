@@ -8,8 +8,12 @@ export default defineConfig({
   site: "https://opengolflab.com",
   integrations: [sitemap()],
   redirects: {
-    // The section was renamed from "Market Data"; keep old links working.
-    "/lab/market": "/lab/gear",
+    // The Gear Guide was renamed from "Market Data" and later graduated from a
+    // Lab sub-section to its own top-level /gear page. Keep both old links live.
+    "/lab/market": "/gear",
+    "/lab/gear": "/gear",
+    // The Roadmap moved under The Lab.
+    "/roadmap": "/lab/roadmap",
   },
   // Static output is the default: no adapter, no SSR, no server code.
   build: {

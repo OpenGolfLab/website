@@ -42,14 +42,15 @@ export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/golf-sim-analytics", label: "Golf Sim Analytics" },
   { href: "/lab", label: "The Lab" },
-  { href: "/roadmap", label: "Roadmap" },
+  { href: "/gear", label: "Gear Guide" },
   { href: "/blog", label: "Blog" },
 ] as const;
 
 /**
- * The Lab's own section nav. Two kinds of data live under /lab and they are
- * built completely differently — keep them on separate routes so each has a
- * shareable URL and room to grow (balls, irons, wedges) without one long page.
+ * The Lab's own section nav. Overview frames the effort, the Roadmap says
+ * where it's headed, and Community Data is the crowd-sourced payoff — each on
+ * its own route so it has a shareable URL. (The researched Gear Guide graduated
+ * to its own top-level section; see GEAR_SECTIONS.)
  */
 export const LAB_SECTIONS = [
   {
@@ -58,13 +59,25 @@ export const LAB_SECTIONS = [
     blurb: "What the Lab is and where each dataset stands.",
   },
   {
-    href: "/lab/gear",
-    label: "Gear Guide",
-    blurb: "Editorial snapshots of what's for sale — lineups and street prices.",
+    href: "/lab/roadmap",
+    label: "Roadmap",
+    blurb: "What's shipped, building, and planned — no dates.",
   },
   {
     href: "/lab/community",
     label: "Community Data",
     blurb: "Crowd-sourced norms from anonymized, opt-in GSPro sessions.",
   },
+] as const;
+
+/**
+ * The Gear Guide's section nav. One page, four bag categories — these are
+ * in-page anchors (jump-nav) rather than separate routes, so the whole guide
+ * stays a single scroll with a shareable deep link per category.
+ */
+export const GEAR_SECTIONS = [
+  { href: "/gear#drivers", id: "drivers", label: "Drivers" },
+  { href: "/gear#irons", id: "irons", label: "Irons" },
+  { href: "/gear#wedges", id: "wedges", label: "Wedges" },
+  { href: "/gear#balls", id: "balls", label: "Balls" },
 ] as const;

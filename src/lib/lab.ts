@@ -18,7 +18,7 @@ function readJson(relPath: string): any {
   return null;
 }
 
-// ---- Market: editorial lineups + pricing (drivers, balls, …) ---------------
+// ---- Market: researched lineups + pricing (drivers, balls, …) --------------
 
 /** Position-% below which two spectrum labels are considered close enough to collide. */
 const STAGGER_GAP = 16;
@@ -132,6 +132,11 @@ export function loadBallMarket() {
 /** 2026 iron lineups + per-set (7-club, steel) street pricing. */
 export function loadIronMarket() {
   return loadLineupMarket("public/data/iron-lineups.json", 500);
+}
+
+/** 2026 wedge lineups + per-wedge street pricing. */
+export function loadWedgeMarket() {
+  return loadLineupMarket("public/data/wedge-lineups.json", 50);
 }
 
 // ---- Community: summary.json v2 (tiered) ----------------------------------

@@ -1,0 +1,329 @@
+{
+  "lineups": [
+    {
+      "brand": "Titleist",
+      "models": [
+        {
+          "name": "Vokey SM10",
+          "position": 92,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "6 grinds: F · S · M · K · D · L · T · V",
+          "construction": "cast 8620 carbon steel, tour blade",
+          "config": "per wedge · 46°–62°",
+          "msrp": 189,
+          "price": 189,
+          "dealer": "Titleist",
+          "dealerUrl": "https://www.titleist.com/golf-wedges/vokey-sm10",
+          "url": "https://www.vokey.com/"
+        }
+      ]
+    },
+    {
+      "brand": "Cleveland",
+      "models": [
+        {
+          "name": "RTX 6 ZipCore",
+          "position": 66,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 9,
+          "grind": "Low · Mid · Full",
+          "construction": "cast, ZipCore core, UltiZip grooves",
+          "config": "per wedge · 46°–60°",
+          "msrp": 160,
+          "price": 150,
+          "dealer": "Cleveland",
+          "dealerUrl": "https://www.clevelandgolf.com/wedges/",
+          "url": "https://www.clevelandgolf.com/wedges/"
+        },
+        {
+          "name": "RTX Full-Face 2",
+          "position": 50,
+          "category": "full-face",
+          "loft": 56,
+          "bounce": 9,
+          "grind": "XL full-face, C-shaped sole",
+          "construction": "full-face grooves, raised toe for open-face spin",
+          "config": "per wedge · 50°–64°",
+          "msrp": 150,
+          "price": 150,
+          "dealer": "Cleveland",
+          "dealerUrl": "https://www.clevelandgolf.com/wedges/",
+          "url": "https://www.clevelandgolf.com/wedges/"
+        },
+        {
+          "name": "CBX 4 ZipCore",
+          "position": 20,
+          "category": "game-improvement",
+          "loft": 56,
+          "bounce": 12,
+          "grind": "dual V / S / C sole by loft",
+          "construction": "cavity-back, ZipCore, HydraZip face",
+          "config": "per wedge · 44°–60°",
+          "msrp": 170,
+          "price": 170,
+          "dealer": "Cleveland",
+          "dealerUrl": "https://www.clevelandgolf.com/wedges/",
+          "url": "https://www.clevelandgolf.com/wedges/"
+        },
+        {
+          "name": "Smart Sole 4.0",
+          "position": 8,
+          "category": "game-improvement",
+          "loft": 58,
+          "bounce": 16,
+          "grind": "3-tier extra-wide sole",
+          "construction": "super-game-improvement, chip/pitch specialist",
+          "config": "per wedge · G · W · C · S",
+          "msrp": 140,
+          "price": 140,
+          "dealer": "Cleveland",
+          "dealerUrl": "https://www.clevelandgolf.com/wedges/",
+          "url": "https://www.clevelandgolf.com/wedges/"
+        }
+      ]
+    },
+    {
+      "brand": "TaylorMade",
+      "models": [
+        {
+          "name": "Milled Grind 4",
+          "position": 72,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 11,
+          "grind": "Standard · Low · High bounce",
+          "construction": "forged, milled face, Spin Tread",
+          "config": "per wedge · 46°–60°",
+          "msrp": 199,
+          "price": 179,
+          "dealer": "TaylorMade",
+          "dealerUrl": "https://www.taylormadegolf.com/wedges/",
+          "url": "https://www.taylormadegolf.com/wedges/"
+        },
+        {
+          "name": "Hi-Toe 4",
+          "position": 54,
+          "category": "full-face",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "high-toe full-face C-grind",
+          "construction": "full-face grooves, raised toe profile",
+          "config": "per wedge · 50°–64°",
+          "msrp": 179,
+          "price": 179,
+          "dealer": "TaylorMade",
+          "dealerUrl": "https://www.taylormadegolf.com/wedges/",
+          "url": "https://www.taylormadegolf.com/wedges/"
+        }
+      ]
+    },
+    {
+      "brand": "Callaway",
+      "models": [
+        {
+          "name": "Opus",
+          "position": 68,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "5 grinds: S · C · W · T · X",
+          "construction": "forged, Spin Gen Optimized face",
+          "config": "per wedge · 46°–60°",
+          "msrp": 180,
+          "price": 180,
+          "dealer": "Callaway",
+          "dealerUrl": "https://www.callawaygolf.com/wedges/",
+          "url": "https://www.callawaygolf.com/wedges/"
+        },
+        {
+          "name": "Opus Platinum",
+          "position": 62,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 11,
+          "grind": "premium MIM + tungsten weighting",
+          "construction": "metal-injection-molded, tungsten-weighted",
+          "config": "per wedge · 48°–60°",
+          "msrp": 230,
+          "price": 230,
+          "dealer": "Callaway",
+          "dealerUrl": "https://www.callawaygolf.com/wedges/",
+          "url": "https://www.callawaygolf.com/wedges/"
+        },
+        {
+          "name": "CB",
+          "position": 24,
+          "category": "game-improvement",
+          "loft": 56,
+          "bounce": 12,
+          "grind": "cavity, wide dual-width sole",
+          "construction": "cavity-back, tungsten-weighted forgiveness",
+          "config": "per wedge · 48°–60°",
+          "msrp": 160,
+          "price": 160,
+          "dealer": "Callaway",
+          "dealerUrl": "https://www.callawaygolf.com/wedges/",
+          "url": "https://www.callawaygolf.com/wedges/"
+        }
+      ]
+    },
+    {
+      "brand": "Ping",
+      "models": [
+        {
+          "name": "s159",
+          "position": 74,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "6 grinds: B · S · W · H · E · T",
+          "construction": "cast 8620, precision tour, 25 loft/grind combos",
+          "config": "per wedge · 46°–62°",
+          "msrp": 185,
+          "price": 185,
+          "dealer": "PING",
+          "dealerUrl": "https://ping.com/en-us/clubs/wedges",
+          "url": "https://ping.com/en-us/clubs/wedges"
+        }
+      ]
+    },
+    {
+      "brand": "Mizuno",
+      "models": [
+        {
+          "name": "T24",
+          "position": 78,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 8,
+          "grind": "5 grinds: S · D · C · X · V",
+          "construction": "grain-flow forged HD, 1025 boron",
+          "config": "per wedge · 45°–62°",
+          "msrp": 160,
+          "price": 160,
+          "dealer": "Mizuno",
+          "dealerUrl": "https://mizunogolf.com/us/wedges/",
+          "url": "https://mizunogolf.com/us/wedges/"
+        }
+      ]
+    },
+    {
+      "brand": "Cobra",
+      "models": [
+        {
+          "name": "Snakebite",
+          "position": 80,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 9,
+          "grind": "Versatile · Classic · Widelow",
+          "construction": "MIM tour blade, Snakebite grooves",
+          "config": "per wedge · 46°–60°",
+          "msrp": 149,
+          "price": 149,
+          "dealer": "Cobra",
+          "dealerUrl": "https://www.cobragolf.com/wedges",
+          "url": "https://www.cobragolf.com/wedges"
+        }
+      ]
+    },
+    {
+      "brand": "PXG",
+      "models": [
+        {
+          "name": "Sugar Daddy III",
+          "position": 84,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 8,
+          "grind": "milled, multiple sole grinds",
+          "construction": "fully milled, tour blade",
+          "config": "per wedge · 46°–60°",
+          "msrp": 199,
+          "price": 199,
+          "dealer": "PXG",
+          "dealerUrl": "https://www.pxg.com/en-us/wedges",
+          "url": "https://www.pxg.com/en-us/wedges"
+        }
+      ]
+    },
+    {
+      "brand": "Wilson",
+      "models": [
+        {
+          "name": "Staff Model",
+          "position": 82,
+          "category": "tour",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "traditional · low-bounce options",
+          "construction": "forged tour blade",
+          "config": "per wedge · 46°–60°",
+          "msrp": 150,
+          "price": 150,
+          "dealer": "Wilson",
+          "dealerUrl": "https://www.wilson.com/en-us/golf/clubs/wedges",
+          "url": "https://www.wilson.com/en-us/golf/clubs/wedges"
+        },
+        {
+          "name": "Harmonized",
+          "position": 14,
+          "category": "game-improvement",
+          "loft": 56,
+          "bounce": 13,
+          "grind": "wide sole, high bounce",
+          "construction": "cast game-improvement, budget value",
+          "config": "per wedge · 45°–64°",
+          "msrp": 50,
+          "price": 40,
+          "dealer": "Wilson",
+          "dealerUrl": "https://www.wilson.com/en-us/golf/clubs/wedges",
+          "url": "https://www.wilson.com/en-us/golf/clubs/wedges"
+        }
+      ]
+    },
+    {
+      "brand": "Sub70",
+      "models": [
+        {
+          "name": "286 Forged",
+          "position": 58,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 10,
+          "grind": "V-sole, versatile",
+          "construction": "1025 carbon-steel forged, direct-to-consumer",
+          "config": "per wedge · 48°–60°",
+          "msrp": 100,
+          "price": 100,
+          "dealer": "Sub70",
+          "dealerUrl": "https://sub70golf.com/collections/wedges",
+          "url": "https://sub70golf.com/collections/wedges"
+        }
+      ]
+    },
+    {
+      "brand": "Takomo",
+      "models": [
+        {
+          "name": "101",
+          "position": 56,
+          "category": "forged",
+          "loft": 56,
+          "bounce": 9,
+          "grind": "versatile mid sole",
+          "construction": "forged, direct-to-consumer",
+          "config": "per wedge · 48°–58°",
+          "msrp": 99,
+          "price": 99,
+          "dealer": "Takomo",
+          "dealerUrl": "https://takomogolf.com/collections/wedges",
+          "url": "https://takomogolf.com/collections/wedges"
+        }
+      ]
+    }
+  ]
+}
