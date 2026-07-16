@@ -14,6 +14,22 @@ export const GITHUB_URL = `https://github.com/${GITHUB_REPO}`;
 /** "Download the latest release" link — always points at the newest release. */
 export const LATEST_RELEASE_URL = `${GITHUB_URL}/releases/latest`;
 
+/**
+ * Exact filename of the installer asset attached to each GitHub release.
+ * Must match OutputBaseFilename in installer/GolfSimAnalytics.iss over in
+ * the golf-sim-analytics repo — if that ever changes, update it here too.
+ */
+const INSTALLER_ASSET_NAME = "GolfSimAnalytics-Setup.exe";
+
+/**
+ * Direct download link for the installer — goes straight to the .exe file
+ * (browser starts downloading immediately), not to the GitHub releases
+ * page. Always resolves to the newest release, PROVIDED that release isn't
+ * marked "pre-release" or "draft" on GitHub — those are excluded from
+ * "latest" and this link 404s until one is promoted to a full release.
+ */
+export const LATEST_DOWNLOAD_URL = `${GITHUB_URL}/releases/latest/download/${INSTALLER_ASSET_NAME}`;
+
 /** Watch/star the repo (used on the Lab page as an email-free CTA). */
 export const GITHUB_WATCH_URL = `${GITHUB_URL}/subscription`;
 

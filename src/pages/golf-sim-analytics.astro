@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Screenshot from "../components/Screenshot.astro";
 import JsonLd from "../components/JsonLd.astro";
 import {
-  LATEST_RELEASE_URL,
+  LATEST_DOWNLOAD_URL,
   PRODUCT_NAME,
   PRODUCT_OS,
   PRODUCT_PRICE,
@@ -154,7 +154,7 @@ const softwareLd = {
   applicationCategory: "SportsApplication",
   operatingSystem: "Windows 10, Windows 11",
   softwareVersion: "latest",
-  downloadUrl: LATEST_RELEASE_URL,
+  downloadUrl: LATEST_DOWNLOAD_URL,
   url: `${SITE_URL}/golf-sim-analytics`,
   description,
   offers: { "@type": "Offer", price: PRODUCT_PRICE, priceCurrency: "USD" },
@@ -177,7 +177,7 @@ const softwareLd = {
           wrangling, no account — and nothing leaves your machine.
         </p>
         <div class="hero-cta">
-          <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">
+          <a href={LATEST_DOWNLOAD_URL} class="btn btn-primary btn-lg" rel="noopener">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"
               ><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor"
                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg
@@ -395,7 +395,7 @@ const softwareLd = {
         numbers show up.
       </p>
       <div class="hero-cta" style="justify-content:center;">
-        <a href={LATEST_RELEASE_URL} class="btn btn-primary btn-lg" rel="noopener">Download for Windows</a>
+        <a href={LATEST_DOWNLOAD_URL} class="btn btn-primary btn-lg" rel="noopener">Download for Windows</a>
         <a href="/download" class="btn btn-secondary btn-lg">System requirements</a>
       </div>
       <p class="sample-note text-muted">
