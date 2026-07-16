@@ -24,11 +24,12 @@ const balls = loadBallMarket();
 const irons = loadIronMarket();
 
 // ---- Shared quadrant-map label layout --------------------------------------
-// Greedy label placement: try rings of positions around each dot (nearest
-// first) and keep the first that doesn't hit another label, a dot, or the
-// plot edge. Labels pushed far from their dot get a leader line. The quadrant
-// captions' footprints are registered as obstacles so labels never land on
-// top of them.
+// Hurricane-chart style: every dot carries its full label, placed on a fixed
+// grid of rows so the result reads as tidy stacks rather than scatter. A
+// label may sit far from its dot — whitespace is found by sliding sideways
+// first, then hopping rows — and anything not directly beside its dot gets a
+// leader line back to it. Labels never overlap each other, a dot, a quadrant
+// caption, or the plot edges; distance is sacrificed instead.
 function placeQuadrantLabels(
   dots: any[],
   qcaps: any[],
@@ -36,79 +37,150 @@ function placeQuadrantLabels(
   H: number,
   PAD: any,
 ) {
-  const CHAR_W = 7;
-  const LBL_H = 15;
-  const boxes = dots.map((d: any) => ({
-    x1: d.x - 9, y1: d.y - 9, x2: d.x + 9, y2: d.y + 9,
+  const CHAR_W = 7.8; // ~14px font
+  const ROW_H = 18; // label row pitch
+  const boxes: any[] = dots.map((d: any) => ({
+    x1: d.x - 8, y1: d.y - 8, x2: d.x + 8, y2: d.y + 8,
   }));
   for (const c of qcaps) {
-    const w = c.t.length * 7.5;
+    const w = c.t.length * 8.5;
     boxes.push({
       x1: (c.a === "start" ? c.x : c.x - w) - 4,
-      y1: c.y - 15,
+      y1: c.y - 16,
       x2: (c.a === "start" ? c.x + w : c.x) + 4,
-      y2: c.y + 4,
+      y2: c.y + 5,
     });
   }
   const hits = (a: any) =>
-    boxes.some((b) => a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2);
-  // Near-ring offsets must clear the ±9 dot box (label boxes get ±2/-12+3
-  // padding below), or every label falls through to the far rings.
-  const CANDS: { dx: number; dy: number; anchor: string }[] = [
-    { dx: 12, dy: 4, anchor: "start" },
-    { dx: -12, dy: 4, anchor: "end" },
-    { dx: 0, dy: -13, anchor: "middle" },
-    { dx: 0, dy: 21, anchor: "middle" },
-    { dx: 12, dy: -7, anchor: "start" },
-    { dx: 12, dy: 15, anchor: "start" },
-    { dx: -12, dy: -7, anchor: "end" },
-    { dx: -12, dy: 15, anchor: "end" },
-  ];
-  // Wider rings for dense clusters.
-  for (const r of [24, 36, 48, 60]) {
-    CANDS.push(
-      { dx: r, dy: 4, anchor: "start" },
-      { dx: -r, dy: 4, anchor: "end" },
-      { dx: 0, dy: -r, anchor: "middle" },
-      { dx: 0, dy: r + 8, anchor: "middle" },
-      { dx: r * 0.8, dy: -r * 0.6, anchor: "start" },
-      { dx: r * 0.8, dy: r * 0.6 + 8, anchor: "start" },
-      { dx: -r * 0.8, dy: -r * 0.6, anchor: "end" },
-      { dx: -r * 0.8, dy: r * 0.6 + 8, anchor: "end" },
+    boxes.some(
+      (b) => a.x1 < b.x2 + 3 && b.x1 < a.x2 + 3 && a.y1 < b.y2 + 2 && b.y1 < a.y2 + 2,
     );
-  }
-  return [...dots]
-    .sort((a: any, b: any) => a.y - b.y || a.x - b.x)
-    .map((d: any) => {
-      const w = d.label.length * CHAR_W;
-      let pick = CANDS[0];
-      for (const c of CANDS) {
-        const lx =
-          c.anchor === "start" ? d.x + c.dx :
-          c.anchor === "end" ? d.x + c.dx - w :
-          d.x - w / 2;
-        const box = { x1: lx - 2, y1: d.y + c.dy - LBL_H + 3, x2: lx + w + 2, y2: d.y + c.dy + 3 };
-        if (box.x1 < 2 || box.x2 > W - 2 || box.y1 < 2 || box.y2 > H - PAD.b + 14) continue;
-        if (!hits(box)) {
-          pick = c;
-          break;
+
+  // Leader-line hygiene: two leaders crossing, or a leader slicing through
+  // unrelated dots, is what makes a labeled scatter read as spaghetti — both
+  // get scored as heavy penalties below.
+  const placedLeads: any[] = [];
+  const orient = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) =>
+    Math.sign((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
+  const segsCross = (p: any, q: any) => {
+    const o1 = orient(p.x1, p.y1, p.x2, p.y2, q.x1, q.y1);
+    const o2 = orient(p.x1, p.y1, p.x2, p.y2, q.x2, q.y2);
+    const o3 = orient(q.x1, q.y1, q.x2, q.y2, p.x1, p.y1);
+    const o4 = orient(q.x1, q.y1, q.x2, q.y2, p.x2, p.y2);
+    return o1 !== o2 && o3 !== o4 && o1 !== 0 && o2 !== 0 && o3 !== 0 && o4 !== 0;
+  };
+  const pointSegDist = (px: number, py: number, s: any) => {
+    const dx = s.x2 - s.x1;
+    const dy = s.y2 - s.y1;
+    const len2 = dx * dx + dy * dy;
+    const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - s.x1) * dx + (py - s.y1) * dy) / len2));
+    return Math.hypot(px - (s.x1 + t * dx), py - (s.y1 + t * dy));
+  };
+
+  // Candidate slots: every label row × outward horizontal offsets from the
+  // dot. Scored by leader length (vertical travel penalized so labels prefer
+  // drifting sideways into open space) plus the hygiene penalties.
+  const rowYs: number[] = [];
+  for (let y = PAD.t + 34; y <= H - PAD.b - 8; y += ROW_H) rowYs.push(y);
+  const DISTS = [14, 34, 62, 98, 142, 194, 254, 322, 400];
+  const xMidPlot = (PAD.l + W - PAD.r) / 2;
+
+  const findSlot = (d: any, exclude: number) => {
+    const w = d.label.length * CHAR_W;
+    // Point labels toward the plot's horizontal center first — on these
+    // diagonal-band maps that's where the open quadrants are.
+    const sides = d.x < xMidPlot ? [1, -1] : [-1, 1];
+    let pick: any = null;
+    let bestScore = Infinity;
+    for (const row of rowYs) {
+      const dy = Math.abs(row - d.y);
+      if (dy * 2.2 >= bestScore) continue;
+      for (const dist of DISTS) {
+        const base = dist + dy * 2.2;
+        if (base >= bestScore) break;
+        for (const side of sides) {
+          const ax = d.x + dist * side;
+          const x1 = side > 0 ? ax : ax - w;
+          const x2 = x1 + w;
+          if (x1 < PAD.l + 2 || x2 > W - PAD.r - 2) continue;
+          const box = { x1: x1 - 2, y1: row - 13, x2: x2 + 2, y2: row + 4 };
+          if (hits(box)) continue;
+          // Leader for this candidate: dot → closest point on the box.
+          const lx = Math.min(Math.max(d.x, box.x1), box.x2);
+          const ly = Math.min(Math.max(d.y, box.y1), box.y2);
+          const seg = { x1: d.x, y1: d.y, x2: lx, y2: ly };
+          let penalty = 0;
+          for (let k = 0; k < placedLeads.length; k++) {
+            if (k !== exclude && placedLeads[k] && segsCross(seg, placedLeads[k])) penalty += 550;
+          }
+          for (const o of dots) {
+            if (o === d) continue;
+            if (pointSegDist(o.x, o.y, seg) < 8) penalty += 90;
+          }
+          const score = base + penalty;
+          if (score < bestScore) {
+            pick = { ax, row, anchor: side > 0 ? "start" : "end", box, seg, score };
+            bestScore = score;
+          }
         }
       }
-      // Record the chosen box (fallback included) so later labels dodge it.
-      const flx =
-        pick.anchor === "start" ? d.x + pick.dx :
-        pick.anchor === "end" ? d.x + pick.dx - w :
-        d.x - w / 2;
-      boxes.push({ x1: flx - 2, y1: d.y + pick.dy - LBL_H + 3, x2: flx + w + 2, y2: d.y + pick.dy + 3 });
-      const far = Math.hypot(pick.dx, pick.dy - 4) > 22;
-      // Leader line runs from the dot toward the near edge of the label.
-      const leadX =
-        pick.anchor === "start" ? d.x + pick.dx - 3 :
-        pick.anchor === "end" ? d.x + pick.dx + 3 :
-        d.x;
-      const leadY = pick.dy > 0 ? d.y + pick.dy - LBL_H + 6 : d.y + pick.dy + 2;
-      return { ...d, lbl: pick, far, leadX, leadY };
-    });
+    }
+    // Fallback (dense beyond saving): sit right of the dot regardless.
+    if (!pick) {
+      const ax = d.x + 12;
+      const box = { x1: ax - 2, y1: d.y - 9, x2: ax + w + 2, y2: d.y + 8 };
+      pick = { ax, row: d.y + 4, anchor: "start", box, seg: { x1: d.x, y1: d.y, x2: ax, y2: d.y }, score: 0 };
+    }
+    return pick;
+  };
+
+  // First pass: place top-to-bottom. The label boxes join the obstacle list
+  // as they land, so `hits` sees them via `boxes`.
+  const ordered = [...dots].sort((a: any, b: any) => a.y - b.y || a.x - b.x);
+  const picks: any[] = [];
+  for (const d of ordered) {
+    const pick = findSlot(d, -1);
+    boxes.push(pick.box);
+    placedLeads.push(pick.seg);
+    picks.push(pick);
+  }
+
+  // Refinement: early labels were placed blind to later ones, so rip each
+  // one out (longest leaders first) and re-place it with the full picture —
+  // this is what untangles crossing leaders in the dense clusters.
+  const nDots = ordered.length;
+  const boxIndexOffset = boxes.length - nDots;
+  for (let iter = 0; iter < 3; iter++) {
+    const order = picks
+      .map((p: any, i: number) => ({ i, len: Math.hypot(p.seg.x2 - p.seg.x1, p.seg.y2 - p.seg.y1) }))
+      .sort((a, b) => b.len - a.len);
+    for (const { i } of order) {
+      const d = ordered[i];
+      const saved = boxes[boxIndexOffset + i];
+      boxes[boxIndexOffset + i] = { x1: -99, y1: -99, x2: -98, y2: -98 };
+      const savedLead = placedLeads[i];
+      placedLeads[i] = null;
+      const pick = findSlot(d, i);
+      // Keep whichever slot scores better under full knowledge.
+      boxes[boxIndexOffset + i] = pick.box;
+      placedLeads[i] = pick.seg;
+      picks[i] = pick;
+      void saved;
+      void savedLead;
+    }
+  }
+
+  return ordered.map((d: any, i: number) => {
+    const pick = picks[i];
+    const far = Math.hypot(pick.seg.x2 - d.x, pick.seg.y2 - d.y) > 11;
+    return {
+      ...d,
+      lbl: { dx: pick.ax - d.x, dy: pick.row - d.y, anchor: pick.anchor },
+      far,
+      leadX: pick.seg.x2,
+      leadY: pick.seg.y2,
+    };
+  });
 }
 
 // ---- Ball quadrant map ----------------------------------------------------
@@ -120,7 +192,7 @@ function placeQuadrantLabels(
 const ballMap = (() => {
   if (!balls.hasLineups) return null;
   const W = 960;
-  const H = 720;
+  const H = 820;
   const PAD = { l: 40, r: 18, t: 30, b: 46 };
   const pw = W - PAD.l - PAD.r;
   const ph = H - PAD.t - PAD.b;
@@ -144,17 +216,16 @@ const ballMap = (() => {
       ? PAD.t + ((cMax - comp) / (cMax - Y_MID)) * topPh
       : PAD.t + topPh + ((Y_MID - comp) / (Y_MID - cMin)) * (ph - topPh);
 
-  // Generic model names (Vice "Pro", Maxfli "Tour", …) get their brand
-  // prefixed so two dots never carry the same label.
-  const counts: Record<string, number> = {};
-  for (const p of pts) counts[p.name] = (counts[p.name] ?? 0) + 1;
-  const GENERIC = new Set(["Tour", "Tour X", "Pro", "Pro Plus", "Pro Soft"]);
+  // Full names: every label carries its brand so any ball is recognizable on
+  // its own (unless the model name already starts with the brand).
   const dots = pts.map((p: any) => ({
     ...p,
     x: toX(p.position),
     y: toY(p.compression),
     premium: /urethane/i.test(p.construction),
-    label: counts[p.name] > 1 || GENERIC.has(p.name) ? `${p.brand} ${p.name}` : p.name,
+    label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
+      ? p.name
+      : `${p.brand} ${p.name}`,
   }));
 
   const qcaps = [
@@ -243,7 +314,7 @@ const IRON_CATS: Record<string, { label: string; cls: string; blurb: string }> =
 const ironMap = (() => {
   if (!irons.hasLineups) return null;
   const W = 960;
-  const H = 760;
+  const H = 940;
   const PAD = { l: 40, r: 18, t: 30, b: 46 };
   const pw = W - PAD.l - PAD.r;
   const ph = H - PAD.t - PAD.b;
@@ -267,16 +338,16 @@ const ironMap = (() => {
   // Stronger (numerically lower) loft = more built-in distance = higher up.
   const toY = (loft: number) => PAD.t + ((loft - L_MIN) / (L_MAX - L_MIN)) * ph;
 
-  // Any model name shared across brands gets its brand prefixed so two dots
-  // never carry the same label.
-  const counts: Record<string, number> = {};
-  for (const p of pts) counts[p.name] = (counts[p.name] ?? 0) + 1;
+  // Full names: every label carries its brand so any set is recognizable on
+  // its own (unless the model name already starts with the brand).
   const dots = pts.map((p: any) => ({
     ...p,
     x: toX(p.position),
     y: toY(p.loft7),
     cls: IRON_CATS[p.category]?.cls ?? "cat-gi",
-    label: counts[p.name] > 1 ? `${p.brand} ${p.name}` : p.name,
+    label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
+      ? p.name
+      : `${p.brand} ${p.name}`,
   }));
 
   const qcaps = [
@@ -597,12 +668,12 @@ const ironProfiles = [
                     text-anchor="middle"
                     x={(ballMap.PAD.l + ballMap.right) / 2}
                     y={ballMap.H - 12}
-                  >← more spin, more grab and curve&#8195;·&#8195;less spin, straighter flight →</text>
+                  >← More spin&#8195;·&#8195;Straighter →</text>
                   <text
                     class="ballmap-axis"
                     text-anchor="middle"
                     transform={`translate(14 ${(ballMap.PAD.t + ballMap.bottom) / 2}) rotate(-90)`}
-                  >← lower compression, softer&#8195;·&#8195;higher compression, firmer →</text>
+                  >← Softer&#8195;·&#8195;Firmer →</text>
 
                   {/* balls */}
                   {ballMap.dots.map((d: any) => (
@@ -814,17 +885,17 @@ const ironProfiles = [
                     text-anchor="middle"
                     x={(ironMap.PAD.l + ironMap.right) / 2}
                     y={ironMap.H - 12}
-                  >← more help: bigger heads, wider soles&#8195;·&#8195;smaller heads, purer feedback →</text>
+                  >← More forgiving&#8195;·&#8195;More workable →</text>
                   <text
                     class="ballmap-axis"
                     text-anchor="middle"
                     transform={`translate(14 ${(ironMap.PAD.t + ironMap.bottom) / 2}) rotate(-90)`}
-                  >← traditional 7-iron loft, flight you control&#8195;·&#8195;stronger loft, built-in distance →</text>
+                  >← Traditional loft&#8195;·&#8195;Stronger loft →</text>
 
                   {/* irons */}
                   {ironMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name} — ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} set`}</title>
+                      <title>{`${d.brand} ${d.name} — ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} (${d.config})`}</title>
                       {d.far && (
                         <line
                           class="ballmap-lead"
@@ -907,12 +978,14 @@ const ironProfiles = [
             <section class="lab-band">
               <div class="lab-band-head">
                 <p class="eyebrow">Pricing</p>
-                <h2 id="iron-pricing">Iron Pricing — 7-club steel set</h2>
+                <h2 id="iron-pricing">Iron Pricing — per set, as sold</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Manufacturer set pricing, normalized to a 7-club steel set so
-                  a $599 direct-to-consumer set and a $2,499 titanium-faced
-                  flagship sit on the same axis. Hollow dot = MSRP. Filled dot
-                  = lowest price found today. Click any row to shop.
+                  The price each linked page actually charges for its stock
+                  set. Set makeups vary — some brands sell 4-PW steel, some
+                  8-piece sets, some price per club (shown as ×7) — hover a
+                  row for the exact configuration behind the number. Hollow
+                  dot = list price. Filled dot = price at the link today;
+                  green marks a real discount. Click any row to shop.
                 </p>
                 <p class="lab-stat-line tnum">
                   {irons.modelCount} iron sets · median ${irons.medianPrice}
@@ -952,6 +1025,7 @@ const ironProfiles = [
                               rel="noopener noreferrer"
                               class="price-row"
                               class:list={[{ discounted: hasDiscount }]}
+                              title={`${lineup.brand} ${model.name} — ${model.config}`}
                             >
                               <span class="price-row-model">{model.name}</span>
                               <div class="price-row-track">
@@ -986,10 +1060,11 @@ const ironProfiles = [
               </div>
 
               <p class="lab-caption">
-                MSRP-based and seeded editorially — PXG and the
-                direct-to-consumer brands in particular run frequent promos
-                well below these numbers, and graphite shafts add roughly
-                $100–200. Always confirm at the retailer; no commission taken.
+                Every price was checked against the linked page by hand and
+                will drift — PXG and the direct-to-consumer brands in
+                particular run frequent promos, and graphite shafts typically
+                add $100–200. Always confirm at the retailer; no commission
+                taken on any link.
               </p>
             </section>
           )}
@@ -1151,7 +1226,7 @@ const ironProfiles = [
     border-radius: var(--radius);
     background: var(--surface);
     padding: 1.25rem 1.25rem 1rem;
-    max-width: 1000px;
+    max-width: 1060px;
   }
   .ballmap {
     width: 100%;
@@ -1165,7 +1240,7 @@ const ironProfiles = [
   .ballmap-q {
     fill: var(--text);
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
     paint-order: stroke;
     stroke: var(--surface);
@@ -1175,12 +1250,13 @@ const ironProfiles = [
   .ballmap-axis {
     fill: var(--text-muted);
     font-family: var(--font-body);
-    font-size: 13.5px;
-    font-style: italic;
+    font-size: 17px;
+    font-weight: 600;
   }
   .ballmap-lead {
-    stroke: var(--border-strong);
+    stroke: var(--text-dim);
     stroke-width: 1;
+    opacity: 0.75;
   }
   .ballmap-dot {
     stroke: var(--bg-elevated);
@@ -1211,10 +1287,11 @@ const ironProfiles = [
   .ballmap-lbl {
     fill: var(--text);
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 500;
     paint-order: stroke;
     stroke: var(--surface);
-    stroke-width: 3px;
+    stroke-width: 3.5px;
     stroke-linejoin: round;
   }
   .ballmap-pt:hover .ballmap-lbl {

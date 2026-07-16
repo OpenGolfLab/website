@@ -33,12 +33,14 @@ The 2026 iron quadrant map + per-set pricing shown on Lab · Gear Guide.
 Same shape as the driver file, plus per model: `category` (one of `blade`,
 `players-cb`, `players-distance`, `game-improvement`, `max-gi`), `loft7`
 (manufacturer's standard 7-iron loft in degrees — the anti-loft-jacking axis),
-and `construction`. `position` is 0 (max forgiveness) → 100 (max
-workability/precision), an editorial estimate. Prices are MSRP for a 7-club
-steel set.
+`construction`, and `config` (the stock set makeup the price buys, e.g.
+"4-PW steel" or "$229/club × 7" — shown on hover). `position` is 0 (max
+forgiveness) → 100 (max workability/precision), an editorial estimate.
 
-⚠️ Prices were seeded editorially from MSRPs — **verify against retailers
-before deploy**. PXG and the DTC brands discount aggressively.
+`price` is what the `dealerUrl` page actually charges for that stock config
+(verified by hand July 2026); `dealerUrl` must point at the model's product
+page, never a brand landing page. PXG and the DTC brands discount
+aggressively — re-verify before deploy.
 
 ## speed-journey.csv (illustrative)
 

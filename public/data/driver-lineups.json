@@ -3,27 +3,27 @@
     {
       "brand": "TaylorMade",
       "models": [
-        { "name": "Qi4D Max", "position": 10, "msrp": 599, "price": 599, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/drivers/", "url": "https://www.taylormadegolf.com/drivers/" },
-        { "name": "Qi4D", "position": 50, "msrp": 599, "price": 599, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/drivers/", "url": "https://www.taylormadegolf.com/drivers/" },
-        { "name": "Qi4D LS", "position": 85, "msrp": 649, "price": 649, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/drivers/", "url": "https://www.taylormadegolf.com/drivers/" }
+        { "name": "Qi4D Max", "position": 10, "msrp": 649, "price": 649, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/Qi4D-Max-Driver/DW-TC451.html", "url": "https://www.taylormadegolf.com/Qi4D-Max-Driver/DW-TC451.html" },
+        { "name": "Qi4D", "position": 50, "msrp": 649, "price": 649, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/Qi4D-Driver/DW-TC441.html", "url": "https://www.taylormadegolf.com/Qi4D-Driver/DW-TC441.html" },
+        { "name": "Qi4D LS", "position": 85, "msrp": 649, "price": 649, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/Qi4D-LS-Driver/DW-TC438.html", "url": "https://www.taylormadegolf.com/Qi4D-LS-Driver/DW-TC438.html" }
       ]
     },
     {
       "brand": "Callaway",
       "models": [
-        { "name": "Quantum Max D", "position": 15, "msrp": 599, "price": 599, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/drivers/", "url": "https://www.callawaygolf.com/golf-clubs/drivers/" },
-        { "name": "Quantum Max", "position": 48, "msrp": 599, "price": 599, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/drivers/", "url": "https://www.callawaygolf.com/golf-clubs/drivers/" },
-        { "name": "Quantum TD Max", "position": 75, "msrp": 629, "price": 629, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/drivers/", "url": "https://www.callawaygolf.com/golf-clubs/drivers/" },
-        { "name": "Quantum TD", "position": 90, "msrp": 629, "price": 629, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/drivers/", "url": "https://www.callawaygolf.com/golf-clubs/drivers/" }
+        { "name": "Quantum Max D", "position": 15, "msrp": 649, "price": 649, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/drivers-2026-quantum-max-d", "url": "https://www.callawaygolf.com/product/drivers-2026-quantum-max-d" },
+        { "name": "Quantum Max", "position": 48, "msrp": 649, "price": 649, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/drivers-2026-quantum-max", "url": "https://www.callawaygolf.com/product/drivers-2026-quantum-max" },
+        { "name": "Quantum TD Max", "position": 75, "msrp": 699, "price": 699, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/drivers-2026-quantum-triple-diamond-max", "url": "https://www.callawaygolf.com/product/drivers-2026-quantum-triple-diamond-max" },
+        { "name": "Quantum TD", "position": 90, "msrp": 699, "price": 699, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/drivers-2026-quantum-triple-diamond", "url": "https://www.callawaygolf.com/product/drivers-2026-quantum-triple-diamond" }
       ]
     },
     {
       "brand": "PING",
       "models": [
-        { "name": "G440 SFT", "position": 8, "msrp": 599, "price": 599, "dealer": "PING", "dealerUrl": "https://ping.com/en-us/clubs/drivers", "url": "https://ping.com/en-us/clubs/drivers" },
-        { "name": "G440 Max", "position": 20, "msrp": 599, "price": 599, "dealer": "PING", "dealerUrl": "https://ping.com/en-us/clubs/drivers", "url": "https://ping.com/en-us/clubs/drivers" },
-        { "name": "G440", "position": 55, "msrp": 599, "price": 599, "dealer": "PING", "dealerUrl": "https://ping.com/en-us/clubs/drivers", "url": "https://ping.com/en-us/clubs/drivers" },
-        { "name": "G440 LST", "position": 88, "msrp": 599, "price": 599, "dealer": "PING", "dealerUrl": "https://ping.com/en-us/clubs/drivers", "url": "https://ping.com/en-us/clubs/drivers" }
+        { "name": "G440 SFT", "position": 8, "msrp": 619, "price": 619, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g440-sft-dr/", "url": "https://ping.com/en-us/golf-clubs/drivers/g440-sft-driver" },
+        { "name": "G440 K", "position": 20, "msrp": 649, "price": 649, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g440k-max-dr/", "url": "https://ping.com/en-us/golf-clubs/drivers" },
+        { "name": "G440 Max", "position": 55, "msrp": 619, "price": 619, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g440-max-dr/", "url": "https://ping.com/en-us/golf-clubs/drivers/g440-max-driver" },
+        { "name": "G440 LST", "position": 88, "msrp": 619, "price": 619, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g440-lst-dr/", "url": "https://ping.com/en-us/golf-clubs/drivers/g440-lst-driver" }
       ]
     },
     {
@@ -31,23 +31,23 @@
       "models": [
         { "name": "GT2", "position": 40, "msrp": 649, "price": 449, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-gt2-driver", "url": "https://www.titleist.com/golf-clubs/drivers" },
         { "name": "GT3", "position": 65, "msrp": 649, "price": 449, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-gt3-driver", "url": "https://www.titleist.com/golf-clubs/drivers" },
-        { "name": "GT4", "position": 95, "msrp": 649, "price": 449, "dealer": "GlobalGolf", "dealerUrl": "https://www.globalgolf.com/golf-clubs/titleist-gt4-driver/", "url": "https://www.titleist.com/golf-clubs/drivers" }
+        { "name": "GT4", "position": 95, "msrp": 649, "price": 449, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-gt4-driver", "url": "https://www.titleist.com/golf-clubs/drivers" }
       ]
     },
     {
       "brand": "Cobra",
       "models": [
-        { "name": "OPTM Max-K", "position": 15, "msrp": 599, "price": 549, "dealer": "Dick's", "dealerUrl": "https://www.dickssportinggoods.com/f/cobra-drivers", "url": "https://www.cobragolf.com/collections/drivers" },
-        { "name": "OPTM", "position": 55, "msrp": 599, "price": 599, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/collections/drivers", "url": "https://www.cobragolf.com/collections/drivers" },
-        { "name": "OPTM X", "position": 85, "msrp": 599, "price": 599, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/collections/drivers", "url": "https://www.cobragolf.com/collections/drivers" }
+        { "name": "OPTM Max-K", "position": 15, "msrp": 599, "price": 599, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/optm-max-k-driver", "url": "https://www.cobragolf.com/products/optm-max-k-driver" },
+        { "name": "OPTM X", "position": 55, "msrp": 599, "price": 599, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/optm-x-driver", "url": "https://www.cobragolf.com/products/optm-x-driver" },
+        { "name": "OPTM LS", "position": 85, "msrp": 599, "price": 599, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/optm-ls-driver", "url": "https://www.cobragolf.com/products/optm-ls-driver" }
       ]
     },
     {
       "brand": "PXG",
       "models": [
-        { "name": "Lightning Max 10K+", "position": 5, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/en-us/golf-clubs/drivers", "url": "https://www.pxg.com/en-us/golf-clubs/drivers" },
-        { "name": "Lightning Max Lite", "position": 40, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/en-us/golf-clubs/drivers", "url": "https://www.pxg.com/en-us/golf-clubs/drivers" },
-        { "name": "Lightning Tour", "position": 80, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/en-us/golf-clubs/drivers", "url": "https://www.pxg.com/en-us/golf-clubs/drivers" }
+        { "name": "Lightning Max 10K+", "position": 5, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/lightning-drivers", "url": "https://www.pxg.com/products/lightning-drivers" },
+        { "name": "Lightning Max Lite", "position": 40, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/lightning-drivers", "url": "https://www.pxg.com/products/lightning-drivers" },
+        { "name": "Lightning Tour", "position": 80, "msrp": 649, "price": 649, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/lightning-drivers", "url": "https://www.pxg.com/products/lightning-drivers" }
       ]
     },
     {
@@ -61,58 +61,55 @@
     {
       "brand": "Mizuno",
       "models": [
-        { "name": "ST-MAX 250", "position": 20, "msrp": 499, "price": 499, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/woods/", "url": "https://mizunogolf.com/us/woods/" },
-        { "name": "ST-X 250", "position": 35, "msrp": 499, "price": 499, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/woods/", "url": "https://mizunogolf.com/us/woods/" },
-        { "name": "ST-Z 250", "position": 70, "msrp": 499, "price": 499, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/woods/", "url": "https://mizunogolf.com/us/woods/" }
+        { "name": "JPX ONE", "position": 30, "msrp": 599, "price": 599, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx-one-driver", "url": "https://mizunogolf.com/us/golf-clubs/jpx-one-series/jpx-one-driver/" },
+        { "name": "JPX ONE Select", "position": 70, "msrp": 599, "price": 599, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx-one-select-driver", "url": "https://mizunogolf.com/us/golf-clubs/jpx-one-series/" }
       ]
     },
     {
       "brand": "Cleveland",
       "models": [
-        { "name": "Launcher Max", "position": 5, "msrp": 349, "price": 249, "dealer": "2nd Swing", "dealerUrl": "https://www.2ndswing.com/cleveland/drivers/", "url": "https://us.dunlopsports.com/cleveland-golf/clubs/drivers" },
-        { "name": "Launcher XL3", "position": 18, "msrp": 349, "price": 249, "dealer": "2nd Swing", "dealerUrl": "https://www.2ndswing.com/cleveland/drivers/", "url": "https://us.dunlopsports.com/cleveland-golf/clubs/drivers" }
+        { "name": "Launcher XL 2", "position": 15, "msrp": 449, "price": 299, "dealer": "Cleveland", "dealerUrl": "https://us.dunlopsports.com/cleveland-golf/sale/drivers/launcher-xl-2-drivers/launcher-xl-2-drivers/MLXL2D.html", "url": "https://us.dunlopsports.com/cleveland-golf/clubs/drivers" }
       ]
     },
     {
       "brand": "Tour Edge",
       "models": [
-        { "name": "Exotics E725", "position": 25, "msrp": 399, "price": 299, "dealer": "Dick's", "dealerUrl": "https://www.dickssportinggoods.com/f/tour-edge-drivers", "url": "https://www.touredge.com/drivers" },
-        { "name": "Exotics C725", "position": 60, "msrp": 399, "price": 299, "dealer": "Dick's", "dealerUrl": "https://www.dickssportinggoods.com/f/tour-edge-drivers", "url": "https://www.touredge.com/drivers" },
-        { "name": "Exotics X725", "position": 88, "msrp": 399, "price": 299, "dealer": "Dick's", "dealerUrl": "https://www.dickssportinggoods.com/f/tour-edge-drivers", "url": "https://www.touredge.com/drivers" }
+        { "name": "Exotics E725", "position": 25, "msrp": 399, "price": 299, "dealer": "Tour Edge", "dealerUrl": "https://www.touredge.com/products/exotics-e725-driver", "url": "https://www.touredge.com/products/exotics-e725-driver" },
+        { "name": "Exotics C725", "position": 70, "msrp": 399, "price": 299, "dealer": "Golf Discount", "dealerUrl": "https://www.golfdiscount.com/products/tour-edge-c725-driver", "url": "https://www.golfdiscount.com/products/tour-edge-c725-driver" }
       ]
     },
     {
       "brand": "Wilson",
       "models": [
-        { "name": "DYNAPWR Max+", "position": 30, "msrp": 499, "price": 499, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/golf/clubs/drivers", "url": "https://www.wilson.com/en-us/golf/clubs/drivers" },
-        { "name": "DYNAPWR Carbon", "position": 75, "msrp": 549, "price": 549, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/golf/clubs/drivers", "url": "https://www.wilson.com/en-us/golf/clubs/drivers" }
+        { "name": "DYNAPWR Max+", "position": 30, "msrp": 499, "price": 499, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/product/dynapwr-max-plus-drv-wg1p0389", "url": "https://www.wilson.com/en-us/product/dynapwr-max-plus-drv-wg1p0389" },
+        { "name": "DYNAPWR Carbon", "position": 75, "msrp": 549, "price": 549, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/product/dynapwr-carbon-drv-wg1p0365", "url": "https://www.wilson.com/en-us/product/dynapwr-carbon-drv-wg1p0365" }
       ]
     },
     {
       "brand": "Honma",
       "models": [
-        { "name": "Beres", "position": 10, "msrp": 899, "price": 899, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/collections/drivers", "url": "https://us.honmagolf.com/collections/drivers" },
-        { "name": "TW767", "position": 60, "msrp": 749, "price": 650, "dealer": "Fairway Golf", "dealerUrl": "https://www.fairwaygolfusa.com/honma-tw767-driver.html", "url": "https://us.honmagolf.com/collections/drivers" }
+        { "name": "Beres 10 3-Star", "position": 10, "msrp": 1440, "price": 1440, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/3-star-driver-beres-10", "url": "https://us.honmagolf.com/products/3-star-driver-beres-10" },
+        { "name": "TW777", "position": 60, "msrp": 650, "price": 650, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/tw767-driver-copy", "url": "https://us.honmagolf.com/products/tw767-driver-copy" }
       ]
     },
     {
       "brand": "XXIO",
       "models": [
-        { "name": "XXIO 14", "position": 15, "msrp": 799, "price": 799, "dealer": "XXIO", "dealerUrl": "https://us.dunlopsports.com/xxio/clubs/drivers", "url": "https://us.dunlopsports.com/xxio/clubs/drivers" },
-        { "name": "XXIO X-eks-", "position": 45, "msrp": 699, "price": 699, "dealer": "XXIO", "dealerUrl": "https://us.dunlopsports.com/xxio/clubs/drivers", "url": "https://us.dunlopsports.com/xxio/clubs/drivers" }
+        { "name": "XXIO 14", "position": 15, "msrp": 799, "price": 799, "dealer": "XXIO", "dealerUrl": "https://us.dunlopsports.com/xxio/clubs/drivers/xxio-14-drivers/xxio-14-driver/MX14DRV.html", "url": "https://us.dunlopsports.com/xxio/clubs/drivers/xxio-14-drivers/xxio-14-driver/MX14DRV.html" },
+        { "name": "XXIO X", "position": 45, "msrp": 699, "price": 499, "dealer": "XXIO", "dealerUrl": "https://us.dunlopsports.com/xxio/sale/drivers/xxio-x-drivers/xxio-x-driver-%282022%29/MXXD22.html", "url": "https://us.dunlopsports.com/xxio/sale/drivers/xxio-x-drivers/xxio-x-driver-%282022%29/MXXD22.html" }
       ]
     },
     {
       "brand": "Takomo",
       "models": [
-        { "name": "Ignis D1", "position": 50, "msrp": 319, "price": 319, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/collections/drivers", "url": "https://takomogolf.com/collections/drivers" }
+        { "name": "Ignis D1", "position": 50, "msrp": 319, "price": 319, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/products/ignis-d1-driver", "url": "https://takomogolf.com/products/ignis-d1-driver" }
       ]
     },
     {
       "brand": "Sub70",
       "models": [
-        { "name": "849D", "position": 30, "msrp": 199, "price": 199, "dealer": "Sub70", "dealerUrl": "https://golfsub70.com/collections/drivers", "url": "https://golfsub70.com/collections/drivers" },
-        { "name": "849 Pro", "position": 70, "msrp": 199, "price": 199, "dealer": "Sub70", "dealerUrl": "https://golfsub70.com/collections/drivers", "url": "https://golfsub70.com/collections/drivers" }
+        { "name": "849D", "position": 30, "msrp": 199, "price": 199, "dealer": "Sub70", "dealerUrl": "https://www.golfsub70.com/sub-70-849d-driver.html", "url": "https://www.golfsub70.com/sub-70-849d-driver.html" },
+        { "name": "849 Pro", "position": 70, "msrp": 199, "price": 199, "dealer": "Sub70", "dealerUrl": "https://www.golfsub70.com/sub-70-849-pro-driver.html", "url": "https://www.golfsub70.com/sub-70-849-pro-driver.html" }
       ]
     }
   ]
