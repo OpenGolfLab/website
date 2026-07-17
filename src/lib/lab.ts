@@ -202,6 +202,8 @@ export function loadCommunity() {
   const defaultTierKey =
     [...tierViews].reverse().find((t) => t.clubs.length > 0)?.key ?? "all";
 
+  const feed = loadFeed();
+
   return {
     summaryData,
     tierViews,
@@ -211,5 +213,49 @@ export function loadCommunity() {
     minContributors: summaryData?.meta?.min_contributors ?? 8,
     totalContributors: tierViews.find((t) => t.key === "all")?.contributors ?? 0,
     totalShots: tierViews.find((t) => t.key === "all")?.shots ?? 0,
+    feed,
+  };
+}
+
+// ---- Community feed: feed.json (recent contributions) ----------------------
+// Written alongside summary.json by the aggregator. "Live" means fresh as of the
+// last build/deploy — the page states when. Every field here is already safe to
+// show (the aggregator emits only display name / date / counts / clubs /
+// monitor), so the page can render it directly.
+
+/** A YYYY-MM-DD → "Jul 15, 2026" for display; passes anything else through. */
+function prettyDate(iso: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || "");
+  if (!m) return iso || "";
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${months[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
+}
+
+export function loadFeed() {
+  const data = readJson("public/data/feed.json");
+  const rawItems: any[] = Array.isArray(data?.contributions)
+    ? data.contributions
+    : [];
+
+  const items = rawItems.map((it: any) => {
+    const clubs: string[] = Array.isArray(it.clubs) ? it.clubs : [];
+    return {
+      displayName: String(it.display_name ?? ""),
+      date: String(it.date ?? ""),
+      dateLabel: prettyDate(String(it.date ?? "")),
+      shots: Number(it.shots ?? 0),
+      clubs,
+      clubCount: clubs.length,
+      // "" from the aggregator (unattributed monitor) reads better as a phrase
+      // than an empty cell.
+      launchMonitor: String(it.launch_monitor ?? "").trim() || "Not specified",
+    };
+  });
+
+  return {
+    hasFeed: items.length > 0,
+    items,
+    generatedDate: data?.generated_date ?? null,
   };
 }
