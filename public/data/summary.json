@@ -1,0 +1,132 @@
+{
+  "generated_date": "2026-07-17",
+  "schema_version": "2.0",
+  "tiers": {
+    "community": {
+      "totals": {
+        "contributors": 3,
+        "shots": 940
+      },
+      "clubs": [],
+      "gapping": [],
+      "balls": [],
+      "distribution": {
+        "club": "7I",
+        "unit": "yds",
+        "basis": "per-contributor median",
+        "bins": [
+          "130",
+          "135",
+          "140",
+          "145",
+          "150",
+          "155",
+          "160",
+          "165",
+          "170",
+          "175",
+          "180"
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "verified": {
+      "totals": {
+        "contributors": 0,
+        "shots": 0
+      },
+      "clubs": [],
+      "gapping": [],
+      "balls": [],
+      "distribution": {
+        "club": "7I",
+        "unit": "yds",
+        "basis": "per-contributor median",
+        "bins": [
+          "130",
+          "135",
+          "140",
+          "145",
+          "150",
+          "155",
+          "160",
+          "165",
+          "170",
+          "175",
+          "180"
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    "reference": {
+      "totals": {
+        "contributors": 0,
+        "shots": 0
+      },
+      "clubs": [],
+      "gapping": [],
+      "balls": [],
+      "distribution": {
+        "club": "7I",
+        "unit": "yds",
+        "basis": "per-contributor median",
+        "bins": [
+          "130",
+          "135",
+          "140",
+          "145",
+          "150",
+          "155",
+          "160",
+          "165",
+          "170",
+          "175",
+          "180"
+        ],
+        "counts": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  },
+  "meta": {
+    "min_contributors": 8,
+    "min_club_shots": 5,
+    "min_gap_contributors": 5,
+    "min_ball_contributors": 6
+  }
+}
