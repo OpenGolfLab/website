@@ -1,0 +1,48 @@
+# Build and deploy the site to Cloudflare Workers on every push to main —
+# including the automated aggregate pushes from the data repo (see
+# opengolflab-data's aggregate.yml), which is what makes the community data
+# pipeline hands-off. Replaces running `npm run deploy` by hand.
+#
+# This runs ALONGSIDE the GitHub Pages deploy (deploy.yml): opengolflab.com
+# currently serves the Pages deployment, while the desktop app reads its
+# community data from the Worker at opengolflab.<account>.workers.dev. Once
+# the custom domain is attached to the Worker in the Cloudflare dashboard,
+# the Pages workflow can be retired.
+#
+# Required secrets (this repo → Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN   API token made from the "Edit Cloudflare Workers"
+#                          template (dash.cloudflare.com → My Profile →
+#                          API Tokens → Create Token).
+#   CLOUDFLARE_ACCOUNT_ID  Shown on the Workers overview page (right sidebar,
+#                          or in the dashboard URL).
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-workers
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
