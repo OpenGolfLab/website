@@ -41,8 +41,12 @@ jobs:
 
       - run: npm run build
 
+      # Deploy with the repo's own wrangler (from devDependencies), not
+      # cloudflare/wrangler-action — the action installs its own older wrangler,
+      # which can't read this repo's wrangler.jsonc ("missing entry-point").
+      # Wrangler picks up both env vars natively.
       - name: Deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
