@@ -1,19 +1,13 @@
 ---
 title: "Meet Golf Sim Analytics: zero-click analytics for GSPro"
 description: "A closer look at the free Windows app — how automatic capture works, what the 15 dashboards cover, and why everything stays on your machine."
-pubDate: 2026-07-08
-heroImage: "/images/blog/meet-golf-sim-analytics.jpg"
+pubDate: 2026-07-16
+heroImage: "/images/screenshots/home.jpg"
 category: "Product"
 tags: ["release", "product", "gspro"]
 ---
 
-Most golf analytics tools ask you to do work before you get insight: export a file, find it, import it, tag the session, pick the club. By the time you've done all that, you've lost the flow of practice. Golf Sim Analytics takes a different stance — **the best import step is no import step.**
-
-## Zero-click capture
-
-The app watches for the files [GSPro](https://gsprogolf.com/) already writes.
-
-When you export from the Practice Range, the CSV lands on your Desktop and the app ingests it immediately — no button, no dialog. When you start a round, it reads GSPro's live round file in real time, updating a live dispersion view as you hit, and archives the round automatically the moment it ends. You never think about data plumbing again.
+[Golf Sim Analytics](/golf-sim-analytics) captures every GSPro session automatically — [no import step, ever](/blog/gspro-has-no-memory). Here's a closer look at what the 15 dashboards actually cover.
 
 ## 15 dashboards across six categories
 
@@ -31,10 +25,6 @@ Everything is organized into six areas so you can go from a quick glance to a de
 Hover any point and you get the full picture for that shot: carry, ball speed, launch, descent, spin, and smash factor. Each value is flagged against that club's ideal window, so you're not just looking at numbers — you're seeing exactly where a shot fell out of spec.
 
 Want a target? Overlay **PGA Tour averages** or any **handicap level from 5 to 20** with one click, and your gapping and launch/spin numbers get an instant, honest benchmark.
-
-## Private by design
-
-Every shot is stored locally in Parquet files right next to the app. Nothing leaves your machine, there's no account, and there's nothing to sign up for. It's free, and it stays free.
 
 ## A note on the first run
 

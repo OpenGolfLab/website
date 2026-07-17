@@ -1,7 +1,7 @@
 ---
 title: "GSPro has no memory. That's the problem Golf Sim Analytics solves."
-description: "GSPro is a brilliant simulator, but it forgets every shot the moment it lands — no history, no trends, no dispersion over time. Here's why that gap matters, and how our free app fills it."
-pubDate: 2026-07-12
+description: "GSPro is a brilliant simulator, but it forgets every shot the moment it lands — no history, no trends, no dispersion over time. Here's why that gap matters, how our free app fills it, and how it powers GSPro-driven community analytics."
+pubDate: 2026-07-16
 heroImage: "/images/screenshots/gapping_benchmarks.jpg"
 category: "Product"
 tags: ["golf-sim-analytics", "gspro", "why"]
@@ -31,7 +31,7 @@ None of those can be answered from a number that disappears. They require every 
 We wrote a free Windows app that sits alongside GSPro and quietly does the part GSPro leaves out:
 
 - **It remembers everything, automatically.** Practice Range exports are picked up the instant they hit your Desktop, and live rounds are tracked in real time and archived when they end. There's no import button — you just play.
-- **It turns shots into 15 dashboards.** Dispersion, club gapping, trajectory, swing efficiency, shot shape, speed training, on-course scorecards, live sessions — the historical views GSPro can't give you.
+- **It turns shots into 15 dashboards** — dispersion, gapping, trajectory, and more. See the [full feature tour](/blog/meet-golf-sim-analytics) for what each one covers.
 - **It benchmarks you honestly.** Overlay PGA Tour averages or any handicap level from 5 to 20 with one click, so your numbers have a real target.
 - **It keeps your data yours.** Everything lives in local Parquet files next to the app. Nothing is uploaded, there's no account, and it's completely free.
 
@@ -39,7 +39,7 @@ Think of it as the layer between "I hit a shot" and "I understand my game."
 
 ## Why this is bigger than one app
 
-There's a second reason the memory problem matters. Once every shot is captured in a consistent, structured way, it becomes possible to do something the golf world badly needs: **compare equipment on real data instead of tiny one-off tests.** That's the [OpenGolfLab mission](/lab) — an open, free effort to crowd-source standardized ball and club testing. Golf Sim Analytics is how that data gets captured in the first place.
+There's a second reason the memory problem matters. Once every shot is captured in a consistent, structured way, it becomes possible to do something the golf world badly needs: **compare equipment on real data instead of tiny one-off tests.** That's the [OpenGolfLab mission](/lab) — **GSPro-driven community analytics**: an open, free effort to crowd-source standardized ball and club testing from the sim community's own sessions. Golf Sim Analytics is how that data gets captured in the first place.
 
 But you don't need to care about any of that to get value on day one. If you've ever wished GSPro could just *remember* your shots, that's the whole pitch.
 

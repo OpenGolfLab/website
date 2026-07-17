@@ -1,0 +1,142 @@
+{
+  "lineups": [
+    {
+      "brand": "Titleist",
+      "models": [
+        { "name": "T350", "position": 14, "category": "game-improvement", "loft7": 29, "construction": "hollow-body long irons, max forgiveness", "config": "7 pc steel", "msrp": 1499, "price": 1499, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-t350-4g-irons", "url": "https://www.titleist.com/golf-clubs/irons/t-series/" },
+        { "name": "T250 Launch Spec", "position": 40, "category": "players-distance", "loft7": 35, "construction": "hollow-body, high-launch lofts", "config": "7 pc steel", "msrp": 1499, "price": 1499, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-t250-4g-irons", "url": "https://www.titleist.com/golf-clubs/irons/t-series/" },
+        { "name": "T250", "position": 53, "category": "players-distance", "loft7": 30.5, "construction": "hollow-body, forged face", "config": "7 pc steel", "msrp": 1499, "price": 1499, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-t250-4g-irons", "url": "https://www.titleist.com/golf-clubs/irons/t-series/" },
+        { "name": "T150", "position": 72, "category": "players-cb", "loft7": 32, "construction": "forged cavity back, tour shaping", "config": "7 pc steel", "msrp": 1499, "price": 1499, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/titleist-t150-4g-irons", "url": "https://www.titleist.com/golf-clubs/irons/t-series/" },
+        { "name": "T100", "position": 84, "category": "players-cb", "loft7": 33, "construction": "forged cavity back, tour shaping", "config": "7 pc steel", "msrp": 1499, "price": 1499, "dealer": "Titleist", "dealerUrl": "https://www.titleist.com/product/t100/559C.html", "url": "https://www.titleist.com/product/t100/559C.html" }
+      ]
+    },
+    {
+      "brand": "TaylorMade",
+      "models": [
+        { "name": "Qi Max", "position": 10, "category": "game-improvement", "loft7": 28, "construction": "cast cap-back cavity", "config": "7 pc steel", "msrp": 1099, "price": 1099, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/taylormade-qi-max-irons", "url": "https://www.taylormadegolf.com/irons/" },
+        { "name": "Qi Max HL", "position": 15, "category": "game-improvement", "loft7": 31, "construction": "cast cap-back, high-launch build", "config": "7 pc steel", "msrp": 1099, "price": 1099, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/taylormade-qi-max-hl-irons", "url": "https://www.taylormadegolf.com/Qi-Max-HL-Irons/DW-TC680.html" },
+        { "name": "P·790", "position": 62, "category": "players-distance", "loft7": 30.5, "construction": "hollow-body, foam-filled", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/taylormade-p790-irons-2025", "url": "https://www.taylormadegolf.com/P%E2%88%99790-Irons/DW-TC635.html" },
+        { "name": "P·770", "position": 66, "category": "players-distance", "loft7": 33, "construction": "compact hollow-body", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/taylormade-p770-irons-2024", "url": "https://www.taylormadegolf.com/P%E2%88%99770-Irons/DW-TC567.html" },
+        { "name": "P·7CB", "position": 79, "category": "players-cb", "loft7": 34, "construction": "forged cavity back", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/taylormade-p7cb-irons-2024", "url": "https://www.taylormadegolf.com/irons/" },
+        { "name": "P·7MB", "position": 99, "category": "blade", "loft7": 34, "construction": "one-piece forged muscle back", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "TaylorMade", "dealerUrl": "https://www.taylormadegolf.com/P%E2%88%997MB-Irons/DW-TA238.html", "url": "https://www.taylormadegolf.com/P%E2%88%997MB-Irons/DW-TA238.html" }
+      ]
+    },
+    {
+      "brand": "Callaway",
+      "models": [
+        { "name": "Quantum Max Fast", "position": 5, "category": "max-gi", "loft7": 29.5, "construction": "lightweight build, oversize cavity", "config": "graphite set", "msrp": 1249, "price": 1249, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/irons-2026-quantum-max-fast", "url": "https://www.callawaygolf.com/product/irons-2026-quantum-max-fast" },
+        { "name": "Quantum Max OS", "position": 8, "category": "max-gi", "loft7": 29, "construction": "oversize 360° undercut cavity", "config": "steel set", "msrp": 1099, "price": 1099, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/irons-2026-quantum-max-os", "url": "https://www.callawaygolf.com/product/irons-2026-quantum-max-os" },
+        { "name": "Quantum Max", "position": 21, "category": "game-improvement", "loft7": 28.5, "construction": "cast 360° undercut cavity", "config": "steel set", "msrp": 1099, "price": 1099, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/product/irons-2026-quantum-max", "url": "https://www.callawaygolf.com/product/irons-2026-quantum-max" },
+        { "name": "Apex Ai200", "position": 59, "category": "players-distance", "loft7": 30.5, "construction": "forged hollow-body", "config": "steel set", "msrp": 1449, "price": 1449, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/irons/irons-2024-apex-ai200.html", "url": "https://www.callawaygolf.com/golf-clubs/irons/irons-2024-apex-ai200.html" },
+        { "name": "Apex Ti Fusion", "position": 66, "category": "players-distance", "loft7": 30.5, "construction": "forged hollow-body, titanium face", "config": "7 pc steel", "msrp": 2100, "price": 2100, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/apextifusion", "url": "https://www.callawaygolf.com/apextifusion" },
+        { "name": "X Forged", "position": 83, "category": "players-cb", "loft7": 33.5, "construction": "forged cavity back", "config": "4-PW steel", "msrp": 1590, "price": 1590, "dealer": "Callaway", "dealerUrl": "https://www.callawaygolf.com/golf-clubs/irons/irons-2025-x-forged.html", "url": "https://www.callawaygolf.com/golf-clubs/irons/irons-2025-x-forged.html" }
+      ]
+    },
+    {
+      "brand": "PING",
+      "models": [
+        { "name": "G740", "position": 4, "category": "max-gi", "loft7": 28, "construction": "cast oversize cavity", "config": "8 pc steel, 5-PW+wedges", "msrp": 1299, "price": 1299, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g740-irons-st/", "url": "https://ping.com/en-us/golf-clubs/irons/g740-iron" },
+        { "name": "G440", "position": 24, "category": "game-improvement", "loft7": 28.5, "construction": "cast cavity back", "config": "7 pc steel, 4-PW", "msrp": 1149, "price": 1149, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-g440-irons-st/", "url": "https://ping.com/en-us/golf-clubs/irons/g440-iron" },
+        { "name": "i540", "position": 54, "category": "players-distance", "loft7": 29, "construction": "forged-face hollow-body", "config": "8 pc steel", "msrp": 1499, "price": 1499, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-i540-irons-st/", "url": "https://ping.com/en-us/golf-clubs/irons/i540-iron" },
+        { "name": "i240", "position": 71, "category": "players-cb", "loft7": 33, "construction": "forged cavity back", "config": "7 pc steel, 4-PW", "msrp": 1399, "price": 1399, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-i240-irons-st/", "url": "https://ping.com/en-us/golf-clubs/irons/i240-iron" },
+        { "name": "Blueprint S", "position": 88, "category": "players-cb", "loft7": 33, "construction": "forged shallow cavity", "config": "8 pc steel, 3-PW", "msrp": 1772, "price": 1772, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-blueprint-s-irons-st/", "url": "https://ping.com/en-us/golf-clubs/irons/blueprint-s-iron" },
+        { "name": "Blueprint T", "position": 97, "category": "blade", "loft7": 33, "construction": "one-piece forged blade", "config": "8 pc steel, 3-PW", "msrp": 1772, "price": 1772, "dealer": "Morton Golf Sales", "dealerUrl": "https://www.mortongolfsales.com/ping-golf-blueprint-t-irons/", "url": "https://ping.com/en-us/golf-clubs/irons/blueprint-t-iron" }
+      ]
+    },
+    {
+      "brand": "Mizuno",
+      "models": [
+        { "name": "JPX925 Hot Metal HL", "position": 8, "category": "max-gi", "loft7": 30.5, "construction": "cast chromoly, high-launch build", "config": "steel set, from", "msrp": 825, "price": 825, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx925-hot-metal-hl-irons", "url": "https://mizunogolf.com/us/golf-clubs/jpx925-series/jpx925-hot-metals/" },
+        { "name": "JPX925 Hot Metal", "position": 17, "category": "game-improvement", "loft7": 28.5, "construction": "cast chromoly cavity", "config": "steel set, from", "msrp": 990, "price": 990, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx925-hot-metal-irons", "url": "https://mizunogolf.com/us/golf-clubs/jpx925-series/jpx925-hot-metals/" },
+        { "name": "JPX925 Hot Metal Pro", "position": 38, "category": "game-improvement", "loft7": 28, "construction": "compact cast chromoly", "config": "steel set, from", "msrp": 990, "price": 990, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx925-hot-metal-pro-irons", "url": "https://mizunogolf.com/us/golf-clubs/jpx925-series/jpx925-hot-metals/" },
+        { "name": "JPX925 Forged", "position": 58, "category": "players-distance", "loft7": 30, "construction": "forged cavity back", "config": "steel set, from", "msrp": 1504, "price": 1504, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/mizuno-jpx925-forged-irons", "url": "https://mizunogolf.com/us/golf-clubs/jpx925-series/" },
+        { "name": "Mizuno Pro M-15", "position": 61, "category": "players-distance", "loft7": 29, "construction": "forged hollow-body", "config": "$215/club × 7 steel", "msrp": 1505, "price": 1505, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-m15/", "url": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-m15/" },
+        { "name": "Mizuno Pro M-13", "position": 74, "category": "players-cb", "loft7": 32, "construction": "forged compact cavity", "config": "$215/club × 7 steel", "msrp": 1505, "price": 1505, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-m13/", "url": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-m13/" },
+        { "name": "Mizuno Pro S-3", "position": 86, "category": "players-cb", "loft7": 34, "construction": "forged cavity back", "config": "$225/club × 7 steel", "msrp": 1575, "price": 1575, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-s3/", "url": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-s3/" },
+        { "name": "Mizuno Pro S-1", "position": 95, "category": "blade", "loft7": 34, "construction": "one-piece forged blade", "config": "$225/club × 7 steel", "msrp": 1575, "price": 1575, "dealer": "Mizuno", "dealerUrl": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-s1/", "url": "https://mizunogolf.com/us/golf-clubs/mp-series/mizuno-pro-s1/" }
+      ]
+    },
+    {
+      "brand": "Srixon",
+      "models": [
+        { "name": "ZXiR", "position": 13, "category": "game-improvement", "loft7": 28, "construction": "multi-piece distance cavity", "config": "7 pc steel", "msrp": 1099, "price": 1099, "dealer": "Srixon", "dealerUrl": "https://us.dunlopsports.com/srixon/clubs/irons/zxir-irons/zxir-irons/MZXIRIRN.html", "url": "https://us.dunlopsports.com/srixon/clubs/irons/zxir-irons/zxir-irons/MZXIRIRN.html" },
+        { "name": "ZXi4", "position": 34, "category": "game-improvement", "loft7": 28.5, "construction": "hollow-body, strong lofts", "config": "7 pc steel", "msrp": 1299, "price": 1299, "dealer": "Srixon", "dealerUrl": "https://us.dunlopsports.com/srixon/clubs/irons/zxi4-irons/zxi4-irons/MZXI4IRN.html", "url": "https://us.dunlopsports.com/srixon/clubs/irons/zxi4-irons/zxi4-irons/MZXI4IRN.html" },
+        { "name": "ZXi5", "position": 58, "category": "players-distance", "loft7": 31, "construction": "forged players distance", "config": "7 pc steel", "msrp": 1299, "price": 1299, "dealer": "Srixon", "dealerUrl": "https://us.dunlopsports.com/srixon/clubs/irons/zxi5-irons/zxi5-irons/MZXI5IRN.html", "url": "https://us.dunlopsports.com/srixon/clubs/irons/zxi5-irons/zxi5-irons/MZXI5IRN.html" },
+        { "name": "ZXi7", "position": 80, "category": "players-cb", "loft7": 32, "construction": "one-piece forged players iron", "config": "7 pc steel", "msrp": 1299, "price": 1299, "dealer": "Srixon", "dealerUrl": "https://us.dunlopsports.com/srixon/clubs/irons/zxi7-irons/zxi7-irons/MZXI7IRN.html", "url": "https://us.dunlopsports.com/srixon/clubs/irons/zxi7-irons/zxi7-irons/MZXI7IRN.html" }
+      ]
+    },
+    {
+      "brand": "Cobra",
+      "models": [
+        { "name": "DS-Adapt", "position": 18, "category": "game-improvement", "loft7": 27, "construction": "cast cavity, PWRSHELL face", "config": "steel set", "msrp": 999, "price": 999, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/ds-adapt-irons", "url": "https://www.cobragolf.com/products/ds-adapt-irons" },
+        { "name": "King Tec", "position": 55, "category": "players-distance", "loft7": 29.5, "construction": "hollow-body, adjustable weights", "config": "4-PW steel", "msrp": 999, "price": 999, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/king-tec-irons", "url": "https://www.cobragolf.com/products/king-tec-irons" },
+        { "name": "King Tour", "position": 76, "category": "players-cb", "loft7": 32, "construction": "forged cavity back", "config": "steel set, from", "msrp": 1399, "price": 1099, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/king-tour-irons-2023", "url": "https://www.cobragolf.com/products/king-tour-irons-2023" },
+        { "name": "King CB/MB", "position": 92, "category": "blade", "loft7": 34, "construction": "forged muscle back / cavity combo", "config": "steel set, from", "msrp": 999, "price": 999, "dealer": "Cobra", "dealerUrl": "https://www.cobragolf.com/products/king-cb-mb-irons-2023", "url": "https://www.cobragolf.com/products/king-cb-mb-irons-2023" }
+      ]
+    },
+    {
+      "brand": "Cleveland",
+      "models": [
+        { "name": "ZipCore XL", "position": 6, "category": "max-gi", "loft7": 28, "construction": "oversize cavity, counterbalanced", "config": "steel set, from", "msrp": 714, "price": 534, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/cleveland-zipcore-xl-irons", "url": "https://us.dunlopsports.com/cleveland-golf/clubs/irons/zipcore-xl-irons/zipcore-xl-irons/MZCXLI.html" }
+      ]
+    },
+    {
+      "brand": "Wilson",
+      "models": [
+        { "name": "Dynapower Max", "position": 5, "category": "max-gi", "loft7": 29, "construction": "oversize cast cavity", "config": "7 pc steel", "msrp": 899, "price": 899, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/product/dynapwr-max-stl-wg1p0379", "url": "https://www.wilson.com/en-us/product/dynapwr-max-stl-wg1p0379" },
+        { "name": "Dynapower Forged", "position": 46, "category": "players-distance", "loft7": 30.5, "construction": "forged, strong lofts", "config": "7 pc steel", "msrp": 1199, "price": 1199, "dealer": "Wilson", "dealerUrl": "https://www.wilson.com/en-us/product/dynapwr-forged-stl-wg1p0324", "url": "https://www.wilson.com/en-us/product/dynapwr-forged-stl-wg1p0324" },
+        { "name": "Staff Model XB", "position": 64, "category": "players-distance", "loft7": 32, "construction": "forged, stronger lofts", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/wilson-staff-model-xb-irons", "url": "https://www.wilson.com/en-us/product/staff-model-xb-wg1p0387" },
+        { "name": "Staff Model CB", "position": 83, "category": "players-cb", "loft7": 34, "construction": "forged cavity back", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/wilson-staff-model-cb-irons-2026", "url": "https://www.wilson.com/en-us/product/staff-model-cb-wg1p0386" },
+        { "name": "Staff Model Blade", "position": 97, "category": "blade", "loft7": 34, "construction": "one-piece forged blade", "config": "7 pc steel", "msrp": 1399, "price": 1399, "dealer": "Carl's Golfland", "dealerUrl": "https://www.carlsgolfland.com/wilson-staff-model-blade-irons-2026", "url": "https://www.wilson.com/en-us/product/staff-model-blade-wg1p0385" }
+      ]
+    },
+    {
+      "brand": "PXG",
+      "models": [
+        { "name": "0311 XP GEN8", "position": 28, "category": "game-improvement", "loft7": 28.5, "construction": "hollow-body, QuantumCOR core", "config": "$229/club × 7", "msrp": 1603, "price": 1603, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/gen8-irons", "url": "https://www.pxg.com/products/gen8-irons" },
+        { "name": "0311 P GEN8", "position": 55, "category": "players-distance", "loft7": 30, "construction": "hollow-body, QuantumCOR core", "config": "$229/club × 7", "msrp": 1603, "price": 1603, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/gen8-irons", "url": "https://www.pxg.com/products/gen8-irons" },
+        { "name": "0311 T GEN8", "position": 78, "category": "players-cb", "loft7": 33, "construction": "compact hollow, milled face", "config": "$229/club × 7", "msrp": 1603, "price": 1603, "dealer": "PXG", "dealerUrl": "https://www.pxg.com/products/gen8-irons", "url": "https://www.pxg.com/products/gen8-irons" }
+      ]
+    },
+    {
+      "brand": "Tour Edge",
+      "models": [
+        { "name": "Hot Launch Max", "position": 10, "category": "max-gi", "loft7": 29, "construction": "cast cavity, ultralight graphite", "config": "graphite set", "msrp": 699, "price": 699, "dealer": "Tour Edge", "dealerUrl": "https://www.touredge.com/products/hot-launch-max-irons-1", "url": "https://www.touredge.com/products/hot-launch-max-irons-1" },
+        { "name": "Exotics CB", "position": 81, "category": "players-cb", "loft7": 33, "construction": "forged cavity back", "config": "steel set", "msrp": 1249, "price": 1249, "dealer": "Tour Edge", "dealerUrl": "https://www.touredge.com/products/exotics-cb-irons", "url": "https://www.touredge.com/products/exotics-cb-irons" },
+        { "name": "Exotics MB", "position": 85, "category": "blade", "loft7": 34.5, "construction": "forged muscle back", "config": "steel set", "msrp": 1249, "price": 1249, "dealer": "Tour Edge", "dealerUrl": "https://www.touredge.com/products/exotics-mb-irons", "url": "https://www.touredge.com/products/exotics-mb-irons" }
+      ]
+    },
+    {
+      "brand": "Honma",
+      "models": [
+        { "name": "TW767 Hx", "position": 30, "category": "game-improvement", "loft7": 28.5, "construction": "hollow-body game improvement", "config": "6-PW steel", "msrp": 1050, "price": 1050, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/tw-hx-irons", "url": "https://us.honmagolf.com/products/tw-hx-irons" },
+        { "name": "TW767 Px", "position": 62, "category": "players-distance", "loft7": 30, "construction": "forged players distance", "config": "6-PW steel", "msrp": 875, "price": 875, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/tw-px-irons", "url": "https://us.honmagolf.com/products/tw-px-irons" },
+        { "name": "TW767 Vx", "position": 78, "category": "players-cb", "loft7": 32.5, "construction": "forged cavity back", "config": "6-PW steel", "msrp": 875, "price": 875, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/tw-vx-irons", "url": "https://us.honmagolf.com/products/tw-vx-irons" },
+        { "name": "TW767 Tour V", "position": 87, "category": "players-cb", "loft7": 33.5, "construction": "forged tour cavity", "config": "5-PW steel", "msrp": 1050, "price": 1050, "dealer": "Honma", "dealerUrl": "https://us.honmagolf.com/products/tw-tour-v-irons", "url": "https://us.honmagolf.com/products/tw-tour-v-irons" }
+      ]
+    },
+    {
+      "brand": "XXIO",
+      "models": [
+        { "name": "XXIO 14", "position": 9, "category": "max-gi", "loft7": 29.5, "construction": "ultra-lightweight cavity, graphite", "config": "$240/club × 7 graphite", "msrp": 1679, "price": 1679, "dealer": "XXIO", "dealerUrl": "https://us.dunlopsports.com/xxio/clubs/irons/xxio-14-irons/xxio-14-irons/MX14IRN.html", "url": "https://us.dunlopsports.com/xxio/clubs/irons/xxio-14-irons/xxio-14-irons/MX14IRN.html" }
+      ]
+    },
+    {
+      "brand": "Sub70",
+      "models": [
+        { "name": "699 Pro V2", "position": 50, "category": "players-distance", "loft7": 30.5, "construction": "forged hollow-body", "config": "$105/club × 7", "msrp": 735, "price": 735, "dealer": "Sub70", "dealerUrl": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-699-pro-v2-irons.html", "url": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-699-pro-v2-irons.html" },
+        { "name": "659 CB", "position": 69, "category": "players-cb", "loft7": 31.5, "construction": "forged cavity back", "config": "$110/club × 7", "msrp": 770, "price": 770, "dealer": "Sub70", "dealerUrl": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-659-cb-irons.html", "url": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-659-cb-irons.html" },
+        { "name": "659 MB", "position": 89, "category": "blade", "loft7": 34, "construction": "forged muscle back", "config": "$90/club × 7", "msrp": 630, "price": 630, "dealer": "Sub70", "dealerUrl": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-659-mb-irons.html", "url": "https://www.golfsub70.com/sub-70-golf-clubs/sub-70-golf-irons/c-sub-70-659-mb-irons.html" }
+      ]
+    },
+    {
+      "brand": "Takomo",
+      "models": [
+        { "name": "101 MKII", "position": 26, "category": "game-improvement", "loft7": 29, "construction": "hollow-body, forged face", "config": "4-PW steel", "msrp": 579, "price": 579, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/products/iron-101-mkii", "url": "https://takomogolf.com/products/iron-101-mkii" },
+        { "name": "201 MKII", "position": 56, "category": "players-distance", "loft7": 30.5, "construction": "forged hollow-body", "config": "4-PW steel", "msrp": 679, "price": 679, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/products/iron-201-mkii", "url": "https://takomogolf.com/products/iron-201-mkii" },
+        { "name": "301 CB", "position": 74, "category": "players-cb", "loft7": 33, "construction": "forged cavity back", "config": "4-PW steel", "msrp": 649, "price": 649, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/products/iron-301-cb", "url": "https://takomogolf.com/products/iron-301-cb" },
+        { "name": "301 MB", "position": 88, "category": "blade", "loft7": 34.5, "construction": "forged muscle back", "config": "4-PW steel", "msrp": 649, "price": 649, "dealer": "Takomo", "dealerUrl": "https://takomogolf.com/products/iron-301-mb", "url": "https://takomogolf.com/products/iron-301-mb" }
+      ]
+    }
+  ]
+}

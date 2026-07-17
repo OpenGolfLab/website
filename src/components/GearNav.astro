@@ -1,0 +1,110 @@
+---
+import { GEAR_SECTIONS } from "../consts";
+---
+
+{/* One-page jump nav. Anchors scroll to each bag category; a scroll-spy
+    lights the section currently in view. Sits below the site nav and sticks. */}
+<div class="gear-nav-bar">
+  <div class="container">
+    <nav class="gear-nav" aria-label="Gear Guide sections">
+      {
+        GEAR_SECTIONS.map((section, i) => (
+          <a
+            href={section.href}
+            data-section={section.id}
+            class:list={["gear-nav-link", { active: i === 0 }]}
+          >
+            {section.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</div>
+
+<style>
+  /* Sits directly under the sticky site nav, and sticks below it on scroll. */
+  .gear-nav-bar {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 90;
+    background: var(--bg-translucent);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .gear-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .gear-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .gear-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.85rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .gear-nav-link:hover {
+    color: var(--text-muted);
+  }
+  .gear-nav-link.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+  .gear-nav-link:first-child {
+    padding-left: 0;
+  }
+
+  @media (max-width: 700px) {
+    .gear-nav-link {
+      font-size: 0.76rem;
+      padding: 0.75rem 0.7rem;
+    }
+  }
+</style>
+
+<script>
+  // Scroll-spy: highlight the section whose top has passed just below the two
+  // stacked sticky bars. Plain scroll math keeps it robust across resizes and
+  // tall/short sections (an IntersectionObserver threshold struggles with both).
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>(".gear-nav-link"),
+  );
+  const entries = links
+    .map((link) => {
+      const id = link.dataset.section ?? "";
+      const section = document.getElementById(id);
+      return section ? { link, section } : null;
+    })
+    .filter((e): e is { link: HTMLAnchorElement; section: HTMLElement } => !!e);
+
+  if (entries.length) {
+    const OFFSET = 150; // ~ site nav + gear nav height, plus a little
+    const spy = () => {
+      let current = entries[0];
+      for (const entry of entries) {
+        if (entry.section.getBoundingClientRect().top - OFFSET <= 0) {
+          current = entry;
+        }
+      }
+      for (const { link } of entries) link.classList.remove("active");
+      current.link.classList.add("active");
+    };
+    spy();
+    window.addEventListener("scroll", spy, { passive: true });
+    window.addEventListener("resize", spy, { passive: true });
+  }
+</script>

@@ -1,6 +1,57 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
+import { loadMarket, loadBallMarket, loadCommunity } from "../lib/lab";
+
+// Real counts, computed at build from the lineup datasets — no slogans.
+const market = loadMarket();
+const balls = loadBallMarket();
+const community = loadCommunity();
+const driverCount = market.modelCount;
+const ballCount = balls.modelCount;
+// Brands = union across both datasets, so it stays honest as sections ship.
+const brandCount = new Set(
+  [...market.lineups, ...balls.lineups].map((l: any) => l.brand),
+).size;
+
+// The Lab's two pillars, promoted from the Lab overview to the homepage.
+// Order matters: Community Data feeds the Gear Guide, so it renders first
+// with an arrow between them. Same honest live/in-progress states.
+const labTiles = [
+  {
+    href: "/lab/community",
+    eyebrow: "Measured",
+    label: "Community Data",
+    live: community.hasCommunityData,
+    liveText: community.hasCommunityData
+      ? `${community.totalContributors} golfers · ${community.totalShots.toLocaleString()} shots`
+      : "Collecting first dataset",
+    blurb:
+      "Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone — one golfer, one vote, so a big session can't skew a result.",
+    covers: [
+      "Launch & spin norms by club",
+      "Driver dispersion",
+      "Quality tiers",
+    ],
+  },
+  {
+    href: "/gear",
+    eyebrow: "Where it pays off",
+    label: "Gear Guide",
+    live: market.hasLineups,
+    liveText: market.hasLineups
+      ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}irons · wedges`
+      : "Not published yet",
+    blurb:
+      "Where every driver, iron, wedge and ball sits — forgiveness to distance, soft to max spin — and what it actually costs today. Researched specs and live street prices now, sharpened by community numbers as the dataset grows.",
+    covers: [
+      "Driver lineup spectrum",
+      "Iron & wedge maps",
+      ...(balls.hasLineups ? ["Golf ball map"] : []),
+      "Street price vs. MSRP",
+    ],
+  },
+];
 
 // One positive trio — replaces the old "problems" + "framework" sections.
 const ideas = [
@@ -26,36 +77,46 @@ const ideas = [
   <!-- ============================ HERO ============================ -->
   <section class="hero">
     <div class="hero-media" aria-hidden="true">
-      <img
-        src="/images/course_bg.jpg"
-        alt=""
-        width="2400"
-        height="1350"
-        fetchpriority="high"
-      />
+      <picture>
+        <source media="(max-width: 760px)" srcset="/images/course_bg-mobile.jpg" />
+        <img
+          src="/images/course_bg.jpg"
+          alt=""
+          width="2400"
+          height="1350"
+          fetchpriority="high"
+        />
+      </picture>
       <div class="hero-scrim"></div>
     </div>
     <div class="grid-bg"></div>
 
     <div class="container hero-inner">
-      <span class="pill hero-openpill">◆ Open &amp; free · community-powered</span>
-      <h1 class="hero-title">Confident gear decisions, backed by data.</h1>
+      <span class="pill hero-openpill">◆ GSPro-driven community analytics · free &amp; open</span>
+      <h1 class="hero-title">Your sim is the lab. Your swings are the data.</h1>
       <p class="lede hero-lede">
-        Clubs and balls aren't cheap. OpenGolfLab turns real, standardized
-        community shot data into no-regret buying decisions — so you get it
-        right the first time.
+        Pool your shots with thousands of GSPro golfers — and find out what
+        actually deserves a spot in your bag.
       </p>
 
       <div class="hero-cta">
-        <a href="/lab" class="btn btn-primary btn-lg">Explore the data</a>
-        <a href="/golf-sim-analytics" class="btn btn-secondary btn-lg">Get the app</a>
+        <a href="/download" class="btn btn-primary btn-lg">Download the free app</a>
+        <a href="/lab" class="btn btn-secondary btn-lg">Preview the Lab ↗</a>
       </div>
 
-      <div class="hero-chips" role="list" aria-label="Why it helps">
-        <span class="stat-chip" role="listitem"><span class="label">Get it right</span><b>First time</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">No-regret</span><b>Purchases</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Backed by</span><b>Data</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Open &amp;</span><b>Free</b></span>
+      <p class="hero-contrast" role="note">
+        No photo scans · No CSV wrangling · No subscription · No account
+      </p>
+
+      <div class="hero-chips" role="list" aria-label="At a glance">
+        <span class="stat-chip" role="listitem"><span class="label">Dashboards</span><b>15</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Drivers tracked</span><b>{driverCount}</b></span>
+        {ballCount > 0 && (
+          <span class="stat-chip" role="listitem"><span class="label">Balls tracked</span><b>{ballCount}</b></span>
+        )}
+        <span class="stat-chip" role="listitem"><span class="label">Brands</span><b>{brandCount}</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">History</span><b>Unlimited</b></span>
+        <span class="stat-chip" role="listitem"><span class="label">Price</span><b>$0</b></span>
       </div>
     </div>
   </section>
@@ -64,11 +125,9 @@ const ideas = [
   <section class="section" id="why">
     <div class="container">
       <p class="eyebrow">Why this exists</p>
-      <h2 class="mission-h">Great gear decisions deserve more data</h2>
+      <h2 class="mission-h">The clubs and ball you use matter</h2>
       <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        Choosing a ball or a driver should lean on real evidence. The more shots,
-        players and consistency behind a comparison, the more you can trust it —
-        and that's exactly the kind of thing a community can build together.
+        OpenGolfLab exists to build the data you need to choose them well.
       </p>
 
       <ol class="idea-grid">
@@ -83,10 +142,6 @@ const ideas = [
         }
       </ol>
 
-      <p class="idea-foot text-muted">
-        The community analytics hub — comparisons, gapping by handicap, launch
-        &amp; spin norms — is taking shape in <a href="/lab">the Lab</a>.
-      </p>
     </div>
   </section>
 
@@ -95,13 +150,13 @@ const ideas = [
     <div class="container">
       <div class="tool card">
         <div class="tool-copy">
-          <p class="eyebrow">How you can help</p>
+          <p class="eyebrow">The instrument</p>
           <h2>{PRODUCT_NAME} is the instrument</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
-            Consistent data needs a consistent way to capture it. Our free
-            Windows app for GSPro records every shot automatically and turns it
-            into 15 dashboards — so you get sharper practice today, and (only if
-            you opt in) can help build the shared dataset tomorrow.
+            {PRODUCT_NAME} — our free GSPro companion — captures every shot
+            automatically and turns it into 15 dashboards, so you get sharper
+            practice today and (only if you opt in) help build the shared
+            dataset tomorrow.
           </p>
           <div class="hero-cta">
             <a href="/golf-sim-analytics" class="btn btn-primary">Explore the app</a>
@@ -118,6 +173,54 @@ const ideas = [
             decoding="async"
           />
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== THE LAB: TWO PILLARS ==================== -->
+  <section class="section" id="lab" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">The Lab</p>
+      <h2>From community shots to gear answers</h2>
+      <p class="lede" style="margin-top:0.9rem;max-width:66ch;">
+        Community Data is the input: anonymized, opt-in GSPro sessions pooled
+        into measured performance numbers. The Gear Guide is where they pay
+        off — the insights that tell you what to actually buy.
+      </p>
+
+      <div class="lab-tiles">
+        {
+          labTiles.map((t, i) => (
+            <Fragment>
+              {i > 0 && (
+                <div class="lab-arrow" aria-hidden="true">
+                  <span class="lab-arrow-glyph">→</span>
+                  <span class="lab-arrow-label">feeds&nbsp;into</span>
+                </div>
+              )}
+              <a href={t.href} class="card lab-tile">
+              <div class="lab-tile-top">
+                <span class="lab-tile-eyebrow">{t.eyebrow}</span>
+                <span class:list={["pill", "lab-tile-pill", t.live ? "live" : "progress"]}>
+                  {t.live ? "Live now" : "In progress"}
+                </span>
+              </div>
+              <h3>{t.label}</h3>
+              <p class="lab-tile-stat tnum">{t.liveText}</p>
+              <p class="lab-tile-blurb">{t.blurb}</p>
+              <ul class="lab-tile-list">
+                {t.covers.map((c) => (
+                  <li>
+                    <span class="lab-tile-mark">{t.live ? "✓" : "◐"}</span>
+                    {c}
+                  </li>
+                ))}
+              </ul>
+                <span class="lab-tile-go">Open {t.label} →</span>
+              </a>
+            </Fragment>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -158,6 +261,11 @@ const ideas = [
     inset: 0;
     z-index: -2;
   }
+  .hero-media picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
   .hero-media img {
     width: 100%;
     height: 100%;
@@ -168,8 +276,8 @@ const ideas = [
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(180deg, rgba(13, 17, 23, 0.72) 0%, rgba(13, 17, 23, 0.86) 60%, var(--bg) 100%),
-      radial-gradient(120% 90% at 50% -10%, rgba(61, 220, 132, 0.12), transparent 55%);
+      linear-gradient(180deg, var(--bg-translucent) 0%, rgba(20, 19, 17, 0.86) 60%, var(--bg) 100%),
+      radial-gradient(120% 90% at 50% -10%, var(--green-tint), transparent 55%);
   }
   .hero .grid-bg {
     z-index: -1;
@@ -177,7 +285,7 @@ const ideas = [
   .hero-inner {
     position: relative;
     z-index: 1;
-    padding-block: clamp(4rem, 11vw, 8rem) clamp(3rem, 7vw, 5rem);
+    padding-block: clamp(3rem, 8vw, 6rem) clamp(2.25rem, 5vw, 3.75rem);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -186,12 +294,12 @@ const ideas = [
   .hero-openpill {
     color: var(--green);
     border-color: var(--green-dim);
-    background: rgba(13, 17, 23, 0.5);
+    background: rgba(20, 19, 17, 0.5);
     margin-bottom: 1.2rem;
   }
   .hero-title {
     max-width: 20ch;
-    background: linear-gradient(180deg, #ffffff 0%, #cdd8e2 100%);
+    background: linear-gradient(180deg, #ffffff 0%, var(--text-muted) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -199,7 +307,7 @@ const ideas = [
   .hero-lede {
     margin-top: 1.2rem;
     text-align: center;
-    color: #cbd5e0;
+    color: var(--text-muted);
   }
   .hero-cta {
     display: flex;
@@ -207,6 +315,14 @@ const ideas = [
     gap: 0.8rem;
     margin-top: 1.8rem;
     justify-content: center;
+  }
+  .hero-contrast {
+    margin-top: 1.15rem;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    text-align: center;
   }
   .hero-chips {
     display: flex;
@@ -244,9 +360,107 @@ const ideas = [
     margin-top: 0.5rem;
     font-size: 1.2rem;
   }
-  .idea-foot {
-    margin-top: 1.5rem;
-    font-size: 0.98rem;
+  /* ---- Lab tiles (promoted from the Lab overview) ---- */
+  .lab-tiles {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.1rem;
+    align-items: stretch;
+  }
+  .lab-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    padding-inline: 0.15rem;
+  }
+  .lab-arrow-glyph {
+    font-size: 1.7rem;
+    line-height: 1;
+    color: var(--green);
+  }
+  .lab-arrow-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .lab-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    color: inherit;
+    transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+  }
+  .lab-tile:hover {
+    border-color: var(--green-dim);
+    transform: translateY(-2px);
+  }
+  .lab-tile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .lab-tile-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .lab-tile-pill.live {
+    color: var(--green);
+    border-color: var(--green-dim);
+  }
+  .lab-tile-pill.progress {
+    color: var(--text-muted);
+  }
+  .lab-tile h3 {
+    margin-top: 0.3rem;
+    color: var(--text);
+  }
+  .lab-tile-stat {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--green);
+  }
+  .lab-tile-blurb {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+  .lab-tile-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .lab-tile-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .lab-tile-mark {
+    color: var(--green);
+  }
+  .lab-tile-go {
+    margin-top: auto;
+    padding-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: var(--green);
+  }
+  .lab-tile:hover .lab-tile-go {
+    color: var(--green-bright);
   }
 
   /* ---- Tool (app) split ---- */
@@ -258,7 +472,7 @@ const ideas = [
     overflow: hidden;
   }
   .tool-copy {
-    padding: clamp(1.75rem, 4vw, 2.75rem);
+    padding: clamp(1.5rem, 3vw, 2.25rem);
   }
   .tool-shot {
     position: relative;
@@ -283,7 +497,7 @@ const ideas = [
     overflow: hidden;
     border: 1px solid var(--border-strong);
     border-radius: var(--radius);
-    padding: clamp(2rem, 5vw, 3.5rem);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
     text-align: center;
     background: linear-gradient(135deg, var(--surface) 0%, var(--bg-elevated) 100%);
   }
@@ -296,8 +510,16 @@ const ideas = [
   }
 
   @media (max-width: 900px) {
-    .idea-grid {
+    .idea-grid,
+    .lab-tiles {
       grid-template-columns: 1fr;
+    }
+    .lab-arrow {
+      flex-direction: row;
+      padding-block: 0.1rem;
+    }
+    .lab-arrow-glyph {
+      transform: rotate(90deg);
     }
     .tool {
       grid-template-columns: 1fr;

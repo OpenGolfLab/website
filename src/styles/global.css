@@ -5,45 +5,46 @@
    ========================================================================= */
 
 :root {
-  /* ---- Surfaces ---- */
-  --bg: #0d1117;
-  --bg-elevated: #131922;
-  --surface: #161b22;
-  --surface-2: #1c232d;
-  --border: #262d38;
-  --border-strong: #333c49;
+  /* ---- Surfaces (Dark Warm Minimalist) ---- */
+  --bg: #141311;
+  --bg-elevated: #1a1917;
+  --surface: #201f1c;
+  --surface-2: #262521;
+  --border: #3a3833;
+  --border-strong: #514e46;
 
-  /* ---- Text ---- */
-  --text: #e6edf3;
-  --text-muted: #9aa7b4;
-  --text-dim: #6e7b8a;
+  /* ---- Text (all tiers ≥ 7:1 on --bg; dim is for de-emphasis, not decoration) ---- */
+  --text: #f4f3ef;
+  --text-muted: #cfccc3;
+  --text-dim: #aaa79e;
 
-  /* ---- Accent: electric fairway green ---- */
-  --green: #3ddc84;
-  --green-bright: #57f294;
-  --green-dim: #1f7a48;
-  --green-ink: #04150c; /* text ON green */
-  --green-glow: rgba(61, 220, 132, 0.35);
+  /* ---- Accent: Fairway Green (6.4:1 on --bg as text) ---- */
+  --green: #6fa64e;
+  --green-bright: #97cd72;
+  --green-dim: #4c7635;
+  --green-ink: #141311;
+  --green-tint: rgba(111, 166, 78, 0.12);
+  --bg-translucent: rgba(20, 19, 17, 0.72);
 
-  /* ---- Data hues (charts / chips) ---- */
-  --cyan: #4fd6e0;
-  --amber: #ffcf5c;
-  --violet: #b98cff;
+  /* ---- Data hues (CVD-validated categorical set with --green) ---- */
+  --cyan: #3ba0c0;
+  --amber: #bd873c;
+  --violet: #9a7bd4;
 
   /* ---- Type ---- */
-  --font-head: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-head: "Space Grotesk", "Inter", ui-sans-serif, sans-serif;
   --font-body: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* ---- Layout ---- */
   --maxw: 1120px;
-  --radius: 14px;
-  --radius-sm: 9px;
+  --radius: 0px;
+  --radius-sm: 0px;
   --gap: clamp(1rem, 2vw, 1.5rem);
   --nav-h: 64px;
 
-  --shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
-  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --shadow: none;
+  --ease: cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ---------- Reset ---------- */
@@ -103,8 +104,8 @@ h3,
 h4 {
   font-family: var(--font-head);
   font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
   color: var(--text);
   text-wrap: balance;
 }
@@ -127,6 +128,17 @@ a {
 }
 a:hover {
   color: var(--green-bright);
+}
+/* In-copy links get an underline so they never rely on color alone. */
+p a,
+li a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--green-dim);
+}
+p a:hover,
+li a:hover {
+  text-decoration-color: var(--green-bright);
 }
 
 /* Numbers should be tabular wherever they appear as data. */
@@ -182,14 +194,20 @@ time {
   padding-inline: clamp(1rem, 4vw, 2rem);
 }
 .section {
-  padding-block: clamp(3.5rem, 8vw, 6rem);
+  padding-block: clamp(2.75rem, 6vw, 4.5rem);
 }
 .section-tight {
-  padding-block: clamp(2.5rem, 5vw, 3.5rem);
+  padding-block: clamp(2rem, 4vw, 2.75rem);
+}
+/* Alternate surfaces between top-level sections so pages read with rhythm
+   instead of one flat tone end to end. */
+main > section.section:nth-of-type(even),
+main > section.section-tight:nth-of-type(even) {
+  background: var(--bg-elevated);
 }
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--green);
@@ -207,67 +225,63 @@ time {
   display: inline-flex;
   align-items: center;
   gap: 0.55rem;
-  font-family: var(--font-head);
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: -0.01em;
-  padding: 0.85rem 1.4rem;
-  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 1.4rem;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: transform 0.12s var(--ease), background 0.15s var(--ease),
-    box-shadow 0.15s var(--ease), border-color 0.15s var(--ease);
+  transition: all 0.3s var(--ease);
+  text-transform: uppercase;
   will-change: transform;
 }
 .btn:active {
   transform: translateY(1px);
 }
 .btn-primary {
-  background: var(--green);
-  color: var(--green-ink);
-  box-shadow: 0 0 0 1px var(--green), 0 8px 24px -10px var(--green-glow);
+  background: var(--text);
+  color: var(--bg);
+  border: 1px solid var(--text);
 }
 .btn-primary:hover {
-  background: var(--green-bright);
-  color: var(--green-ink);
-  box-shadow: 0 0 0 1px var(--green-bright), 0 10px 30px -8px var(--green-glow);
+  background: var(--bg);
+  color: var(--text);
+  transform: translateY(-2px);
 }
 .btn-secondary {
-  background: var(--surface);
+  background: transparent;
   color: var(--text);
-  border-color: var(--border-strong);
+  border: 1px solid var(--border-strong);
 }
 .btn-secondary:hover {
-  color: var(--text);
-  border-color: var(--green);
-  background: var(--surface-2);
+  border-color: var(--text);
+  transform: translateY(-2px);
 }
 .btn-coffee {
-  background: #ffdd00;
-  color: #1a1400;
-  font-weight: 600;
-  box-shadow: 0 6px 18px -10px rgba(255, 221, 0, 0.6);
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--amber);
 }
 .btn-coffee:hover {
-  background: #ffe533;
-  color: #1a1400;
-  box-shadow: 0 8px 22px -8px rgba(255, 221, 0, 0.7);
+  background: var(--amber);
+  color: var(--bg);
+  transform: translateY(-2px);
 }
 .btn-lg {
-  font-size: 1.1rem;
+  font-size: 1rem;
   padding: 1rem 1.7rem;
 }
 
 /* ---------- Cards ---------- */
 .card {
-  background: linear-gradient(180deg, var(--surface) 0%, var(--bg-elevated) 100%);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.5rem;
-  transition: border-color 0.18s var(--ease), transform 0.18s var(--ease);
+  padding: 1.75rem 1.5rem;
+  transition: border-color 0.3s var(--ease);
 }
 .card:hover {
-  border-color: var(--border-strong);
+  border-color: var(--text-muted);
 }
 
 /* ---------- Stat chip (e.g. "SMASH 1.49") ---------- */
@@ -281,33 +295,32 @@ time {
   padding: 0.4rem 0.7rem;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  background: rgba(22, 27, 34, 0.7);
-  color: var(--text-muted);
-  backdrop-filter: blur(6px);
+  background: var(--surface);
+  color: var(--text);
   white-space: nowrap;
 }
 .stat-chip b {
-  color: var(--green);
+  color: var(--green-bright);
   font-weight: 600;
   font-size: 0.95rem;
 }
 .stat-chip .label {
-  color: var(--text-dim);
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: 0.68rem;
+  font-size: 0.75rem;
 }
 
 /* ---------- Pill / tag ---------- */
 .pill {
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   letter-spacing: 0.06em;
   padding: 0.25rem 0.6rem;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
-  color: var(--text-muted);
+  color: var(--text);
   background: var(--surface);
 }
 
@@ -318,10 +331,10 @@ time {
   z-index: 0;
   pointer-events: none;
   background-image: radial-gradient(
-    rgba(61, 220, 132, 0.11) 1px,
+    var(--green-tint) 1px,
     transparent 1.4px
   );
-  background-size: 26px 26px;
+  background-size: 32px 32px;
   mask-image: radial-gradient(
     ellipse 80% 70% at 50% 0%,
     #000 0%,

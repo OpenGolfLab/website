@@ -1,0 +1,182 @@
+/* =========================================================================
+   The Lab — chrome shared across /lab, /lab/roadmap, /lab/community and the
+   top-level /gear guide (which reuses this hero/body/band scaffolding).
+   Section-specific chart CSS stays scoped in its own page.
+   ========================================================================= */
+
+.lab-hero {
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  background: radial-gradient(
+    120% 90% at 50% -20%,
+    var(--green-tint),
+    transparent 60%
+  );
+}
+.lab-hero-inner {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(2rem, 5vw, 3rem);
+  max-width: 64ch;
+}
+.lab-status {
+  color: var(--green);
+  border-color: var(--green-dim);
+  margin-bottom: 1rem;
+}
+.lab-noemail {
+  margin-top: 1.3rem;
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.lab-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 7vw, 5rem);
+  padding-block: clamp(2rem, 5vw, 3rem);
+}
+
+/* Two sticky bars stack here (site nav + section nav, ~114px). Without this, a
+   deep link like /gear#irons parks its target underneath them. Applies to both
+   headings with ids and the section wrappers the Gear jump-nav points at. */
+.lab-body :is(h1, h2, h3)[id],
+.lab-body section[id] {
+  scroll-margin-top: calc(var(--nav-h) + 64px);
+}
+
+/* ---- Section bands ---- */
+.lab-band {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+.lab-band-head h2 {
+  margin-top: 0.6rem;
+  margin-bottom: 0.5rem;
+}
+.lab-band-pill {
+  font-weight: 600;
+}
+.lab-band-pill.live {
+  color: var(--green);
+  border-color: var(--green-dim);
+}
+.lab-band-pill.progress {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+.lab-section h3 {
+  margin-bottom: 0.6rem;
+  font-size: clamp(1.3rem, 2.6vw, 1.7rem);
+}
+.lab-section + .lab-section {
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+}
+.lab-caption {
+  margin-top: 1rem;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  color: var(--text-dim);
+}
+/* When a caption sits directly in a band, cancel most of the band's flex gap
+   so the caption hugs the chart it describes instead of floating between
+   sections. */
+.lab-band > .lab-caption {
+  margin-top: calc(0.6rem - clamp(1.75rem, 4vw, 2.5rem));
+}
+.lab-stat-line {
+  margin-top: 0.6rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  color: var(--text-dim);
+}
+
+/* ---- Build status list ---- */
+.build-status {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.build-status li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+}
+.build-mark {
+  font-size: 1rem;
+}
+.build-status li.done {
+  color: var(--text);
+}
+.build-status li.done .build-mark {
+  color: var(--green);
+}
+.build-status li.active {
+  color: var(--text);
+  border-color: var(--amber);
+}
+.build-status li.active .build-mark {
+  color: var(--amber);
+}
+.build-status li.pending {
+  color: var(--text-dim);
+}
+.build-status li.pending .build-mark {
+  color: var(--text-dim);
+}
+@media (max-width: 700px) {
+  .build-status {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.lab-cta-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* ---- "Planned" placeholder, used where a dataset isn't built yet ---- */
+.lab-planned {
+  border: 1px dashed var(--border-strong);
+  background: var(--surface);
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.lab-planned-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+.lab-planned-head h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--text-muted);
+}
+.lab-planned p {
+  color: var(--text-dim);
+  font-size: 0.92rem;
+  max-width: 62ch;
+}
+.lab-planned-pill {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}

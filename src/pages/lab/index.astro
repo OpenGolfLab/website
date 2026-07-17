@@ -1,0 +1,314 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LabNav from "../../components/LabNav.astro";
+import { GITHUB_URL, GITHUB_WATCH_URL } from "../../consts";
+import "../../styles/lab.css";
+
+const title = "The Lab";
+const description =
+  "The OpenGolfLab hub for GSPro-driven community analytics — the vision and roadmap for open, crowd-sourced golf analytics: real-world ball comparisons, gapping by handicap, and launch/spin norms built from anonymized GSPro sessions.";
+
+// The plan in three acts — the old /lab/roadmap page, distilled into a story.
+// Deliberately no dates: this is a free project built in spare time; a missed
+// date is a broken promise, an ordered list is not.
+const acts = [
+  {
+    mark: "✓",
+    state: "done",
+    stateLabel: "Shipped",
+    title: "Build the instruments",
+    body: "Golf Sim Analytics captures every GSPro shot automatically, free. The Gear Guide maps every major driver, iron, wedge and ball against live street prices. And the contribution pipeline — consent-gated, anonymized, quality-controlled — is built and tested end to end.",
+  },
+  {
+    mark: "◐",
+    state: "now",
+    stateLabel: "Happening now",
+    title: "Collect the first dataset",
+    body: "Everything upstream works. What's left is contributors: no club publishes until enough golfers have submitted it, so the numbers are worth trusting on day one. Every opt-in session moves the bar.",
+  },
+  {
+    mark: "○",
+    state: "next",
+    stateLabel: "What it unlocks",
+    title: "Answer what nobody else can",
+    body: "Once the dataset clears its thresholds, the questions that started this project get real answers:",
+  },
+];
+
+// Act III payoffs — the reason to get excited.
+const payoffs = [
+  {
+    name: "Ball comparisons",
+    detail:
+      "What a premium ball actually does for your game — measured across thousands of real shots, not a robot and a marketing budget. The question that started this project.",
+  },
+  {
+    name: "Gapping by handicap",
+    detail:
+      "What real distance gaps look like at your level, so you can tell a genuine hole in your set from a magazine number.",
+  },
+  {
+    name: "Norms by swing speed",
+    detail:
+      "Launch, spin and dispersion norms sliced by driver speed — a 95 mph twelve and a 108 mph twelve need different answers.",
+  },
+  {
+    name: "Old club vs. new",
+    detail:
+      "What does a 2020 driver actually give up to a 2026? Real golfers and real shots, instead of robot tests.",
+  },
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight lab-hero">
+    <div class="grid-bg"></div>
+    <div class="container lab-hero-inner">
+      <span class="pill lab-status">◐ Community dataset in progress</span>
+      <h1>The Lab</h1>
+      <p class="lede" style="margin-top:1rem;">
+        Every shot from your launch monitor tells a story about your game, but
+        the bigger picture requires a crowd. The Lab is GSPro-driven community
+        analytics: anonymized simulator sessions aggregated to build what no
+        individual can — community-driven
+        ball and club comparisons, true gapping by handicap, and launch and spin
+        norms to help you find the absolute best equipment for your game.
+      </p>
+      <div class="hero-cta" style="margin-top:1.6rem;">
+        <a href="/download" class="btn btn-primary">Get the app</a>
+        <a href={GITHUB_WATCH_URL} class="btn btn-secondary" rel="noopener">
+          Watch the repo
+        </a>
+      </div>
+      <p class="lab-noemail">
+        No newsletter, no sign-up. Watch the
+        <a href={GITHUB_URL} rel="noopener">GitHub repo</a> or follow the
+        <a href="/blog">blog</a> and you'll know the moment data goes live.
+      </p>
+    </div>
+  </section>
+
+  <LabNav />
+
+  <div class="container lab-body">
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">How it works</p>
+        <h2>From your bay to the dataset</h2>
+      </div>
+      <ol class="lab-flow">
+        <li>
+          <span class="lab-flow-n tnum">01</span>
+          <h3>You play</h3>
+          <p>
+            <a href="/golf-sim-analytics">Golf Sim Analytics</a> captures every
+            GSPro session automatically. Everything stays on your machine by
+            default — the app is fully useful without ever contributing.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">02</span>
+          <h3>You opt in</h3>
+          <p>
+            If you choose to, the app exports an anonymized bundle: ball and
+            club metrics plus your launch monitor model. No name, no account, no
+            course, no scores. See <a href="/privacy">data &amp; privacy</a>.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">03</span>
+          <h3>We aggregate</h3>
+          <p>
+            Quality control drops mislabeled and implausible shots. Each golfer
+            is reduced to one summary per club — one golfer, one vote — then
+            combined with robust medians so no single big session can move a
+            number. The exact rules are in the
+            <a href="/lab/methodology"> methodology</a>.
+          </p>
+        </li>
+        <li>
+          <span class="lab-flow-n tnum">04</span>
+          <h3>Everyone gets it back</h3>
+          <p>
+            Results publish here, free and open, split into quality tiers so you
+            can decide how much trust a number has earned.
+          </p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="lab-band" id="roadmap">
+      <div class="lab-band-head">
+        <p class="eyebrow">The plan</p>
+        <h2>Where this is headed</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          No dates — this is a free project built in spare time, and a missed
+          date is a broken promise. Order is a real signal; timing isn't.
+        </p>
+      </div>
+
+      <ol class="acts">
+        {
+          acts.map((a) => (
+            <li class:list={["act", `is-${a.state}`]}>
+              <span class="act-mark" aria-hidden="true">{a.mark}</span>
+              <div class="act-body">
+                <p class="act-state">{a.stateLabel}</p>
+                <h3>{a.title}</h3>
+                <p class="act-detail">{a.body}</p>
+                {a.state === "next" && (
+                  <ul class="payoffs">
+                    {payoffs.map((p) => (
+                      <li class="card payoff">
+                        <h4>{p.name}</h4>
+                        <p>{p.detail}</p>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <p class="exploring text-muted">
+        Further out, ideas we like but haven't committed to: handicap tracking
+        and a voice caddy. <a href={GITHUB_URL} rel="noopener">Open an issue</a>
+        if one matters to you — that's how it moves up.
+      </p>
+    </section>
+
+    <section class="lab-band lab-band-cta">
+      <div class="card lab-cta-card">
+        <h2>Help shape what comes next</h2>
+        <p class="text-muted" style="margin-top:0.5rem;max-width:56ch;">
+          The Lab is built in the open, and this plan is shaped by what people
+          actually ask for. Feature requests, opinions on what data to collect,
+          and privacy scrutiny are all equally welcome.
+        </p>
+        <div class="hero-cta" style="margin-top:1.2rem;">
+          <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">
+            Open on GitHub
+          </a>
+          <a href="/download" class="btn btn-secondary">Get the app</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  /* ---- How it works ---- */
+  .lab-flow {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: var(--gap);
+    counter-reset: flow;
+  }
+  .lab-flow li {
+    border-top: 1px solid var(--border-strong);
+    padding-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .lab-flow-n {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--green);
+    letter-spacing: 0.1em;
+  }
+  .lab-flow h3 {
+    font-size: 1.05rem;
+  }
+  .lab-flow p {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  /* ---- The plan: three acts ---- */
+  .acts {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .act {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: 0.9rem;
+    padding-block: 1.4rem;
+  }
+  .act + .act {
+    border-top: 1px solid var(--border);
+  }
+  .act-mark {
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+  .is-done .act-mark {
+    color: var(--green);
+  }
+  .is-now .act-mark {
+    color: var(--amber);
+  }
+  .is-next .act-mark {
+    color: var(--text-dim);
+  }
+  .act-state {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 0.25rem;
+  }
+  .is-done .act-state {
+    color: var(--green);
+  }
+  .is-now .act-state {
+    color: var(--amber);
+  }
+  .act h3 {
+    font-size: 1.3rem;
+  }
+  .act-detail {
+    margin-top: 0.45rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    max-width: 66ch;
+  }
+
+  .payoffs {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.1rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
+  }
+  .payoff h4 {
+    font-size: 1.02rem;
+  }
+  .payoff p {
+    margin-top: 0.35rem;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+  }
+
+  .exploring {
+    margin-top: 1.4rem;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 700px) {
+    .payoffs {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
