@@ -3,16 +3,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
 import { loadMarket, loadBallMarket, loadCommunity } from "../lib/lab";
 
-// Real counts, computed at build from the lineup datasets — no slogans.
+// Real counts, computed at build from the lineup datasets. No slogans.
 const market = loadMarket();
 const balls = loadBallMarket();
 const community = loadCommunity();
-const driverCount = market.modelCount;
-const ballCount = balls.modelCount;
-// Brands = union across both datasets, so it stays honest as sections ship.
-const brandCount = new Set(
-  [...market.lineups, ...balls.lineups].map((l: any) => l.brand),
-).size;
 
 // The Lab's two pillars, promoted from the Lab overview to the homepage.
 // Order matters: Community Data feeds the Gear Guide, so it renders first
@@ -27,7 +21,7 @@ const labTiles = [
       ? `${community.totalContributors} golfers · ${community.totalShots.toLocaleString()} shots`
       : "Collecting first dataset",
     blurb:
-      "Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone — one golfer, one vote, so a big session can't skew a result.",
+      "Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone. One golfer, one vote, so a big session can't skew a result.",
     covers: [
       "Launch & spin norms by club",
       "Driver dispersion",
@@ -43,7 +37,7 @@ const labTiles = [
       ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}irons · wedges`
       : "Not published yet",
     blurb:
-      "Where every driver, iron, wedge and ball sits — forgiveness to distance, soft to max spin — and what it actually costs today. Researched specs and live street prices now, sharpened by community numbers as the dataset grows.",
+      "Where every driver, iron, wedge and ball sits (forgiveness to distance, soft to max spin) and what it actually costs today. Researched specs and live street prices now, sharpened by community numbers as the dataset grows.",
     covers: [
       "Driver lineup spectrum",
       "Iron & wedge maps",
@@ -53,7 +47,7 @@ const labTiles = [
   },
 ];
 
-// One positive trio — replaces the old "problems" + "framework" sections.
+// One positive trio, replaces the old "problems" + "framework" sections.
 const ideas = [
   {
     n: "01",
@@ -63,12 +57,12 @@ const ideas = [
   {
     n: "02",
     title: "One shared method",
-    body: "Everyone measures the same way, following one open, documented protocol — so contributions add up to comparisons that are truly apples-to-apples.",
+    body: "Everyone measures the same way, following one open, documented protocol, so contributions add up to comparisons that are truly apples-to-apples.",
   },
   {
     n: "03",
     title: "Open results, for everyone",
-    body: "Real ball comparisons, club gapping by handicap, launch and spin norms — free and open for any golfer to use.",
+    body: "Real ball comparisons, club gapping by handicap, launch and spin norms, free and open for any golfer to use.",
   },
 ];
 ---
@@ -95,7 +89,7 @@ const ideas = [
       <span class="pill hero-openpill">◆ GSPro-driven community analytics · free &amp; open</span>
       <h1 class="hero-title">Your sim is the lab. Your swings are the data.</h1>
       <p class="lede hero-lede">
-        Pool your shots with thousands of GSPro golfers — and find out what
+        Pool your shots with thousands of GSPro golfers, and find out what
         actually deserves a spot in your bag.
       </p>
 
@@ -104,20 +98,11 @@ const ideas = [
         <a href="/lab" class="btn btn-secondary btn-lg">Preview the Lab ↗</a>
       </div>
 
+      {/* One row, mission only: why you can join without hesitation. The
+          gear-tracking counts live on the Gear Guide where they're relevant. */}
       <p class="hero-contrast" role="note">
-        No photo scans · No CSV wrangling · No subscription · No account
+        Free · No account · Opt-in sharing · Open method
       </p>
-
-      <div class="hero-chips" role="list" aria-label="At a glance">
-        <span class="stat-chip" role="listitem"><span class="label">Dashboards</span><b>15</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Drivers tracked</span><b>{driverCount}</b></span>
-        {ballCount > 0 && (
-          <span class="stat-chip" role="listitem"><span class="label">Balls tracked</span><b>{ballCount}</b></span>
-        )}
-        <span class="stat-chip" role="listitem"><span class="label">Brands</span><b>{brandCount}</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">History</span><b>Unlimited</b></span>
-        <span class="stat-chip" role="listitem"><span class="label">Price</span><b>$0</b></span>
-      </div>
     </div>
   </section>
 
@@ -153,7 +138,7 @@ const ideas = [
           <p class="eyebrow">The instrument</p>
           <h2>{PRODUCT_NAME} is the instrument</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
-            {PRODUCT_NAME} — our free GSPro companion — captures every shot
+            {PRODUCT_NAME}, our free GSPro companion, captures every shot
             automatically and turns it into 15 dashboards, so you get sharper
             practice today and (only if you opt in) help build the shared
             dataset tomorrow.
@@ -185,7 +170,7 @@ const ideas = [
       <p class="lede" style="margin-top:0.9rem;max-width:66ch;">
         Community Data is the input: anonymized, opt-in GSPro sessions pooled
         into measured performance numbers. The Gear Guide is where they pay
-        off — the insights that tell you what to actually buy.
+        off: the insights that tell you what to actually buy.
       </p>
 
       <div class="lab-tiles">
@@ -233,7 +218,7 @@ const ideas = [
         <div class="openfree-inner">
           <h2>Independent and community-driven.</h2>
           <p class="lede mx-auto" style="text-align:center;margin-top:0.8rem;">
-            OpenGolfLab is built in the open, by golfers for golfers — the data
+            OpenGolfLab is built in the open, by golfers for golfers, the data
             belongs to the community, not to any single brand. Fueling the Lab
             keeps it running, and every shot you choose to contribute makes the
             picture sharper for everyone.
@@ -483,7 +468,7 @@ const ideas = [
     align-items: center;
     justify-content: center;
   }
-  /* Show the full screenshot at its natural shape — no cropping. */
+  /* Show the full screenshot at its natural shape, no cropping. */
   .tool-shot img {
     width: 100%;
     height: auto;

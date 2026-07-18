@@ -18,6 +18,10 @@ export default defineConfig({
     // The Roadmap moved under The Lab, then merged into the Lab overview.
     // (/lab/roadmap itself is a redirect stub page → /lab#roadmap.)
     "/roadmap": "/lab#roadmap",
+    // Two launch posts ("Introducing OpenGolfLab", "GSPro has no memory")
+    // merged into one flagship story. Keep the old links live.
+    "/blog/introducing-opengolflab": "/blog/gspro-forgets-community-remembers",
+    "/blog/gspro-has-no-memory": "/blog/gspro-forgets-community-remembers",
   },
 
   // Static output is the default: no adapter, no SSR, no server code.

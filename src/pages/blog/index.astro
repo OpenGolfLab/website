@@ -5,13 +5,13 @@ import FormattedDate from "../../components/FormattedDate.astro";
 
 const title = "Blog";
 const description =
-  "Updates from OpenGolfLab — releases, deep dives on simulator analytics, and progress on the community data Lab.";
+  "Updates from OpenGolfLab, releases, deep dives on simulator analytics, and progress on the community data Lab.";
 
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
-// Category filter bar — only show categories that actually have posts.
+// Category filter bar, only show categories that actually have posts.
 const ORDER = ["Research", "Product", "Guides", "Updates"] as const;
 const present = ORDER.filter((c) => posts.some((p) => p.data.category === c));
 const filters = ["All", ...present];
@@ -33,7 +33,7 @@ const filters = ["All", ...present];
   <div class="container blog-body">
     {
       posts.length === 0 ? (
-        <p class="text-muted">No posts yet — check back soon.</p>
+        <p class="text-muted">No posts yet, check back soon.</p>
       ) : (
         <>
           <div class="filter-bar" role="tablist" aria-label="Filter posts by category">

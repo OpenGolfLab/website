@@ -5,35 +5,35 @@ import { GITHUB_URL } from "../../consts";
 import { loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
-const title = "Methodology — The Lab";
+const title = "Methodology, The Lab";
 const description =
-  "The exact rules behind OpenGolfLab's community data: consent gating, in-app anonymization, quality control, one-golfer-one-vote aggregation, robust medians, publish thresholds, and trust tiers — all versioned and enforced in open code.";
+  "The exact rules behind OpenGolfLab's community data: consent gating, in-app anonymization, quality control, one-golfer-one-vote aggregation, robust medians, publish thresholds, and trust tiers, all versioned and enforced in open code.";
 
 const { minContributors } = loadCommunity();
 
-// The pipeline, stage by stage. Precise rules — the narrative version lives on
+// The pipeline, stage by stage. Precise rules, the narrative version lives on
 // the Lab overview; the privacy details live on /privacy. No overlap.
 const stages = [
   {
     n: "01",
     title: "Consent gate",
-    body: `Contribution is off by default. The export path refuses to run without a recorded consent (policy v1.0) — there is no code path that shares data without it. Withdrawing consent stops future exports immediately.`,
+    body: `Contribution is off by default. The export path refuses to run without a recorded consent (policy v1.0), there is no code path that shares data without it. Withdrawing consent stops future exports immediately.`,
   },
   {
     n: "02",
     title: "Anonymize at the source",
-    body: `The bundle is built inside the app, on your machine, before anything is transmitted — anonymization is not a server-side promise. Only mapped shot metrics are included (data format v1.1); names, paths and timestamps are dropped by construction. A random, persisted id exists solely to de-duplicate submissions.`,
+    body: `The bundle is built inside the app, on your machine, before anything is transmitted, anonymization is not a server-side promise. Only mapped shot metrics are included (data format v1.1); names, paths and timestamps are dropped by construction. A random, persisted id exists solely to de-duplicate submissions.`,
     link: { href: "/privacy", label: "Exactly what's in a bundle →" },
   },
   {
     n: "03",
     title: "Validate & screen",
-    body: `A submission must carry the core measurements — ball speed, launch angle, spin and carry, per club — or it doesn't enter the pool. Plausibility screens then drop mislabeled and impossible shots (the 280-yard "7-iron") before they can touch a published number.`,
+    body: `A submission must carry the core measurements, ball speed, launch angle, spin and carry, per club, or it doesn't enter the pool. Plausibility screens then drop mislabeled and impossible shots (the 280-yard "7-iron") before they can touch a published number.`,
   },
   {
     n: "04",
     title: "One golfer, one vote",
-    body: `Each contributor is reduced to a single summary per club before pooling. Five drives or five hundred, every golfer moves the result equally — volume buys no influence.`,
+    body: `Each contributor is reduced to a single summary per club before pooling. Five drives or five hundred, every golfer moves the result equally, volume buys no influence.`,
   },
   {
     n: "05",
@@ -43,7 +43,7 @@ const stages = [
   {
     n: "06",
     title: "Publish threshold",
-    body: `No club publishes until at least ${minContributors} golfers have contributed it. Below the threshold, the number simply doesn't exist publicly — a thin sample is worse than no sample.`,
+    body: `No club publishes until at least ${minContributors} golfers have contributed it. Below the threshold, the number simply doesn't exist publicly, a thin sample is worse than no sample.`,
   },
 ];
 
@@ -57,7 +57,7 @@ const tiers = [
   {
     name: "Verified",
     who: "Contributors on spin-measuring hardware (camera units and high-end radar), with a consistent submission history.",
-    adds: "Spin publishes here and above — measured, not modeled.",
+    adds: "Spin publishes here and above, measured, not modeled.",
   },
   {
     name: "Reference",
@@ -70,7 +70,7 @@ const tiers = [
 const limits = [
   {
     title: "Instruments are self-declared",
-    body: "The app can't inspect your launch monitor. A declared model is spoofable — which is why it only gates a contribution's ceiling tier, never its acceptance, and why the spin-measuring allowlist is kept deliberately conservative.",
+    body: "The app can't inspect your launch monitor. A declared model is spoofable, which is why it only gates a contribution's ceiling tier, never its acceptance, and why the spin-measuring allowlist is kept deliberately conservative.",
   },
   {
     title: "It's simulator golf",
@@ -92,7 +92,7 @@ const limits = [
       <p class="lede" style="margin-top:1rem;">
         Crowd-sourced data is easy to do badly, so every rule here is specific,
         versioned, and enforced in code anyone can read. Nothing on this page
-        is aspirational — each stage exists in the shipped pipeline today.
+        is aspirational, each stage exists in the shipped pipeline today.
       </p>
       <div class="hero-cta" style="margin-top:1.6rem;">
         <a href={GITHUB_URL} class="btn btn-primary" rel="noopener">Read the code</a>
@@ -165,7 +165,7 @@ const limits = [
         <h2>Versioned, dated, regenerated</h2>
         <p class="text-muted" style="max-width:66ch;">
           The data format (v1.1) and consent policy (v1.0) are explicitly
-          versioned — if either changes, the version bumps, the in-app consent
+          versioned, if either changes, the version bumps, the in-app consent
           screen and <a href="/privacy">privacy page</a> update to match, and
           the change applies going forward only. Published aggregates carry
           their generation date, and the whole dataset is regenerated rather

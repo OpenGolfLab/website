@@ -9,7 +9,7 @@ interface Props {
   image?: string;
   /** "website" | "article" */
   type?: string;
-  /** Article publish date (ISO) — sets article:published_time. */
+  /** Article publish date (ISO), sets article:published_time. */
   publishedTime?: string;
 }
 
@@ -21,7 +21,7 @@ const {
   publishedTime,
 } = Astro.props;
 
-const pageTitle = title ? `${title} · ${SITE_TITLE}` : `${SITE_TITLE} — Every shot. Every insight.`;
+const pageTitle = title ? `${title} · ${SITE_TITLE}` : `${SITE_TITLE}, Every shot. Every insight.`;
 
 // Canonical + absolute OG URL from the configured `site`.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
