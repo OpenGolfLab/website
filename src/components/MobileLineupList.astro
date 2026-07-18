@@ -13,6 +13,10 @@ const { lineups, legend } = Astro.props;
 
 {/* Mobile-only fallback: stacked per-brand lists, no forced horizontal scroll. */}
 <div class="continuum-mobile">
+  <p class="continuum-mobile-note">
+    Compact list view — rotate to landscape or open on a wider screen for the
+    full chart.
+  </p>
   {legend && <p class="continuum-mobile-legend">{legend}</p>}
   {lineups.map((lineup) => (
     <div class="continuum-mobile-brand">
@@ -47,6 +51,12 @@ const { lineups, legend } = Astro.props;
     font-size: 0.78rem;
     letter-spacing: 0.04em;
     color: var(--text-dim);
+  }
+  .continuum-mobile-note {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    border-left: 2px solid var(--border-strong);
+    padding-left: 0.7rem;
   }
 
   @media (max-width: 700px) {
