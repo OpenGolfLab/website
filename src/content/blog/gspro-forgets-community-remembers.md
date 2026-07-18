@@ -62,7 +62,7 @@ Crowd data is only as good as its honesty, so the pipeline is deliberately stric
 - **Opt-in and anonymized.** Sharing is off until you turn it on. You pick which sessions go. What ships is stripped to shot metrics plus a display name you choose; raw data never leaves the private store, and only aggregates are ever published.
 - **One golfer, one vote.** Every published number is a median of per-golfer medians. Upload 100 sessions or one, you count once, so a marathon uploader can't move a result.
 - **Physics-checked.** Every shot passes sanity ranges and per-club plausibility screens before it counts.
-- **Open method.** The [entire methodology](/lab/methodology) is versioned and enforced in code anyone can read.
+- **Open method.** The [entire methodology](/lab#methodology) is versioned and enforced in code anyone can read.
 
 ## Every shot. Every insight.
 
