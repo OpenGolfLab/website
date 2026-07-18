@@ -14,16 +14,11 @@
     "binding": "ASSETS",
     "directory": "dist"
   },
-  // Serve the site from the branded domain, not just *.workers.dev. On deploy,
-  // wrangler attaches these as Worker Custom Domains and manages their DNS +
-  // TLS. NOTE: if opengolflab.com already has a conflicting DNS record (e.g. the
-  // old GitHub Pages CNAME), the deploy errors with "record already exists" —
-  // delete that record in the zone's DNS tab first. The bot challenge on this
-  // zone is separate: turn off Bot Fight Mode or the app's fetch still 403s here
-  // (which is why config.OPENGOLFLAB_COMMUNITY_URL stays on workers.dev until
-  // opengolflab.com returns 200 to a plain client).
-  "routes": [
-    { "pattern": "opengolflab.com", "custom_domain": true },
-    { "pattern": "www.opengolflab.com", "custom_domain": true }
-  ]
+  // Keep the *.workers.dev URL enabled — it's what the desktop app fetches
+  // (config.OPENGOLFLAB_COMMUNITY_URL). Adding custom-domain `routes` here
+  // silently disabled it and, when the domain attach failed, left NO working
+  // URL. Attaching opengolflab.com is being done from the Cloudflare dashboard
+  // instead (it manages the DNS record + token scope that the CI deploy can't),
+  // so this file stays workers.dev-only.
+  "workers_dev": true
 }
