@@ -2,10 +2,7 @@
 // Site-wide constants. Change these in ONE place.
 // ---------------------------------------------------------------------------
 
-/**
- * GitHub repository that hosts the app releases, in "OWNER/REPO" form.
- * ⇩⇩⇩  REPLACE THIS with your real repo, e.g. "opengolflab/golf-sim-analytics".
- */
+/** GitHub repository that hosts the app releases, in "OWNER/REPO" form. */
 export const GITHUB_REPO = "opengolflab/golf-sim-analytics";
 
 /** Full URL to the GitHub repo. */

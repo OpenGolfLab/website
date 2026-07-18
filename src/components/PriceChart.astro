@@ -1,0 +1,246 @@
+---
+interface Props {
+  lineups: any[];
+  axisTicks: number[];
+  axisMaxRounded: number;
+  ariaLabel: string;
+  titleFor?: (brand: string, model: any) => string;
+}
+
+const { lineups, axisTicks, axisMaxRounded, ariaLabel, titleFor } = Astro.props;
+---
+
+<div class="price-chart-wrap" role="region" aria-label={ariaLabel}>
+  <div class="price-chart-axis" aria-hidden="true">
+    <div class="price-chart-axis-spacer" />
+    <div class="price-chart-axis-ticks">
+      {axisTicks.map((t) => (
+        <span class="price-chart-axis-tick" style={`left:${(t / axisMaxRounded) * 100}%`}>${t}</span>
+      ))}
+    </div>
+  </div>
+
+  <div class="price-chart-body">
+    {lineups.map((lineup: any) => (
+      <div class="price-chart-group">
+        <div class="price-chart-brand">{lineup.brand}</div>
+        <div class="price-chart-bars">
+          {lineup.models.map((model: any) => {
+            const msrpPct = (model.msrp / axisMaxRounded) * 100;
+            const pricePct = (model.price / axisMaxRounded) * 100;
+            const savings = model.msrp - model.price;
+            const hasDiscount = savings > 0;
+            return (
+              <a
+                href={model.dealerUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="price-row"
+                class:list={[{ discounted: hasDiscount }]}
+                title={titleFor ? titleFor(lineup.brand, model) : undefined}
+              >
+                <span class="price-row-model">{model.name}</span>
+                <div class="price-row-track">
+                  {axisTicks.map((t) => (
+                    <span class="price-chart-gridline" style={`left:${(t / axisMaxRounded) * 100}%`} aria-hidden="true" />
+                  ))}
+                  <span
+                    class="price-row-connector"
+                    style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
+                    aria-hidden="true"
+                  />
+                  <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
+                  <span
+                    class="price-row-dot price"
+                    class:list={[{ discount: hasDiscount }]}
+                    style={`left:${pricePct}%`}
+                    aria-hidden="true"
+                  />
+                </div>
+                <span class="price-row-values tnum">
+                  <span class="price-row-price">${model.price}</span>
+                  {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
+                  <span class="price-row-dealer">{model.dealer || "—"}</span>
+                </span>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  /* ---- Pricing dumbbell chart ---- */
+  .price-chart-wrap {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 1.5rem 1.5rem 2rem;
+    max-width: 1000px;
+  }
+  .price-chart-axis {
+    display: flex;
+    margin-bottom: 1.5rem;
+  }
+  .price-chart-axis-spacer {
+    width: 160px;
+    flex-shrink: 0;
+  }
+  .price-chart-axis-ticks {
+    flex-grow: 1;
+    position: relative;
+    height: 1rem;
+    padding-right: 200px;
+  }
+  .price-chart-axis-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .price-chart-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  .price-chart-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+  .price-chart-brand {
+    font-family: var(--font-head);
+    font-size: 1rem;
+    color: var(--green);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.25rem;
+  }
+  .price-chart-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .price-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    text-decoration: none;
+  }
+  .price-row-model {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    width: 160px;
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.15s ease;
+  }
+  .price-row:hover .price-row-model {
+    color: var(--text);
+  }
+  .price-row-track {
+    flex-grow: 1;
+    position: relative;
+    height: 20px;
+  }
+  .price-chart-gridline {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border);
+    opacity: 0.6;
+  }
+  .price-row-connector {
+    position: absolute;
+    top: 50%;
+    height: 2px;
+    background: var(--border-strong);
+    transform: translateY(-50%);
+    z-index: 1;
+  }
+  .price-row.discounted .price-row-connector {
+    background: var(--green-dim);
+  }
+  .price-row-dot {
+    position: absolute;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .price-row-dot.msrp {
+    background: var(--bg-elevated);
+    border: 2px solid var(--text-dim);
+  }
+  .price-row-dot.price {
+    background: var(--text-dim);
+    border: 2px solid var(--text-dim);
+  }
+  .price-row-dot.price.discount {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+  }
+  .price-row-values {
+    flex: 0 0 200px;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .price-row-price {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .price-row-msrp {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-decoration: line-through;
+  }
+  .price-row-dealer {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  @media (max-width: 700px) {
+    .price-chart-wrap {
+      overflow-x: auto;
+    }
+    .price-chart-axis-spacer,
+    .price-row-model {
+      width: 110px;
+    }
+    .price-row-dealer {
+      display: none;
+    }
+    /* The dealer column is hidden here, so give its share of the 200px value
+       column back to the chart track (and keep the axis aligned with it). */
+    .price-chart-axis-ticks {
+      padding-right: 110px;
+    }
+    .price-row-values {
+      flex-basis: 110px;
+    }
+  }
+</style>

@@ -1,6 +1,9 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import GearNav from "../components/GearNav.astro";
+import PriceChart from "../components/PriceChart.astro";
+import QuadrantMap from "../components/QuadrantMap.astro";
+import MobileLineupList from "../components/MobileLineupList.astro";
 import {
   loadMarket,
   loadBallMarket,
@@ -351,6 +354,8 @@ const ballMap = (() => {
     x: toX(p.position),
     y: toY(p.compression),
     premium: /urethane/i.test(p.construction),
+    cls: /urethane/i.test(p.construction) ? "premium" : "value",
+    title: `${p.brand} ${p.name}, ${p.construction}, compression ~${p.compression}, $${p.price}/dz`,
     label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
       ? p.name
       : `${p.brand} ${p.name}`,
@@ -475,6 +480,7 @@ const ironMap = (() => {
     x: toX(p.position),
     y: toY(p.loft7),
     cls: IRON_CATS[p.category]?.cls ?? "cat-gi",
+    title: `${p.brand} ${p.name}, ${IRON_CATS[p.category]?.label ?? p.category}, ${p.construction}, 7-iron ${p.loft7}°, $${p.price} (${p.config})`,
     label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
       ? p.name
       : `${p.brand} ${p.name}`,
@@ -585,6 +591,7 @@ const wedgeMap = (() => {
     x: toX(p.position),
     y: toY(p.bounce),
     cls: WEDGE_CATS[p.category]?.cls ?? "cat-gi",
+    title: `${p.brand} ${p.name}, ${WEDGE_CATS[p.category]?.label ?? p.category}, ${p.construction}, ${p.loft}° · ${p.bounce}° bounce, $${p.price}`,
     label: p.name.toLowerCase().startsWith(p.brand.toLowerCase())
       ? p.name
       : `${p.brand} ${p.name}`,
@@ -636,6 +643,41 @@ const wedgeProfiles = [
     quadrant: "↘ Shop the bottom-right: tour blade, low bounce",
   },
 ];
+
+// ---- Mobile-fallback lineup lists ------------------------------------------
+// Same spectrumLineups data as the desktop continuum/quadrant-map, reshaped
+// for the stacked mobile list: each model optionally carries a `sub` line.
+const driverMobileLineups = spectrumLineups.map((lineup: any) => ({
+  brand: lineup.brand,
+  models: lineup.models.map((model: any) => ({
+    name: model.name,
+    position: model.position,
+  })),
+}));
+const ironMobileLineups = irons.spectrumLineups.map((lineup: any) => ({
+  brand: lineup.brand,
+  models: lineup.models.map((model: any) => ({
+    name: model.name,
+    position: model.position,
+    sub: `${IRON_CATS[model.category]?.label ?? model.category} · 7-iron ${model.loft7}° · ${model.construction}`,
+  })),
+}));
+const wedgeMobileLineups = wedges.spectrumLineups.map((lineup: any) => ({
+  brand: lineup.brand,
+  models: lineup.models.map((model: any) => ({
+    name: model.name,
+    position: model.position,
+    sub: `${WEDGE_CATS[model.category]?.label ?? model.category} · ${model.loft}° · ${model.bounce}° bounce · ${model.grind}`,
+  })),
+}));
+const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
+  brand: lineup.brand,
+  models: lineup.models.map((model: any) => ({
+    name: model.name,
+    position: model.position,
+    sub: `${model.construction} · compression ~${model.compression}`,
+  })),
+}));
 ---
 
 <BaseLayout title={title} description={description}>
@@ -716,22 +758,10 @@ const wedgeProfiles = [
               </div>
             </div>
 
-            {/* Mobile-only fallback: stacked per-brand lists, no forced horizontal scroll. */}
-            <div class="continuum-mobile">
-              {spectrumLineups.map((lineup: any) => (
-                <div class="continuum-mobile-brand">
-                  <strong>{lineup.brand}</strong>
-                  <ul>
-                    {lineup.models.map((model: any) => (
-                      <li>
-                        <span>{model.name}</span>
-                        <span class="continuum-mobile-pos tnum">{model.position}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <MobileLineupList
+              lineups={driverMobileLineups}
+              legend="Position 0–100: max forgiveness → pure distance"
+            />
 
             <p class="lab-caption">
               Positions are researched estimates from manufacturer positioning +
@@ -798,65 +828,12 @@ const wedgeProfiles = [
               </p>
             </div>
 
-            <div class="price-chart-wrap" role="region" aria-label="Pricing dumbbell chart">
-              <div class="price-chart-axis" aria-hidden="true">
-                <div class="price-chart-axis-spacer" />
-                <div class="price-chart-axis-ticks">
-                  {axisTicks.map((t) => (
-                    <span class="price-chart-axis-tick" style={`left:${(t / axisMaxRounded) * 100}%`}>${t}</span>
-                  ))}
-                </div>
-              </div>
-
-              <div class="price-chart-body">
-                {pricingLineups.map((lineup: any) => (
-                  <div class="price-chart-group">
-                    <div class="price-chart-brand">{lineup.brand}</div>
-                    <div class="price-chart-bars">
-                      {lineup.models.map((model: any) => {
-                        const msrpPct = (model.msrp / axisMaxRounded) * 100;
-                        const pricePct = (model.price / axisMaxRounded) * 100;
-                        const savings = model.msrp - model.price;
-                        const hasDiscount = savings > 0;
-                        return (
-                          <a
-                            href={model.dealerUrl || "#"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="price-row"
-                            class:list={[{ discounted: hasDiscount }]}
-                          >
-                            <span class="price-row-model">{model.name}</span>
-                            <div class="price-row-track">
-                              {axisTicks.map((t) => (
-                                <span class="price-chart-gridline" style={`left:${(t / axisMaxRounded) * 100}%`} aria-hidden="true" />
-                              ))}
-                              <span
-                                class="price-row-connector"
-                                style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
-                                aria-hidden="true"
-                              />
-                              <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                              <span
-                                class="price-row-dot price"
-                                class:list={[{ discount: hasDiscount }]}
-                                style={`left:${pricePct}%`}
-                                aria-hidden="true"
-                              />
-                            </div>
-                            <span class="price-row-values tnum">
-                              <span class="price-row-price">${model.price}</span>
-                              {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                              <span class="price-row-dealer">{model.dealer || "—"}</span>
-                            </span>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <PriceChart
+              lineups={pricingLineups}
+              axisTicks={axisTicks}
+              axisMaxRounded={axisMaxRounded}
+              ariaLabel="Pricing dumbbell chart"
+            />
 
             <p class="lab-caption">
               Prices are checked by hand and will drift, always confirm at the
@@ -882,92 +859,19 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="ballmap-wrap" role="region" aria-label="2026 iron map">
-                <svg
-                  viewBox={`0 0 ${ironMap.W} ${ironMap.H}`}
-                  class="ballmap"
-                  role="img"
-                  aria-label="Scatter plot of iron models with forgiveness decreasing left to right and 7-iron loft getting stronger bottom to top. Strong-lofted game-improvement irons sit top left; players distance irons top right; blades and traditional cavity backs bottom right."
-                >
-                  {/* midlines */}
-                  <line class="ballmap-mid" x1={ironMap.xMid} y1={ironMap.PAD.t} x2={ironMap.xMid} y2={ironMap.bottom} />
-                  <line class="ballmap-mid" x1={ironMap.PAD.l} y1={ironMap.yMid} x2={ironMap.right} y2={ironMap.yMid} />
+              <QuadrantMap
+                map={ironMap}
+                regionLabel="2026 iron map"
+                svgLabel="Scatter plot of iron models with forgiveness decreasing left to right and 7-iron loft getting stronger bottom to top. Strong-lofted game-improvement irons sit top left; players distance irons top right; blades and traditional cavity backs bottom right."
+                xCaption={`← More forgiving · More workable →`}
+                yCaption={`← Traditional loft · Stronger loft →`}
+                legend={Object.values(IRON_CATS).map((c) => ({ cls: c.cls, label: `${c.label.toLowerCase()}, ${c.blurb}` }))}
+              />
 
-                  {/* quadrant labels */}
-                  {ironMap.qcaps.map((c: any) => (
-                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
-                  ))}
-
-                  {/* axis captions: one per axis, arrows point along the scale */}
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    x={(ironMap.PAD.l + ironMap.right) / 2}
-                    y={ironMap.H - 12}
-                  >← More forgiving&#8195;·&#8195;More workable →</text>
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    transform={`translate(14 ${(ironMap.PAD.t + ironMap.bottom) / 2}) rotate(-90)`}
-                  >← Traditional loft&#8195;·&#8195;Stronger loft →</text>
-
-                  {/* irons */}
-                  {ironMap.dots.map((d: any) => (
-                    <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name}, ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} (${d.config})`}</title>
-                      <line
-                        class="ballmap-lead"
-                        x1={d.x}
-                        y1={d.y}
-                        x2={d.leadX}
-                        y2={d.leadY}
-                      />
-                      <circle
-                        class:list={["ballmap-dot", d.cls]}
-                        cx={d.x}
-                        cy={d.y}
-                        r="6"
-                      />
-                      <text
-                        class="ballmap-lbl"
-                        x={d.lblX}
-                        y={d.lblY}
-                        text-anchor={d.anchor}
-                      >
-                        {d.label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-
-                <div class="ballmap-legend">
-                  {Object.values(IRON_CATS).map((c) => (
-                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()}, {c.blurb}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mobile-only fallback: stacked per-brand lists. */}
-              <div class="continuum-mobile">
-                {irons.spectrumLineups.map((lineup: any) => (
-                  <div class="continuum-mobile-brand">
-                    <strong>{lineup.brand}</strong>
-                    <ul>
-                      {lineup.models.map((model: any) => (
-                        <li>
-                          <span>
-                            {model.name}
-                            <span class="continuum-mobile-sub">
-                              {IRON_CATS[model.category]?.label ?? model.category} · 7-iron {model.loft7}° · {model.construction}
-                            </span>
-                          </span>
-                          <span class="continuum-mobile-pos tnum">{model.position}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+              <MobileLineupList
+                lineups={ironMobileLineups}
+                legend="Position 0–100: max help → compact precision"
+              />
 
               <p class="lab-caption">
                 Covers the major OEMs plus the direct-to-consumer brands people
@@ -1015,66 +919,13 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="price-chart-wrap" role="region" aria-label="Iron pricing dumbbell chart">
-                <div class="price-chart-axis" aria-hidden="true">
-                  <div class="price-chart-axis-spacer" />
-                  <div class="price-chart-axis-ticks">
-                    {irons.axisTicks.map((t: number) => (
-                      <span class="price-chart-axis-tick" style={`left:${(t / irons.axisMaxRounded) * 100}%`}>${t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="price-chart-body">
-                  {irons.pricingLineups.map((lineup: any) => (
-                    <div class="price-chart-group">
-                      <div class="price-chart-brand">{lineup.brand}</div>
-                      <div class="price-chart-bars">
-                        {lineup.models.map((model: any) => {
-                          const msrpPct = (model.msrp / irons.axisMaxRounded) * 100;
-                          const pricePct = (model.price / irons.axisMaxRounded) * 100;
-                          const savings = model.msrp - model.price;
-                          const hasDiscount = savings > 0;
-                          return (
-                            <a
-                              href={model.dealerUrl || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="price-row"
-                              class:list={[{ discounted: hasDiscount }]}
-                              title={`${lineup.brand} ${model.name}, ${model.config}`}
-                            >
-                              <span class="price-row-model">{model.name}</span>
-                              <div class="price-row-track">
-                                {irons.axisTicks.map((t: number) => (
-                                  <span class="price-chart-gridline" style={`left:${(t / irons.axisMaxRounded) * 100}%`} aria-hidden="true" />
-                                ))}
-                                <span
-                                  class="price-row-connector"
-                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
-                                  aria-hidden="true"
-                                />
-                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                                <span
-                                  class="price-row-dot price"
-                                  class:list={[{ discount: hasDiscount }]}
-                                  style={`left:${pricePct}%`}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <span class="price-row-values tnum">
-                                <span class="price-row-price">${model.price}</span>
-                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                                <span class="price-row-dealer">{model.dealer || "—"}</span>
-                              </span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PriceChart
+                lineups={irons.pricingLineups}
+                axisTicks={irons.axisTicks}
+                axisMaxRounded={irons.axisMaxRounded}
+                ariaLabel="Iron pricing dumbbell chart"
+                titleFor={(brand: string, model: any) => `${brand} ${model.name}, ${model.config}`}
+              />
 
               <p class="lab-caption">
                 Every price was checked against the linked page by hand and
@@ -1103,92 +954,19 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="ballmap-wrap" role="region" aria-label="2026 wedge map">
-                <svg
-                  viewBox={`0 0 ${wedgeMap.W} ${wedgeMap.H}`}
-                  class="ballmap"
-                  role="img"
-                  aria-label="Scatter plot of wedge models with forgiveness decreasing left to right and sole bounce increasing bottom to top. Forgiving cavity wedges sit left; tour blades right; high-bounce soft-turf wedges toward the top and low-bounce firm-turf wedges toward the bottom."
-                >
-                  {/* midlines */}
-                  <line class="ballmap-mid" x1={wedgeMap.xMid} y1={wedgeMap.PAD.t} x2={wedgeMap.xMid} y2={wedgeMap.bottom} />
-                  <line class="ballmap-mid" x1={wedgeMap.PAD.l} y1={wedgeMap.yMid} x2={wedgeMap.right} y2={wedgeMap.yMid} />
+              <QuadrantMap
+                map={wedgeMap}
+                regionLabel="2026 wedge map"
+                svgLabel="Scatter plot of wedge models with forgiveness decreasing left to right and sole bounce increasing bottom to top. Forgiving cavity wedges sit left; tour blades right; high-bounce soft-turf wedges toward the top and low-bounce firm-turf wedges toward the bottom."
+                xCaption={`← More forgiving · More workable →`}
+                yCaption={`← Low bounce · High bounce →`}
+                legend={Object.values(WEDGE_CATS).map((c) => ({ cls: c.cls, label: `${c.label.toLowerCase()}, ${c.blurb}` }))}
+              />
 
-                  {/* quadrant labels */}
-                  {wedgeMap.qcaps.map((c: any) => (
-                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
-                  ))}
-
-                  {/* axis captions: one per axis, arrows point along the scale */}
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    x={(wedgeMap.PAD.l + wedgeMap.right) / 2}
-                    y={wedgeMap.H - 12}
-                  >← More forgiving&#8195;·&#8195;More workable →</text>
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    transform={`translate(14 ${(wedgeMap.PAD.t + wedgeMap.bottom) / 2}) rotate(-90)`}
-                  >← Low bounce&#8195;·&#8195;High bounce →</text>
-
-                  {/* wedges */}
-                  {wedgeMap.dots.map((d: any) => (
-                    <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name}, ${WEDGE_CATS[d.category]?.label ?? d.category}, ${d.construction}, ${d.loft}° · ${d.bounce}° bounce, $${d.price}`}</title>
-                      <line
-                        class="ballmap-lead"
-                        x1={d.x}
-                        y1={d.y}
-                        x2={d.leadX}
-                        y2={d.leadY}
-                      />
-                      <circle
-                        class:list={["ballmap-dot", d.cls]}
-                        cx={d.x}
-                        cy={d.y}
-                        r="6"
-                      />
-                      <text
-                        class="ballmap-lbl"
-                        x={d.lblX}
-                        y={d.lblY}
-                        text-anchor={d.anchor}
-                      >
-                        {d.label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-
-                <div class="ballmap-legend">
-                  {Object.values(WEDGE_CATS).map((c) => (
-                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()}, {c.blurb}</span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mobile-only fallback: stacked per-brand lists. */}
-              <div class="continuum-mobile">
-                {wedges.spectrumLineups.map((lineup: any) => (
-                  <div class="continuum-mobile-brand">
-                    <strong>{lineup.brand}</strong>
-                    <ul>
-                      {lineup.models.map((model: any) => (
-                        <li>
-                          <span>
-                            {model.name}
-                            <span class="continuum-mobile-sub">
-                              {WEDGE_CATS[model.category]?.label ?? model.category} · {model.loft}° · {model.bounce}° bounce · {model.grind}
-                            </span>
-                          </span>
-                          <span class="continuum-mobile-pos tnum">{model.position}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+              <MobileLineupList
+                lineups={wedgeMobileLineups}
+                legend="Position 0–100: forgiving cavity → tour blade"
+              />
 
               <p class="lab-caption">
                 Covers the major OEMs plus the direct-to-consumer brands people
@@ -1237,66 +1015,13 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="price-chart-wrap" role="region" aria-label="Wedge pricing dumbbell chart">
-                <div class="price-chart-axis" aria-hidden="true">
-                  <div class="price-chart-axis-spacer" />
-                  <div class="price-chart-axis-ticks">
-                    {wedges.axisTicks.map((t: number) => (
-                      <span class="price-chart-axis-tick" style={`left:${(t / wedges.axisMaxRounded) * 100}%`}>${t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="price-chart-body">
-                  {wedges.pricingLineups.map((lineup: any) => (
-                    <div class="price-chart-group">
-                      <div class="price-chart-brand">{lineup.brand}</div>
-                      <div class="price-chart-bars">
-                        {lineup.models.map((model: any) => {
-                          const msrpPct = (model.msrp / wedges.axisMaxRounded) * 100;
-                          const pricePct = (model.price / wedges.axisMaxRounded) * 100;
-                          const savings = model.msrp - model.price;
-                          const hasDiscount = savings > 0;
-                          return (
-                            <a
-                              href={model.dealerUrl || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="price-row"
-                              class:list={[{ discounted: hasDiscount }]}
-                              title={`${lineup.brand} ${model.name}, ${model.bounce}° bounce, ${model.grind}`}
-                            >
-                              <span class="price-row-model">{model.name}</span>
-                              <div class="price-row-track">
-                                {wedges.axisTicks.map((t: number) => (
-                                  <span class="price-chart-gridline" style={`left:${(t / wedges.axisMaxRounded) * 100}%`} aria-hidden="true" />
-                                ))}
-                                <span
-                                  class="price-row-connector"
-                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
-                                  aria-hidden="true"
-                                />
-                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                                <span
-                                  class="price-row-dot price"
-                                  class:list={[{ discount: hasDiscount }]}
-                                  style={`left:${pricePct}%`}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <span class="price-row-values tnum">
-                                <span class="price-row-price">${model.price}</span>
-                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                                <span class="price-row-dealer">{model.dealer || "—"}</span>
-                              </span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PriceChart
+                lineups={wedges.pricingLineups}
+                axisTicks={wedges.axisTicks}
+                axisMaxRounded={wedges.axisMaxRounded}
+                ariaLabel="Wedge pricing dumbbell chart"
+                titleFor={(brand: string, model: any) => `${brand} ${model.name}, ${model.bounce}° bounce, ${model.grind}`}
+              />
 
               <p class="lab-caption">
                 Single-wedge prices, checked by hand against the linked page and
@@ -1322,91 +1047,22 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="ballmap-wrap" role="region" aria-label="2026 golf ball map">
-                <svg
-                  viewBox={`0 0 ${ballMap.W} ${ballMap.H}`}
-                  class="ballmap"
-                  role="img"
-                  aria-label="Scatter plot of golf balls with spin decreasing left to right and compression increasing bottom to top. Firm low-spin distance balls sit top right; soft straight-flying balls sit bottom right; firm tour balls sit top left."
-                >
-                  {/* midlines */}
-                  <line class="ballmap-mid" x1={ballMap.xMid} y1={ballMap.PAD.t} x2={ballMap.xMid} y2={ballMap.bottom} />
-                  <line class="ballmap-mid" x1={ballMap.PAD.l} y1={ballMap.yMid} x2={ballMap.right} y2={ballMap.yMid} />
+              <QuadrantMap
+                map={ballMap}
+                regionLabel="2026 golf ball map"
+                svgLabel="Scatter plot of golf balls with spin decreasing left to right and compression increasing bottom to top. Firm low-spin distance balls sit top right; soft straight-flying balls sit bottom right; firm tour balls sit top left."
+                xCaption={`← More spin · Straighter →`}
+                yCaption={`← Softer · Firmer →`}
+                legend={[
+                  { cls: "premium", label: "urethane cover, grippier, so naturally more spin: greenside control" },
+                  { cls: "value", label: "ionomer / hybrid cover, less grippy, so naturally lower spin: distance & budget" },
+                ]}
+              />
 
-                  {/* quadrant labels */}
-                  {ballMap.qcaps.map((c: any) => (
-                    <text class="ballmap-q" text-anchor={c.a} x={c.x} y={c.y}>{c.t}</text>
-                  ))}
-
-                  {/* axis captions: one per axis, arrows point along the scale */}
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    x={(ballMap.PAD.l + ballMap.right) / 2}
-                    y={ballMap.H - 12}
-                  >← More spin&#8195;·&#8195;Straighter →</text>
-                  <text
-                    class="ballmap-axis"
-                    text-anchor="middle"
-                    transform={`translate(14 ${(ballMap.PAD.t + ballMap.bottom) / 2}) rotate(-90)`}
-                  >← Softer&#8195;·&#8195;Firmer →</text>
-
-                  {/* balls */}
-                  {ballMap.dots.map((d: any) => (
-                    <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name}, ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
-                      <line
-                        class="ballmap-lead"
-                        x1={d.x}
-                        y1={d.y}
-                        x2={d.leadX}
-                        y2={d.leadY}
-                      />
-                      <circle
-                        class:list={["ballmap-dot", d.premium ? "premium" : "value"]}
-                        cx={d.x}
-                        cy={d.y}
-                        r="6"
-                      />
-                      <text
-                        class="ballmap-lbl"
-                        x={d.lblX}
-                        y={d.lblY}
-                        text-anchor={d.anchor}
-                      >
-                        {d.label}
-                      </text>
-                    </g>
-                  ))}
-                </svg>
-
-                <div class="ballmap-legend">
-                  <span><i class="ballmap-key premium" aria-hidden="true"></i> urethane cover, grippier, so naturally more spin: greenside control</span>
-                  <span><i class="ballmap-key value" aria-hidden="true"></i> ionomer / hybrid cover, less grippy, so naturally lower spin: distance &amp; budget</span>
-                </div>
-              </div>
-
-              {/* Mobile-only fallback: stacked per-brand lists. */}
-              <div class="continuum-mobile">
-                {balls.spectrumLineups.map((lineup: any) => (
-                  <div class="continuum-mobile-brand">
-                    <strong>{lineup.brand}</strong>
-                    <ul>
-                      {lineup.models.map((model: any) => (
-                        <li>
-                          <span>
-                            {model.name}
-                            <span class="continuum-mobile-sub">
-                              {model.construction} · compression ~{model.compression}
-                            </span>
-                          </span>
-                          <span class="continuum-mobile-pos tnum">{model.position}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
+              <MobileLineupList
+                lineups={ballMobileLineups}
+                legend="Position 0–100: low spin → tour spin"
+              />
 
               <p class="lab-caption">
                 Placements are researched estimates from construction, cover
@@ -1451,65 +1107,12 @@ const wedgeProfiles = [
                 </p>
               </div>
 
-              <div class="price-chart-wrap" role="region" aria-label="Ball pricing dumbbell chart">
-                <div class="price-chart-axis" aria-hidden="true">
-                  <div class="price-chart-axis-spacer" />
-                  <div class="price-chart-axis-ticks">
-                    {balls.axisTicks.map((t: number) => (
-                      <span class="price-chart-axis-tick" style={`left:${(t / balls.axisMaxRounded) * 100}%`}>${t}</span>
-                    ))}
-                  </div>
-                </div>
-
-                <div class="price-chart-body">
-                  {balls.pricingLineups.map((lineup: any) => (
-                    <div class="price-chart-group">
-                      <div class="price-chart-brand">{lineup.brand}</div>
-                      <div class="price-chart-bars">
-                        {lineup.models.map((model: any) => {
-                          const msrpPct = (model.msrp / balls.axisMaxRounded) * 100;
-                          const pricePct = (model.price / balls.axisMaxRounded) * 100;
-                          const savings = model.msrp - model.price;
-                          const hasDiscount = savings > 0;
-                          return (
-                            <a
-                              href={model.dealerUrl || "#"}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="price-row"
-                              class:list={[{ discounted: hasDiscount }]}
-                            >
-                              <span class="price-row-model">{model.name}</span>
-                              <div class="price-row-track">
-                                {balls.axisTicks.map((t: number) => (
-                                  <span class="price-chart-gridline" style={`left:${(t / balls.axisMaxRounded) * 100}%`} aria-hidden="true" />
-                                ))}
-                                <span
-                                  class="price-row-connector"
-                                  style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
-                                  aria-hidden="true"
-                                />
-                                <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                                <span
-                                  class="price-row-dot price"
-                                  class:list={[{ discount: hasDiscount }]}
-                                  style={`left:${pricePct}%`}
-                                  aria-hidden="true"
-                                />
-                              </div>
-                              <span class="price-row-values tnum">
-                                <span class="price-row-price">${model.price}</span>
-                                {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                                <span class="price-row-dealer">{model.dealer || "—"}</span>
-                              </span>
-                            </a>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <PriceChart
+                lineups={balls.pricingLineups}
+                axisTicks={balls.axisTicks}
+                axisMaxRounded={balls.axisMaxRounded}
+                ariaLabel="Ball pricing dumbbell chart"
+              />
 
               <p class="lab-caption">
                 Single-dozen prices, bulk and subscription deals (looking at
@@ -1678,123 +1281,6 @@ const wedgeProfiles = [
   .continuum-node:hover .continuum-node-label {
     color: var(--green);
   }
-  /* ---- Ball quadrant map ---- */
-  .ballmap-wrap {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    padding: 1.25rem 1.25rem 1rem;
-    max-width: 1060px;
-  }
-  .ballmap {
-    width: 100%;
-    height: auto;
-    display: block;
-  }
-  .ballmap-mid {
-    stroke: var(--border-strong);
-    stroke-dasharray: 5 5;
-  }
-  .ballmap-q {
-    fill: var(--text);
-    font-family: var(--font-body);
-    font-size: 16px;
-    font-weight: 600;
-    paint-order: stroke;
-    stroke: var(--surface);
-    stroke-width: 4px;
-    stroke-linejoin: round;
-  }
-  .ballmap-axis {
-    fill: var(--text-muted);
-    font-family: var(--font-body);
-    font-size: 17px;
-    font-weight: 600;
-  }
-  .ballmap-lead {
-    stroke: var(--text-dim);
-    stroke-width: 1;
-    opacity: 0.75;
-  }
-  .ballmap-dot {
-    stroke: var(--bg-elevated);
-    stroke-width: 2;
-  }
-  .ballmap-dot.premium {
-    fill: var(--green);
-  }
-  .ballmap-dot.value {
-    fill: var(--cyan);
-  }
-  /* Iron map category colors, one distinct hue per category, running from the
-     player's end (green → cyan → violet) to the forgiveness end (amber → grey). */
-  .ballmap-dot.cat-blade {
-    fill: var(--green-bright);
-  }
-  .ballmap-dot.cat-pcb {
-    fill: var(--cyan);
-  }
-  .ballmap-dot.cat-pd {
-    fill: var(--violet);
-  }
-  .ballmap-dot.cat-gi {
-    fill: var(--amber);
-  }
-  .ballmap-dot.cat-sgi {
-    fill: var(--text-dim);
-  }
-  .ballmap-lbl {
-    fill: var(--text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 500;
-    paint-order: stroke;
-    stroke: var(--surface);
-    stroke-width: 3.5px;
-    stroke-linejoin: round;
-  }
-  .ballmap-pt:hover .ballmap-lbl {
-    fill: var(--green-bright);
-    font-weight: 700;
-  }
-  .ballmap-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1rem;
-    margin-top: 0.4rem;
-    font-family: var(--font-body);
-    font-size: 0.82rem;
-    line-height: 1.3;
-    color: var(--text-muted);
-  }
-  .ballmap-key {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 0.35rem;
-  }
-  .ballmap-key.premium {
-    background: var(--green);
-  }
-  .ballmap-key.value {
-    background: var(--cyan);
-  }
-  .ballmap-key.cat-blade {
-    background: var(--green-bright);
-  }
-  .ballmap-key.cat-pcb {
-    background: var(--cyan);
-  }
-  .ballmap-key.cat-pd {
-    background: var(--violet);
-  }
-  .ballmap-key.cat-gi {
-    background: var(--amber);
-  }
-  .ballmap-key.cat-sgi {
-    background: var(--text-dim);
-  }
 
   /* ---- Ball profile cards ---- */
   .ball-profiles {
@@ -1827,17 +1313,6 @@ const wedgeProfiles = [
     font-size: 0.92rem;
     color: var(--text);
     border-top: 1px solid var(--border);
-  }
-
-  /* Mobile-only stacked lists (no forced scroll) */
-  .continuum-mobile {
-    display: none;
-  }
-  .continuum-mobile-sub {
-    display: block;
-    font-family: var(--font-body);
-    font-size: 0.86rem;
-    color: var(--text-dim);
   }
 
   /* ---- "Which half are you shopping in?" nudge ---- */
@@ -1895,203 +1370,7 @@ const wedgeProfiles = [
   }
 
   @media (max-width: 700px) {
-    .continuum-wrap,
-    .ballmap-wrap {
-      display: none;
-    }
-    .continuum-mobile {
-      display: flex;
-      flex-direction: column;
-      gap: 1.25rem;
-    }
-    .continuum-mobile-brand strong {
-      color: var(--green);
-      font-family: var(--font-head);
-      font-weight: 600;
-    }
-    .continuum-mobile-brand ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    .continuum-mobile-brand li {
-      display: flex;
-      justify-content: space-between;
-      gap: 1rem;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 0.4rem;
-      font-size: 0.92rem;
-    }
-    .continuum-mobile-pos {
-      color: var(--text-dim);
-      font-family: var(--font-body);
-      font-size: 0.86rem;
-    }
-  }
-
-  /* ---- Pricing dumbbell chart ---- */
-  .price-chart-wrap {
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-    padding: 1.5rem 1.5rem 2rem;
-    max-width: 1000px;
-  }
-  .price-chart-axis {
-    display: flex;
-    margin-bottom: 1.5rem;
-  }
-  .price-chart-axis-spacer {
-    width: 160px;
-    flex-shrink: 0;
-  }
-  .price-chart-axis-ticks {
-    flex-grow: 1;
-    position: relative;
-    height: 1rem;
-    padding-right: 200px;
-  }
-  .price-chart-axis-tick {
-    position: absolute;
-    transform: translateX(-50%);
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--text-dim);
-  }
-  .price-chart-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-  }
-  .price-chart-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-  }
-  .price-chart-brand {
-    font-family: var(--font-head);
-    font-size: 1rem;
-    color: var(--green);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.25rem;
-  }
-  .price-chart-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-  }
-  .price-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    text-decoration: none;
-  }
-  .price-row-model {
-    font-family: var(--font-body);
-    font-size: 0.92rem;
-    color: var(--text-muted);
-    width: 160px;
-    flex-shrink: 0;
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.15s ease;
-  }
-  .price-row:hover .price-row-model {
-    color: var(--text);
-  }
-  .price-row-track {
-    flex-grow: 1;
-    position: relative;
-    height: 20px;
-  }
-  .price-chart-gridline {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--border);
-    opacity: 0.6;
-  }
-  .price-row-connector {
-    position: absolute;
-    top: 50%;
-    height: 2px;
-    background: var(--border-strong);
-    transform: translateY(-50%);
-    z-index: 1;
-  }
-  .price-row.discounted .price-row-connector {
-    background: var(--green-dim);
-  }
-  .price-row-dot {
-    position: absolute;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-  }
-  .price-row-dot.msrp {
-    background: var(--bg-elevated);
-    border: 2px solid var(--text-dim);
-  }
-  .price-row-dot.price {
-    background: var(--text-dim);
-    border: 2px solid var(--text-dim);
-  }
-  .price-row-dot.price.discount {
-    background: var(--green-bright);
-    border-color: var(--green-bright);
-  }
-  .price-row-values {
-    flex: 0 0 200px;
-    display: flex;
-    align-items: baseline;
-    gap: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  .price-row-price {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--text);
-    font-weight: 600;
-  }
-  .price-row-msrp {
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    text-decoration: line-through;
-  }
-  .price-row-dealer {
-    font-family: var(--font-body);
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    min-width: 0;
-  }
-
-  @media (max-width: 700px) {
-    .price-chart-wrap {
-      overflow-x: auto;
-    }
-    .price-chart-axis-spacer,
-    .price-row-model {
-      width: 110px;
-    }
-    .price-row-dealer {
+    .continuum-wrap {
       display: none;
     }
   }

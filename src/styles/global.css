@@ -422,12 +422,6 @@ main > section.section-tight:nth-of-type(even) {
 .text-muted {
   color: var(--text-muted);
 }
-.center {
-  text-align: center;
-}
 .mx-auto {
   margin-inline: auto;
-}
-.stack > * + * {
-  margin-top: 1rem;
 }

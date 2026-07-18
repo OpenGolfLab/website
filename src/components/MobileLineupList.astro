@@ -1,0 +1,85 @@
+---
+interface Props {
+  lineups: {
+    brand: string;
+    models: { name: string; position: number; sub?: string }[];
+  }[];
+  /** Explains the bare 0–100 position number, e.g. "0 = max forgiveness · 100 = pure distance". */
+  legend?: string;
+}
+
+const { lineups, legend } = Astro.props;
+---
+
+{/* Mobile-only fallback: stacked per-brand lists, no forced horizontal scroll. */}
+<div class="continuum-mobile">
+  {legend && <p class="continuum-mobile-legend">{legend}</p>}
+  {lineups.map((lineup) => (
+    <div class="continuum-mobile-brand">
+      <strong>{lineup.brand}</strong>
+      <ul>
+        {lineup.models.map((model) => (
+          <li>
+            <span>
+              {model.name}
+              {model.sub && <span class="continuum-mobile-sub">{model.sub}</span>}
+            </span>
+            <span class="continuum-mobile-pos tnum">{model.position}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+<style>
+  .continuum-mobile {
+    display: none;
+  }
+  .continuum-mobile-sub {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.86rem;
+    color: var(--text-dim);
+  }
+  .continuum-mobile-legend {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 700px) {
+    .continuum-mobile {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .continuum-mobile-brand strong {
+      color: var(--green);
+      font-family: var(--font-head);
+      font-weight: 600;
+    }
+    .continuum-mobile-brand ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .continuum-mobile-brand li {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      font-size: 0.92rem;
+    }
+    .continuum-mobile-pos {
+      color: var(--text-dim);
+      font-family: var(--font-body);
+      font-size: 0.86rem;
+    }
+  }
+</style>
