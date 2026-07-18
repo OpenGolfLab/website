@@ -26,10 +26,12 @@ const STAGGER_GAP = 16;
 /**
  * Generic loader for a lineup file (drivers, balls, …). Both files share the
  * same shape: { lineups: [{ brand, models: [{ name, position, msrp, price,
- * dealer, dealerUrl, url, ...extras }] }] }. `axisStep` sets the pricing-chart
- * gridline interval ($200 suits driver prices, $10 suits per-dozen ball prices).
+ * dealer, dealerUrl, url, ...extras }] }] }. `tickStep` sets the pricing-chart
+ * gridline interval and `roundStep` how tightly the axis end hugs the priciest
+ * model; together they're chosen per category so the chart shows 3–4 ticks
+ * with no dead space on the right.
  */
-function loadLineupMarket(relPath: string, axisStep: number) {
+function loadLineupMarket(relPath: string, tickStep: number, roundStep: number) {
   const data = readJson(relPath);
   const lineups: any[] =
     data && Array.isArray(data.lineups) ? data.lineups : [];
@@ -65,17 +67,19 @@ function loadLineupMarket(relPath: string, axisStep: number) {
     .sort((a: any, b: any) => b.pct - a.pct);
   const biggestDiscount = discounted[0];
 
-  // Pricing chart axis: $0-based, gridlines every `axisStep`, rounded up past the max MSRP.
+  // Pricing chart axis: $0-based track whose end hugs the priciest model
+  // (rounded up to `roundStep`), with a tick every `tickStep`. No $0 tick,
+  // the track start implies it.
   const maxRawPrice = allModels.reduce(
     (max: number, m: any) => Math.max(max, m.msrp, m.price),
     0,
   );
   const axisMaxRounded = Math.max(
-    axisStep,
-    Math.ceil((maxRawPrice + 1) / axisStep) * axisStep,
+    tickStep,
+    Math.ceil((maxRawPrice + 1) / roundStep) * roundStep,
   );
   const axisTicks: number[] = [];
-  for (let v = 0; v <= axisMaxRounded; v += axisStep) axisTicks.push(v);
+  for (let v = tickStep; v <= axisMaxRounded; v += tickStep) axisTicks.push(v);
 
   const pricingLineups = lineups.map((l: any) => ({
     brand: l.brand,
@@ -121,22 +125,22 @@ function loadLineupMarket(relPath: string, axisStep: number) {
 
 /** 2026 driver lineups + street pricing. */
 export function loadMarket() {
-  return loadLineupMarket("public/data/driver-lineups.json", 200);
+  return loadLineupMarket("public/data/driver-lineups.json", 400, 100);
 }
 
 /** 2026 golf-ball lineups + per-dozen street pricing. */
 export function loadBallMarket() {
-  return loadLineupMarket("public/data/ball-lineups.json", 10);
+  return loadLineupMarket("public/data/ball-lineups.json", 20, 5);
 }
 
 /** 2026 iron lineups + per-set (7-club, steel) street pricing. */
 export function loadIronMarket() {
-  return loadLineupMarket("public/data/iron-lineups.json", 500);
+  return loadLineupMarket("public/data/iron-lineups.json", 500, 100);
 }
 
 /** 2026 wedge lineups + per-wedge street pricing. */
 export function loadWedgeMarket() {
-  return loadLineupMarket("public/data/wedge-lineups.json", 50);
+  return loadLineupMarket("public/data/wedge-lineups.json", 60, 10);
 }
 
 // ---- Community: summary.json v2 (tiered) ----------------------------------
