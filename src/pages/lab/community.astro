@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LabNav from "../../components/LabNav.astro";
+import CommunityExplorer from "../../components/CommunityExplorer.astro";
 import { loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
-const title = "Community Data — The Lab";
+const title = "Community Data, The Lab";
 const description =
   "Crowd-sourced launch and spin norms, driver dispersion and club gapping, aggregated from anonymized, opt-in GSPro simulator sessions. One golfer, one vote.";
 
@@ -36,7 +37,7 @@ const {
       </span>
       <h1>Community Data</h1>
       <p class="lede" style="margin-top:1rem;">
-        Real ball comparisons, gapping by handicap, and launch and spin norms —
+        Real ball comparisons, gapping by handicap, and launch and spin norms,
         built from anonymized, opt-in sessions. Every golfer counts once per
         club, so a marathon range session can't outvote anyone.
       </p>
@@ -58,6 +59,8 @@ const {
   <LabNav />
 
   <div class="container lab-body">
+    <CommunityExplorer />
+
     <section class="lab-band">
       {
         hasCommunityData ? (
@@ -123,7 +126,7 @@ const {
                                 {c.spin?.value != null ? (
                                   <span class="tnum">{c.spin.value}</span>
                                 ) : (
-                                  <span class="lock" title="Spin publishes at the Verified tier and up — measured, not modeled.">
+                                  <span class="lock" title="Spin publishes at the Verified tier and up: measured, not modeled.">
                                     Verified+
                                   </span>
                                 )}
@@ -137,7 +140,7 @@ const {
 
                     {t.ellipse && (
                       <div class="disp">
-                        <div class="disp-title">Driver — typical dispersion</div>
+                        <div class="disp-title">Driver: typical dispersion</div>
                         <svg viewBox="0 0 220 176" class="disp-svg" role="img"
                           aria-label={`Typical driver dispersion, about ${Math.round(t.ellipse.lateral * 2)} yards wide and ${Math.round(t.ellipse.depth * 2)} yards deep`}>
                           <line x1="110" y1="12" x2="110" y2="164" class="disp-axis" />
@@ -158,14 +161,14 @@ const {
                 ) : (
                   <p class="tier-empty">
                     Not enough {t.label !== "All" ? t.label.toLowerCase() + "-tier " : ""}data
-                    yet to publish — need {minContributors} golfers per club. Try the All tab.
+                    yet to publish. It takes {minContributors} golfers per club. Try the All tab.
                   </p>
                 )}
               </div>
             ))}
 
             <p class="lab-caption">
-              Each number is the typical golfer's typical shot — every
+              Each number is the typical golfer's typical shot. Every
               contributor counts once, so one marathon session can't skew a
               result. The small range under each carry shows where most golfers
               (the middle 80%) land.{generatedDate && <> Updated {generatedDate}.</>}
@@ -192,7 +195,7 @@ const {
               <h3>Be one of the first {minContributors}</h3>
               <p class="text-muted">
                 Install the app, tick the contribute box, and play. That's the
-                whole ask — no account, no name, no scores. The moment a club
+                whole ask, no account, no name, no scores. The moment a club
                 clears the threshold, its numbers appear on this page for
                 everyone.
               </p>
@@ -214,7 +217,7 @@ const {
         <p class="text-muted" style="max-width:66ch;">
           The last {feed.items.length > 0 ? feed.items.length : "few"} sessions
           people chose to share, most recent first. Just a name someone picked,
-          the date, and what they hit — nothing else about a contributor is shown
+          the date, and what they hit, nothing else about a contributor is shown
           or stored.{" "}
           {feed.generatedDate && (
             <>Fresh as of the last site build, {feed.generatedDate}.</>
@@ -250,7 +253,7 @@ const {
           <div class="card feed-empty">
             <p class="text-muted" style="max-width:60ch;">
               No shared sessions yet. When someone contributes, their chosen name
-              and what they hit show up here — and you can be the first.
+              and what they hit show up here, and you can be the first.
             </p>
             <div class="hero-cta" style="margin-top:1.1rem;">
               <a href="/download" class="btn btn-primary">Contribute your sessions</a>
@@ -266,9 +269,9 @@ const {
         <p class="eyebrow">Method</p>
         <h2>Why you can trust these numbers</h2>
         <p class="text-muted" style="max-width:66ch;">
-          Every value on this page comes out of a six-stage pipeline — consent
+          Every value on this page comes out of a six-stage pipeline, consent
           gate, in-app anonymization, quality screening, one golfer one vote,
-          robust medians, and a publish threshold — with every rule versioned
+          robust medians, and a publish threshold, with every rule versioned
           and enforced in code anyone can read. The
           <a href="/lab/methodology"> full methodology</a> spells out each
           stage, the trust tiers, and the limits we publish alongside the data.
@@ -283,7 +286,7 @@ const {
         <h2>Coming to Community Data</h2>
         <p class="text-muted" style="max-width:66ch;">
           The aggregator already computes more than this page shows. These land
-          as the contributor count supports them — see the
+          as the contributor count supports them, see the
           <a href="/lab#roadmap"> full roadmap</a>.
         </p>
       </div>
@@ -305,7 +308,7 @@ const {
             <span class="pill lab-planned-pill">Planned</span>
           </div>
           <p>
-            What real distance gaps look like at your level — so you can tell a
+            What real distance gaps look like at your level, so you can tell a
             genuine hole in your set from a number you read in a magazine.
           </p>
         </div>

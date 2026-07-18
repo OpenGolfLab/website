@@ -13,7 +13,7 @@ function readJson(relPath: string): any {
     const p = path.resolve(relPath);
     if (fs.existsSync(p)) return JSON.parse(fs.readFileSync(p, "utf-8"));
   } catch {
-    /* fall through — treat unreadable/malformed as absent */
+    /* fall through, treat unreadable/malformed as absent */
   }
   return null;
 }
@@ -83,7 +83,7 @@ function loadLineupMarket(relPath: string, axisStep: number) {
   }));
 
   // Spectrum: sort each brand's models by position, then stagger label height
-  // only where neighboring models sit close enough on the track to collide —
+  // only where neighboring models sit close enough on the track to collide,
   // so labels stay level unless they actually need separating, instead of
   // climbing in lockstep (which made rightmost/"distance" models always sit
   // highest regardless of how much room they actually had).
@@ -219,7 +219,7 @@ export function loadCommunity() {
 
 // ---- Community feed: feed.json (recent contributions) ----------------------
 // Written alongside summary.json by the aggregator. "Live" means fresh as of the
-// last build/deploy — the page states when. Every field here is already safe to
+// last build/deploy, the page states when. Every field here is already safe to
 // show (the aggregator emits only display name / date / counts / clubs /
 // monitor), so the page can render it directly.
 

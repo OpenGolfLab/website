@@ -1,7 +1,7 @@
 import { defineCollection, z } from "astro:content";
 import { glob } from "astro/loaders";
 
-// Blog collection — Markdown files in src/content/blog/.
+// Blog collection, Markdown files in src/content/blog/.
 // Uses Astro's content-layer glob loader (Astro 5+).
 const blog = defineCollection({
   loader: glob({ base: "./src/content/blog", pattern: "**/*.{md,mdx}" }),

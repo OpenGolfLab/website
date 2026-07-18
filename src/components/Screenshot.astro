@@ -1,5 +1,5 @@
 ---
-// Screenshot figure. Shows the WHOLE image at its natural aspect ratio — never
+// Screenshot figure. Shows the WHOLE image at its natural aspect ratio, never
 // crops. If real intrinsic dimensions are passed (width + height), the frame
 // reserves the correct space up-front to avoid layout shift; otherwise the
 // image simply sizes itself once loaded. Real images live in
@@ -46,7 +46,7 @@ const hasDims = !!(width && height);
     box-shadow: var(--shadow);
   }
   /* height:auto + contain means the full image is always shown, at its own
-     aspect ratio — no left/right (or top/bottom) cropping. */
+     aspect ratio, no left/right (or top/bottom) cropping. */
   .shot-frame img {
     width: 100%;
     height: auto;

@@ -17,7 +17,7 @@ const description = `Download ${PRODUCT_NAME} free for Windows. Auto-ingests GSP
 const requirements = [
   ["Operating system", "Windows 10 or 11, 64-bit"],
   ["Simulator", "GSPro (any launch monitor that plays through GSPro)"],
-  ["Install rights", "Per-user install — no administrator rights needed"],
+  ["Install rights", "Per-user install, no administrator rights needed"],
   ["Disk", "~300 MB, plus your growing shot history in local Parquet"],
   ["Account", "None. Nothing to sign up for."],
 ];
@@ -25,7 +25,7 @@ const requirements = [
 const faqs = [
   {
     q: "Is it really free?",
-    a: "Yes — completely free, with no account and no paid tier. Download it, install it, use every dashboard.",
+    a: "Yes, completely free, with no account and no paid tier. Download it, install it, use every dashboard.",
   },
   {
     q: "Does my data leave my machine?",
@@ -33,7 +33,7 @@ const faqs = [
   },
   {
     q: "Does it work with launch monitors other than GSPro?",
-    a: "It works with anything that plays through GSPro. The app reads GSPro's Practice Range exports and round files, so whatever monitor you use to drive GSPro — it just works.",
+    a: "It works with anything that plays through GSPro. The app reads GSPro's Practice Range exports and round files, so whatever monitor you use to drive GSPro, it just works.",
   },
   {
     q: "Why does Windows show a warning when I run it?",
@@ -119,9 +119,9 @@ const softwareLd = {
           <div>
             <h3>Download &amp; run the installer</h3>
             <p class="text-muted">
-              Click <strong>Download for Windows</strong> above — it downloads
+              Click <strong>Download for Windows</strong> above, it downloads
               the <code>.exe</code> directly, no GitHub page in between.
-              Double-click it to install. It's a per-user install — no admin
+              Double-click it to install. It's a per-user install, no admin
               rights, and no wizard screens to click through; it installs and
               launches on its own. (Prefer to browse first? Here's the
               <a href={LATEST_RELEASE_URL} rel="noopener">releases page</a>.)
@@ -134,12 +134,12 @@ const softwareLd = {
             <h3>Get past the browser warning</h3>
             <p class="text-muted">
               Chrome or Edge may flag the download itself, warning it "isn't
-              commonly downloaded" — the browser's own reputation check
+              commonly downloaded", the browser's own reputation check
               reacting to a small, unsigned, freshly-released file, not a
               sign anything's actually wrong. The dialog only shows
               <strong>Cancel</strong> and <strong>Delete</strong> as full
               buttons, but there's a small <strong>▾</strong> arrow attached
-              to Delete — click that (not Delete itself) and choose
+              to Delete, click that (not Delete itself) and choose
               <strong>Keep anyway</strong> from the menu it opens.
             </p>
           </div>
@@ -151,7 +151,7 @@ const softwareLd = {
             <p class="text-muted">
               The app is unsigned, so on first run Windows shows a blue
               <strong>“Windows protected your PC”</strong> screen. This is
-              normal for small independent tools — it means the app hasn't paid
+              normal for small independent tools, it means the app hasn't paid
               for a code-signing certificate, not that anything is wrong.
             </p>
             <div class="ss-do">
@@ -165,7 +165,7 @@ const softwareLd = {
             </div>
             <p class="text-muted ss-note">
               Prefer to verify first? The full source is on
-              <a href={GITHUB_URL} rel="noopener">GitHub</a> — build it yourself
+              <a href={GITHUB_URL} rel="noopener">GitHub</a>, build it yourself
               and skip the warning entirely.
             </p>
           </div>
@@ -176,7 +176,7 @@ const softwareLd = {
             <h3>Play GSPro</h3>
             <p class="text-muted">
               Export from the Practice Range or start a round. The app detects
-              GSPro's files automatically and your dashboards populate — no
+              GSPro's files automatically and your dashboards populate, no
               import step, ever.
             </p>
           </div>

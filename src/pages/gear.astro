@@ -11,7 +11,7 @@ import "../styles/lab.css";
 
 const title = "Gear Guide";
 const description =
-  "What clubs and balls exist, what they're designed to do, and what they actually cost today. Every 2026 driver mapped from forgiveness to distance, every iron and wedge mapped by head type and real lofts, and every ball mapped by spin and compression — with street prices for the whole bag. Independently researched gear snapshots from OpenGolfLab.";
+  "What clubs and balls exist, what they're designed to do, and what they actually cost today. Every 2026 driver mapped from forgiveness to distance, every iron and wedge mapped by head type and real lofts, and every ball mapped by spin and compression, with street prices for the whole bag. Independently researched gear snapshots from OpenGolfLab.";
 
 const {
   hasLineups,
@@ -32,8 +32,8 @@ const wedges = loadWedgeMarket();
 // ---- Shared quadrant-map label layout --------------------------------------
 // Hurricane-chart style: every dot carries its full label, placed on a fixed
 // grid of rows so the result reads as tidy stacks rather than scatter. A
-// label may sit far from its dot — whitespace is found by sliding sideways
-// first, then hopping rows — and anything not directly beside its dot gets a
+// label may sit far from its dot, whitespace is found by sliding sideways
+// first, then hopping rows, and anything not directly beside its dot gets a
 // leader line back to it. Labels never overlap each other, a dot, a quadrant
 // caption, or the plot edges; distance is sacrificed instead.
 function placeQuadrantLabels(
@@ -63,7 +63,7 @@ function placeQuadrantLabels(
     );
 
   // Leader-line hygiene: two leaders crossing, or a leader slicing through
-  // unrelated dots, is what makes a labeled scatter read as spaghetti — both
+  // unrelated dots, is what makes a labeled scatter read as spaghetti, both
   // get scored as heavy penalties below.
   const placedLeads: any[] = [];
   const orient = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) =>
@@ -93,7 +93,7 @@ function placeQuadrantLabels(
 
   const findSlot = (d: any, exclude: number) => {
     const w = d.label.length * CHAR_W;
-    // Point labels toward the plot's horizontal center first — on these
+    // Point labels toward the plot's horizontal center first, on these
     // diagonal-band maps that's where the open quadrants are.
     const sides = d.x < xMidPlot ? [1, -1] : [-1, 1];
     let pick: any = null;
@@ -152,7 +152,7 @@ function placeQuadrantLabels(
   }
 
   // Refinement: early labels were placed blind to later ones, so rip each
-  // one out (longest leaders first) and re-place it with the full picture —
+  // one out (longest leaders first) and re-place it with the full picture,
   // this is what untangles crossing leaders in the dense clusters.
   const nDots = ordered.length;
   const boxIndexOffset = boxes.length - nDots;
@@ -186,8 +186,8 @@ function placeQuadrantLabels(
 
 // ---- Edge-column label layout ---------------------------------------------
 // Reference-chart style: instead of floating each label near its dot, every
-// label is parked in a tidy vertical column in the margin — the left gutter
-// for dots left of centre, the right gutter for dots right of centre — and
+// label is parked in a tidy vertical column in the margin, the left gutter
+// for dots left of centre, the right gutter for dots right of centre, and
 // tied back to its dot with a single straight leader.
 //
 // Each column owns a fixed ladder of label slots (sorted by the dots' heights,
@@ -211,7 +211,7 @@ function placeColumnLabels(
   const leftEdge = PAD.l; // right edge of the left-hand label column
   const rightEdge = W - PAD.r; // left edge of the right-hand label column
 
-  // Proper segment crossing (shared endpoints don't count — leaders never
+  // Proper segment crossing (shared endpoints don't count, leaders never
   // share one anyway, since dots and slots are all distinct).
   const orient = (ax: number, ay: number, bx: number, by: number, cx: number, cy: number) =>
     Math.sign((bx - ax) * (cy - ay) - (by - ay) * (cx - ax));
@@ -311,8 +311,8 @@ function placeColumnLabels(
 
 // ---- Ball quadrant map ----------------------------------------------------
 // One plot that carries the whole buying decision:
-//   x — spin, decreasing left → right (spectrum position, reversed)
-//   y — compression, increasing bottom → top
+//   x, spin, decreasing left → right (spectrum position, reversed)
+//   y, compression, increasing bottom → top
 // So the firm, low-spin distance balls land top-right and the soft,
 // straight-flying swing-saver balls land bottom-right.
 const ballMap = (() => {
@@ -375,7 +375,7 @@ const ballMap = (() => {
   };
 })();
 
-// "Find yourself on the map" — each player profile points at the region of
+// "Find yourself on the map", each player profile points at the region of
 // the map they should shop, matching the quadrant captions on the plot.
 const ballProfiles = [
   {
@@ -399,15 +399,15 @@ const ballProfiles = [
   {
     tag: "Under 85 mph · seniors · slice fighters",
     title: "The smooth swinger",
-    body: "Soft, low-spin balls launch higher, curve less, and feel better at lower speeds — less backspin means less sidespin too.",
+    body: "Soft, low-spin balls launch higher, curve less, and feel better at lower speeds, less backspin means less sidespin too.",
     quadrant: "↘ Shop the bottom-right: slower swing, straight and soft",
   },
 ];
 
 // ---- Iron quadrant map ------------------------------------------------------
 // One plot that carries the whole buying decision:
-//   x — head design, max forgiveness left → compact precision right
-//   y — stamped 7-iron loft, stronger (more built-in distance) toward the top
+//   x, head design, max forgiveness left → compact precision right
+//   y, stamped 7-iron loft, stronger (more built-in distance) toward the top
 // So the juiced game-improvement sets land top-left, hollow-body players
 // distance irons top-right, blades and traditional cavity backs bottom-right,
 // and the honest-lofted launch helpers bottom-left.
@@ -498,7 +498,7 @@ const ironMap = (() => {
   };
 })();
 
-// "Find yourself on the map" — each player profile points at the region of
+// "Find yourself on the map", each player profile points at the region of
 // the iron map they should shop, matching the quadrant captions on the plot.
 const ironProfiles = [
   {
@@ -510,13 +510,13 @@ const ironProfiles = [
   {
     tag: "Mid handicap · chasing carry",
     title: "The distance shopper",
-    body: "Hollow-body players distance irons hide a hot, flexing face in a compact head — speed on mishits without the shovel look at address.",
+    body: "Hollow-body players distance irons hide a hot, flexing face in a compact head, speed on mishits without the shovel look at address.",
     quadrant: "↗ Shop the top-right: compact looks, hidden speed",
   },
   {
     tag: "Slower swing · ball won't climb",
     title: "The launch seeker",
-    body: "Stronger lofts make a low-flight problem worse. Lightweight builds and weaker high-launch lofts buy you height — and height is carry.",
+    body: "Stronger lofts make a low-flight problem worse. Lightweight builds and weaker high-launch lofts buy you height, and height is carry.",
     quadrant: "↙ Shop the bottom-left: forgiving, honest lofts",
   },
   {
@@ -529,8 +529,8 @@ const ironProfiles = [
 
 // ---- Wedge quadrant map ----------------------------------------------------
 // One plot for the short-game buying decision:
-//   x — head type, max forgiveness (cavity) left → compact tour blade right
-//   y — sole bounce, low (firm turf / shallow attack) bottom → high (soft turf
+//   x, head type, max forgiveness (cavity) left → compact tour blade right
+//   y, sole bounce, low (firm turf / shallow attack) bottom → high (soft turf
 //       / steep attack) top
 // So the forgiving cavity wedges land left, tour blades right, and every model
 // stacks by how much bounce its signature sole carries.
@@ -608,13 +608,13 @@ const wedgeMap = (() => {
   };
 })();
 
-// "Find yourself on the map" — each profile points at the wedge region that
+// "Find yourself on the map", each profile points at the wedge region that
 // matches a turf/technique combination, mirroring the quadrant captions.
 const wedgeProfiles = [
   {
     tag: "Higher handicap · fat & thin chips",
     title: "The improver",
-    body: "Cavity-back wedges add forgiveness and wide, high-bounce soles that skid through fat strikes instead of digging — the short-game safety net.",
+    body: "Cavity-back wedges add forgiveness and wide, high-bounce soles that skid through fat strikes instead of digging, the short-game safety net.",
     quadrant: "↖ Shop the top-left: forgiving cavity, plenty of bounce",
   },
   {
@@ -648,7 +648,7 @@ const wedgeProfiles = [
         What clubs and balls exist? What are they designed to do? And what do
         they actually cost today? Every placement is researched by hand from
         published specs, and every price is tracked against live retailer
-        listings — the community-measured numbers are the
+        listings, the community-measured numbers are the
         <a href="/lab/community">separate effort next door</a>.
       </p>
       {
@@ -742,7 +742,7 @@ const wedgeProfiles = [
             <aside class="fit-nudge card">
               <p class="eyebrow">Which half are you shopping in?</p>
               <p class="fit-nudge-lead text-muted">
-                The spectrum tells you where each head sits — your own dispersion
+                The spectrum tells you where each head sits, your own dispersion
                 tells you where <em>you</em> sit. Pull up your driver numbers in
                 the <a href="/golf-sim-analytics">dispersion dashboard</a> (or
                 any 30+ shot sample) and use this rule of thumb:
@@ -771,7 +771,7 @@ const wedgeProfiles = [
                 </li>
               </ul>
               <p class="fit-nudge-foot text-dim">
-                The strokes math behind the rule gets its own write-up soon —
+                The strokes math behind the rule gets its own write-up soon;
                 and a 40-shot demo session beats any rule of thumb.
               </p>
             </aside>
@@ -784,7 +784,7 @@ const wedgeProfiles = [
               <h2 id="pricing">Driver Pricing</h2>
               <p class="text-muted" style="max-width:66ch;">
                 Today's best retail prices vs. MSRP. Hollow dot = MSRP. Filled
-                dot = lowest price found today, connected by a line — green
+                dot = lowest price found today, connected by a line, green
                 marks a real discount. Click any row to shop.
               </p>
               <p class="lab-stat-line tnum">
@@ -859,7 +859,7 @@ const wedgeProfiles = [
             </div>
 
             <p class="lab-caption">
-              Prices are checked by hand and will drift — always confirm at the
+              Prices are checked by hand and will drift, always confirm at the
               retailer. We take no commission on any link here.
             </p>
           </section>
@@ -874,7 +874,7 @@ const wedgeProfiles = [
                   Every major iron lineup on the two axes that actually decide
                   the fit: how much help the head gives you (right = less) and
                   what's really stamped on the 7-iron (up = stronger loft). A
-                  "7-iron" here spans 27° to 35° — a two-club difference — so
+                  "7-iron" here spans 27° to 35°, a two-club difference, so
                   the vertical axis is your defense against loft-jacking:
                   before believing a distance claim, check how much of it is
                   just a 6-iron with a 7 on the sole. Color marks the category.
@@ -914,7 +914,7 @@ const wedgeProfiles = [
                   {/* irons */}
                   {ironMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name} — ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} (${d.config})`}</title>
+                      <title>{`${d.brand} ${d.name}, ${IRON_CATS[d.category]?.label ?? d.category}, ${d.construction}, 7-iron ${d.loft7}°, $${d.price} (${d.config})`}</title>
                       <line
                         class="ballmap-lead"
                         x1={d.x}
@@ -942,7 +942,7 @@ const wedgeProfiles = [
 
                 <div class="ballmap-legend">
                   {Object.values(IRON_CATS).map((c) => (
-                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()} — {c.blurb}</span>
+                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()}, {c.blurb}</span>
                   ))}
                 </div>
               </div>
@@ -973,7 +973,7 @@ const wedgeProfiles = [
                 Covers the major OEMs plus the direct-to-consumer brands people
                 actually shop. Placements are researched estimates from head
                 construction, published specs and stated positioning; 7-iron
-                lofts are manufacturer standard specs — not yet community data.
+                lofts are manufacturer standard specs, not yet community data.
               </p>
 
               {/* Which quadrant are you? */}
@@ -995,11 +995,11 @@ const wedgeProfiles = [
             <section class="lab-band">
               <div class="lab-band-head">
                 <p class="eyebrow">Pricing</p>
-                <h2 id="iron-pricing">Iron Pricing — per set, as sold</h2>
+                <h2 id="iron-pricing">Iron Pricing, per set, as sold</h2>
                 <p class="text-muted" style="max-width:66ch;">
                   The price each linked page actually charges for its stock
-                  set. Set makeups vary — some brands sell 4-PW steel, some
-                  8-piece sets, some price per club (shown as ×7) — hover a
+                  set. Set makeups vary, some brands sell 4-PW steel, some
+                  8-piece sets, some price per club (shown as ×7), hover a
                   row for the exact configuration behind the number. Hollow
                   dot = list price. Filled dot = price at the link today;
                   green marks a real discount. Click any row to shop.
@@ -1042,7 +1042,7 @@ const wedgeProfiles = [
                               rel="noopener noreferrer"
                               class="price-row"
                               class:list={[{ discounted: hasDiscount }]}
-                              title={`${lineup.brand} ${model.name} — ${model.config}`}
+                              title={`${lineup.brand} ${model.name}, ${model.config}`}
                             >
                               <span class="price-row-model">{model.name}</span>
                               <div class="price-row-track">
@@ -1078,7 +1078,7 @@ const wedgeProfiles = [
 
               <p class="lab-caption">
                 Every price was checked against the linked page by hand and
-                will drift — PXG and the direct-to-consumer brands in
+                will drift, PXG and the direct-to-consumer brands in
                 particular run frequent promos, and graphite shafts typically
                 add $100–200. Always confirm at the retailer; no commission
                 taken on any link.
@@ -1096,7 +1096,7 @@ const wedgeProfiles = [
                   Every major wedge on the two axes that actually decide the
                   fit: how forgiving the head is (right = less, more workable)
                   and how much bounce its signature sole carries (up = more).
-                  Bounce is the setting most golfers get wrong — too little and
+                  Bounce is the setting most golfers get wrong, too little and
                   the leading edge digs on soft turf and steep swings; too much
                   and it skips off firm turf and tight lies. Color marks the
                   head type. Hover any wedge for its bounce, grind and price.
@@ -1135,7 +1135,7 @@ const wedgeProfiles = [
                   {/* wedges */}
                   {wedgeMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name} — ${WEDGE_CATS[d.category]?.label ?? d.category}, ${d.construction}, ${d.loft}° · ${d.bounce}° bounce, $${d.price}`}</title>
+                      <title>{`${d.brand} ${d.name}, ${WEDGE_CATS[d.category]?.label ?? d.category}, ${d.construction}, ${d.loft}° · ${d.bounce}° bounce, $${d.price}`}</title>
                       <line
                         class="ballmap-lead"
                         x1={d.x}
@@ -1163,7 +1163,7 @@ const wedgeProfiles = [
 
                 <div class="ballmap-legend">
                   {Object.values(WEDGE_CATS).map((c) => (
-                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()} — {c.blurb}</span>
+                    <span><i class={`ballmap-key ${c.cls}`} aria-hidden="true"></i> {c.label.toLowerCase()}, {c.blurb}</span>
                   ))}
                 </div>
               </div>
@@ -1195,7 +1195,7 @@ const wedgeProfiles = [
                 actually shop. Each wedge is plotted at its 56° option's
                 signature bounce; most models offer a range of lofts, bounces
                 and grinds, so hover for the sole options. Placements are
-                researched estimates from construction and stated positioning —
+                researched estimates from construction and stated positioning,
                 not yet community data.
               </p>
 
@@ -1218,7 +1218,7 @@ const wedgeProfiles = [
             <section class="lab-band">
               <div class="lab-band-head">
                 <p class="eyebrow">Pricing</p>
-                <h2 id="wedge-pricing">Wedge Pricing — per wedge</h2>
+                <h2 id="wedge-pricing">Wedge Pricing, per wedge</h2>
                 <p class="text-muted" style="max-width:66ch;">
                   Wedges are sold one at a time, so this is the price of a single
                   head as the linked page lists it. Hover a row for the bounce
@@ -1264,7 +1264,7 @@ const wedgeProfiles = [
                               rel="noopener noreferrer"
                               class="price-row"
                               class:list={[{ discounted: hasDiscount }]}
-                              title={`${lineup.brand} ${model.name} — ${model.bounce}° bounce, ${model.grind}`}
+                              title={`${lineup.brand} ${model.name}, ${model.bounce}° bounce, ${model.grind}`}
                             >
                               <span class="price-row-model">{model.name}</span>
                               <div class="price-row-track">
@@ -1300,7 +1300,7 @@ const wedgeProfiles = [
 
               <p class="lab-caption">
                 Single-wedge prices, checked by hand against the linked page and
-                sure to drift — the direct-to-consumer brands in particular run
+                sure to drift, the direct-to-consumer brands in particular run
                 frequent promos, and premium finishes or custom grinds add cost.
                 Always confirm at the retailer; no commission taken on any link.
               </p>
@@ -1354,7 +1354,7 @@ const wedgeProfiles = [
                   {/* balls */}
                   {ballMap.dots.map((d: any) => (
                     <g class="ballmap-pt">
-                      <title>{`${d.brand} ${d.name} — ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
+                      <title>{`${d.brand} ${d.name}, ${d.construction}, compression ~${d.compression}, $${d.price}/dz`}</title>
                       <line
                         class="ballmap-lead"
                         x1={d.x}
@@ -1381,8 +1381,8 @@ const wedgeProfiles = [
                 </svg>
 
                 <div class="ballmap-legend">
-                  <span><i class="ballmap-key premium" aria-hidden="true"></i> urethane cover — grippier, so naturally more spin: greenside control</span>
-                  <span><i class="ballmap-key value" aria-hidden="true"></i> ionomer / hybrid cover — less grippy, so naturally lower spin: distance &amp; budget</span>
+                  <span><i class="ballmap-key premium" aria-hidden="true"></i> urethane cover, grippier, so naturally more spin: greenside control</span>
+                  <span><i class="ballmap-key value" aria-hidden="true"></i> ionomer / hybrid cover, less grippy, so naturally lower spin: distance &amp; budget</span>
                 </div>
               </div>
 
@@ -1410,7 +1410,7 @@ const wedgeProfiles = [
 
               <p class="lab-caption">
                 Placements are researched estimates from construction, cover
-                material, compression and published robot data — not yet
+                material, compression and published robot data, not yet
                 community data. Real, crowd-measured ball comparisons are{" "}
                 <a href="/lab#roadmap">next on the roadmap</a>.
               </p>
@@ -1434,10 +1434,10 @@ const wedgeProfiles = [
             <section class="lab-band">
               <div class="lab-band-head">
                 <p class="eyebrow">Pricing</p>
-                <h2 id="ball-pricing">Ball Pricing — per dozen</h2>
+                <h2 id="ball-pricing">Ball Pricing, per dozen</h2>
                 <p class="text-muted" style="max-width:66ch;">
                   Today's best street price per dozen vs. MSRP. Hollow dot =
-                  MSRP. Filled dot = lowest price found today — green marks a
+                  MSRP. Filled dot = lowest price found today, green marks a
                   real discount. Click any row to shop.
                 </p>
                 <p class="lab-stat-line tnum">
@@ -1512,7 +1512,7 @@ const wedgeProfiles = [
               </div>
 
               <p class="lab-caption">
-                Single-dozen prices — bulk and subscription deals (looking at
+                Single-dozen prices, bulk and subscription deals (looking at
                 you, direct-to-consumer brands) can run lower. Checked by hand,
                 will drift, no commission taken.
               </p>
@@ -1534,7 +1534,7 @@ const wedgeProfiles = [
         <h2>Coming to the Gear Guide</h2>
         <p class="text-muted" style="max-width:66ch;">
           Drivers, irons, wedges and balls are all mapped and priced above. The
-          same treatment is planned for the rest of the bag — see the{" "}
+          same treatment is planned for the rest of the bag, see the{" "}
           <a href="/lab#roadmap">full roadmap</a> for where this sits.
         </p>
       </div>
@@ -1557,7 +1557,7 @@ const wedgeProfiles = [
           </div>
           <p>
             Head style, hosel and balance mapped so you can match a putter to
-            your stroke — blade to mallet, and everything between.
+            your stroke, blade to mallet, and everything between.
           </p>
         </div>
       </div>
@@ -1726,7 +1726,7 @@ const wedgeProfiles = [
   .ballmap-dot.value {
     fill: var(--cyan);
   }
-  /* Iron map category colors — one distinct hue per category, running from the
+  /* Iron map category colors, one distinct hue per category, running from the
      player's end (green → cyan → violet) to the forgiveness end (amber → grey). */
   .ballmap-dot.cat-blade {
     fill: var(--green-bright);
