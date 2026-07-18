@@ -47,22 +47,24 @@ const labTiles = [
   },
 ];
 
-// One positive trio, replaces the old "problems" + "framework" sections.
+// The flywheel trio: individual value → comparative value → collective value,
+// in that order. Replaces the old method-first trio; the method still lives
+// on /lab#methodology where the detail belongs.
 const ideas = [
   {
     n: "01",
-    title: "More shots, more signal",
-    body: "Any single test is limited by how many shots one person can hit. Pool thousands across a community and the patterns become something you can actually trust.",
+    title: "Contribute your shots",
+    body: "The app captures every GSPro shot automatically, and sharing is a single opt-in. No account, no name, no manual entry, your sessions just count.",
   },
   {
     n: "02",
-    title: "One shared method",
-    body: "Everyone measures the same way, following one open, documented protocol, so contributions add up to comparisons that are truly apples-to-apples.",
+    title: "Unlock your benchmarks",
+    body: "See where you actually stack up: your carry, dispersion and strike quality against golfers at your swing speed, not a tour pro's table.",
   },
   {
     n: "03",
-    title: "Open results, for everyone",
-    body: "Real ball comparisons, club gapping by handicap, launch and spin norms, free and open for any golfer to use.",
+    title: "Every shot sharpens the answer",
+    body: "Ball comparisons, gapping by handicap, launch and spin norms, free and open for every golfer, and a little sharper with every session shared.",
   },
 ];
 ---
@@ -89,8 +91,8 @@ const ideas = [
       <span class="pill hero-openpill">◆ GSPro-driven community analytics · free &amp; open</span>
       <h1 class="hero-title">Your sim is the lab. Your swings are the data.</h1>
       <p class="lede hero-lede">
-        Pool your shots with thousands of GSPro golfers, and find out what
-        actually deserves a spot in your bag.
+        Pool your shots with thousands of GSPro golfers, see where you actually
+        stack up, and find out what deserves a spot in your bag.
       </p>
 
       <div class="hero-cta">
@@ -113,6 +115,15 @@ const ideas = [
       <h2 class="mission-h">The clubs and ball you use matter</h2>
       <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
         OpenGolfLab exists to build the data you need to choose them well.
+      </p>
+      <p class="text-muted moat" style="max-width:70ch;">
+        The data that could answer it doesn't exist anywhere else. Tour numbers
+        describe professionals. Shot-tracker datasets are closed, and blown
+        around by wind, temperature and elevation. Manufacturer claims come
+        from robots and marketing departments. A sim bay is a controlled lab,
+        so pooled indoor shots, tagged with club, ball and launch monitor, make
+        cleaner comparisons than any of them. That's the dataset we're
+        building, in the open.
       </p>
 
       <ol class="idea-grid">
@@ -311,6 +322,10 @@ const ideas = [
   }
   .mission-h {
     max-width: 22ch;
+  }
+  .moat {
+    margin-top: 1rem;
+    font-size: 0.97rem;
   }
 
   /* ---- Idea trio ---- */
