@@ -1,9 +1,20 @@
 {
   "generated_date": "2026-07-18",
-  "count": 12,
+  "count": 13,
   "contributions": [
     {
-      "display_name": "tom",
+      "display_name": "tim",
+      "date": "2026-07-18",
+      "shots": 40,
+      "clubs": [
+        "4I",
+        "Dr",
+        "Pw"
+      ],
+      "launch_monitor": "Mevo+"
+    },
+    {
+      "display_name": "tim",
       "date": "2026-07-17",
       "shots": 31,
       "clubs": [
