@@ -65,15 +65,20 @@
 <section class="lab-band" id="leaderboard-band" hidden>
   <div class="lab-band-head">
     <p class="eyebrow">Leaderboard</p>
-    <h2>Fastest drivers</h2>
+    <h2>The Bomber Board</h2>
     <p class="text-muted" style="max-width:66ch;">
-      Top ten by median driver ball speed. Medians, not hero swings: every
-      number is the middle of all that golfer's shared driver shots, so one
-      lucky strike can't make this list. Club speed appears when the launch
-      monitor captured it.
+      The community's ten biggest hitters, ranked by median driver ball speed.
+      Medians, not hero swings: every number is the middle of all that golfer's
+      shared driver shots, so one lucky strike can't make this list. Declare
+      your driver in the app and it shows up next to your name.
     </p>
   </div>
   <div class="x-lb-wrap">
+    {/* Original flying-wing silhouette (drawn here, not a licensed asset),
+        ghosted behind the board for the stealth-bomber nod. */}
+    <svg class="x-bomber" viewBox="0 0 200 70" aria-hidden="true" focusable="false">
+      <path d="M100,2 L198,52 L164,52 L150,40 L136,52 L112,52 L100,64 L88,52 L64,52 L50,40 L36,52 L2,52 Z" />
+    </svg>
     <table class="x-table x-lb">
       <thead>
         <tr>
@@ -360,9 +365,12 @@
     const body = $("x-lb-body");
     board.forEach((e) => {
       const tr = document.createElement("tr");
+      const gear = e.driver
+        ? `<span class="x-lb-gear">${escapeHTML(e.driver)}</span>`
+        : "";
       tr.innerHTML =
         `<td class="tnum x-lb-rank">${e.rank}</td>` +
-        `<td class="x-lb-name">${escapeHTML(e.display_name)}</td>` +
+        `<td class="x-lb-name">${escapeHTML(e.display_name)}${gear}</td>` +
         `<td class="tnum"><strong>${e.ball_speed}</strong> mph</td>` +
         `<td class="tnum">${e.club_speed != null ? e.club_speed + " mph" : "–"}</td>` +
         `<td class="tnum">${Math.round(e.carry)} yd</td>` +
@@ -510,9 +518,38 @@
     max-width: 560px;
   }
 
-  .x-lb-wrap { max-width: 640px; overflow-x: auto; }
+  .x-lb-wrap {
+    position: relative;
+    max-width: 640px;
+    overflow-x: auto;
+  }
+  /* The frosted bomber: a big, barely-there flying wing behind the numbers.
+     Blur + low opacity keeps it atmospheric instead of busy; pointer-events
+     off so it never eats a click. */
+  .x-bomber {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    transform: translate(-50%, -50%) rotate(-8deg);
+    width: min(520px, 92%);
+    filter: blur(1.5px);
+    opacity: 0.07;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .x-bomber path {
+    fill: var(--text);
+  }
+  .x-lb { position: relative; z-index: 1; background: transparent; }
+  .x-lb td { background: transparent; }
   .x-lb-rank { color: var(--text-dim); }
   .x-lb-name { color: var(--text); font-weight: 600; }
+  .x-lb-gear {
+    display: block;
+    font-weight: 400;
+    font-size: 0.76rem;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+  }
   .x-lb td strong { color: var(--green); }
 
   @media (max-width: 760px) {
