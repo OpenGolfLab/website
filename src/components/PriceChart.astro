@@ -227,7 +227,12 @@ const { lineups, axisTicks, axisMaxRounded, ariaLabel, titleFor } = Astro.props;
     .price-chart-wrap {
       overflow-x: auto;
     }
-    .price-chart-axis-spacer,
+    /* No room to keep the $-axis aligned with the tracks at this width, and
+       every row already states its price, so the header goes. It returns in
+       landscape / on wider screens. */
+    .price-chart-axis {
+      display: none;
+    }
     .price-row-model {
       width: 110px;
     }
@@ -235,10 +240,7 @@ const { lineups, axisTicks, axisMaxRounded, ariaLabel, titleFor } = Astro.props;
       display: none;
     }
     /* The dealer column is hidden here, so give its share of the 200px value
-       column back to the chart track (and keep the axis aligned with it). */
-    .price-chart-axis-ticks {
-      padding-right: 110px;
-    }
+       column back to the chart track. */
     .price-row-values {
       flex-basis: 110px;
     }
