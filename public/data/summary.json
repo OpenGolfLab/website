@@ -4,11 +4,47 @@
   "tiers": {
     "community": {
       "totals": {
-        "contributors": 4,
-        "shots": 971
+        "contributors": 15,
+        "shots": 1517
       },
-      "clubs": [],
-      "gapping": [],
+      "clubs": [
+        {
+          "club": "Dr",
+          "contributors": 13,
+          "shots": 964,
+          "carry": {
+            "med": 276,
+            "p10": 270,
+            "p90": 288,
+            "spread_mad": 15
+          },
+          "ball": 164,
+          "launch": 14.1,
+          "spin": {
+            "value": null,
+            "min_tier": "verified"
+          },
+          "dispersion": {
+            "offline_bias": 7,
+            "lateral_mad": 22,
+            "depth_mad": 15
+          }
+        }
+      ],
+      "gapping": [
+        {
+          "handicap_band": "1-4",
+          "club": "Dr",
+          "carry": 279,
+          "contributors": 6
+        },
+        {
+          "handicap_band": "5-9",
+          "club": "Dr",
+          "carry": 274,
+          "contributors": 6
+        }
+      ],
       "balls": [],
       "distribution": {
         "club": "7I",
@@ -29,7 +65,7 @@
         ],
         "counts": [
           0,
-          0,
+          1,
           0,
           0,
           0,

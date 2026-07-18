@@ -1,6 +1,6 @@
 {
   "generated_date": "2026-07-18",
-  "count": 1,
+  "count": 12,
   "contributions": [
     {
       "display_name": "tom",
@@ -12,6 +12,116 @@
         "Sw"
       ],
       "launch_monitor": "Square Golf"
+    },
+    {
+      "display_name": "SpinDoctor",
+      "date": "2026-07-16",
+      "shots": 31,
+      "clubs": [
+        "Dr",
+        "PW",
+        "SW"
+      ],
+      "launch_monitor": "Rapsodo MLM2PRO"
+    },
+    {
+      "display_name": "FadeRunner",
+      "date": "2026-07-09",
+      "shots": 21,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Mevo+"
+    },
+    {
+      "display_name": "NightRange",
+      "date": "2026-07-07",
+      "shots": 89,
+      "clubs": [
+        "3W",
+        "4i",
+        "5i",
+        "6i",
+        "7i",
+        "8i",
+        "9i",
+        "GW",
+        "PW",
+        "SW"
+      ],
+      "launch_monitor": "Garmin Approach R10"
+    },
+    {
+      "display_name": "SmoothTakeaway",
+      "date": "2026-06-28",
+      "shots": 68,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Trackman"
+    },
+    {
+      "display_name": "HighBaller",
+      "date": "2026-05-26",
+      "shots": 60,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Bushnell Launch Pro"
+    },
+    {
+      "display_name": "DialedIn",
+      "date": "2026-05-26",
+      "shots": 92,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Full Swing KIT"
+    },
+    {
+      "display_name": "LaunchCodes",
+      "date": "2026-04-26",
+      "shots": 21,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Uneekor EYE XO"
+    },
+    {
+      "display_name": "GarageGolfer",
+      "date": "2026-04-26",
+      "shots": 34,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Square Golf"
+    },
+    {
+      "display_name": "BombSquad",
+      "date": "2026-02-08",
+      "shots": 20,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "SkyTrak+"
+    },
+    {
+      "display_name": "MidwestMasher",
+      "date": "2025-08-06",
+      "shots": 25,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "SkyTrak"
+    },
+    {
+      "display_name": "TurfDreams",
+      "date": "2025-08-03",
+      "shots": 85,
+      "clubs": [
+        "Dr"
+      ],
+      "launch_monitor": "Foresight GCQuad"
     }
   ]
 }
