@@ -22,6 +22,8 @@ export default defineConfig({
     // merged into one flagship story. Keep the old links live.
     "/blog/introducing-opengolflab": "/blog/gspro-forgets-community-remembers",
     "/blog/gspro-has-no-memory": "/blog/gspro-forgets-community-remembers",
+    // The feature-tour post duplicated the app page; the page is the keeper.
+    "/blog/meet-golf-sim-analytics": "/golf-sim-analytics",
   },
 
   // Static output is the default: no adapter, no SSR, no server code.

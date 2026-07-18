@@ -385,7 +385,7 @@
   boot();
 </script>
 
-<style>
+<style is:global>
   .x-filters {
     display: flex;
     flex-direction: column;
@@ -461,6 +461,37 @@
     border: 1px solid var(--border);
     background: var(--surface);
   }
+  /* SVG internals (all created by the script) */
+  .x-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+  .x-center {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+  }
+  .x-tick {
+    fill: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .x-axis-label {
+    fill: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+  .x-point {
+    stroke: rgba(0, 0, 0, 0.4);
+    stroke-width: 0.75;
+    cursor: pointer;
+  }
+  .x-point:hover {
+    stroke: var(--text);
+    stroke-width: 1.5;
+  }
+
   .x-plot-caption {
     margin-top: 0.45rem;
     font-size: 0.8rem;

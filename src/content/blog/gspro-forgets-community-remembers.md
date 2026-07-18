@@ -32,7 +32,7 @@ A number that vanishes can't answer any of that. A simulator with no memory leav
 
 It captures every shot automatically. Practice Range exports are picked up the instant they land on your Desktop; live rounds are tracked in real time and archived when you finish. There is no import button. You play, and the record builds itself.
 
-Then it turns that record into 15 dashboards: dispersion, gapping, trajectory, swing efficiency, shot quality, speed training, on-course scoring, and more. Overlay PGA Tour averages or any handicap benchmark and see exactly where you stand. The [full feature tour](/blog/meet-golf-sim-analytics) walks through every panel.
+Then it turns that record into 15 dashboards: dispersion, gapping, trajectory, swing efficiency, shot quality, speed training, on-course scoring, and more. Overlay PGA Tour averages or any handicap benchmark and see exactly where you stand. The [app page](/golf-sim-analytics) walks through every panel.
 
 And it's local-first. Your shots live in files next to the app, on your machine. No account, no upload, no subscription, no server to leak them. Free, private, yours.
 
