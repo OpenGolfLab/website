@@ -1,0 +1,83 @@
+{
+  "_comment": "Seed data for /lab/benchmarks. Every mean and marker traces to a published source below; SDs are calibrated to a second published statistic (documented per metric in 'calibration') and the distribution is modeled as normal. This entire file is a placeholder tier: when the community dataset clears its publish thresholds, measured percentiles replace these modeled ones and the page relabels from 'sourced' to 'measured'. Population: male amateur golfers, on-course tracking data unless a marker says otherwise.",
+  "population": "male amateur golfers",
+  "metrics": [
+    {
+      "key": "carry",
+      "label": "Driver carry",
+      "unit": "yd",
+      "mean": 204,
+      "sd": 41,
+      "axis": { "min": 140, "max": 290 },
+      "calibration": "Mean from TrackMan's average male amateur (204 yd carry). SD scaled from the total-distance model by the amateur carry-to-total ratio.",
+      "sources": ["trackman", "arccos"],
+      "markers": [
+        { "value": 204, "label": "Avg male amateur" },
+        { "value": 275, "label": "PGA Tour avg carry" }
+      ]
+    },
+    {
+      "key": "total",
+      "label": "Driver total distance",
+      "unit": "yd",
+      "mean": 225,
+      "sd": 45,
+      "axis": { "min": 150, "max": 310 },
+      "calibration": "Mean from Arccos's annual report (224.7 yd average male drive). SD solved so that 29% of drives exceed 250 yd, the share both Arccos and Shot Scope report.",
+      "sources": ["arccos", "shotscope"],
+      "markers": [
+        { "value": 185, "label": "Avg, 30+ handicap" },
+        { "value": 225, "label": "Avg male golfer" },
+        { "value": 250, "label": "Sub-5 hcp avg · top-29% line" },
+        { "value": 300, "label": "PGA Tour avg" }
+      ]
+    },
+    {
+      "key": "ballspeed",
+      "label": "Driver ball speed",
+      "unit": "mph",
+      "mean": 132.6,
+      "sd": 14,
+      "axis": { "min": 100, "max": 180 },
+      "calibration": "Mean from TrackMan's average male amateur (132.6 mph). SD is the club-speed model's SD times the average amateur smash factor of 1.42.",
+      "sources": ["trackman", "usga"],
+      "markers": [
+        { "value": 132.6, "label": "Avg male amateur" },
+        { "value": 167, "label": "PGA Tour avg" }
+      ]
+    },
+    {
+      "key": "clubspeed",
+      "label": "Driver club speed",
+      "unit": "mph",
+      "mean": 93.4,
+      "sd": 9.8,
+      "axis": { "min": 70, "max": 125 },
+      "calibration": "Mean from TrackMan's average male amateur (93.4 mph). SD solved so that roughly a quarter of male golfers exceed 100 mph, consistent with USGA measurement data.",
+      "sources": ["trackman", "usga"],
+      "markers": [
+        { "value": 93.4, "label": "Avg male amateur" },
+        { "value": 100, "label": "Top-quartile line" },
+        { "value": 113, "label": "PGA Tour avg" }
+      ]
+    }
+  ],
+  "sourceList": {
+    "arccos": {
+      "name": "Arccos annual driving-distance report",
+      "url": "https://www.arccosgolf.com/blogs/community/arccos-golf-releases-largest-ever-annual-driving-distance-report-leveraging-data-from-25-million-rounds-to-deliver-eight-year-trend-analysis-across-age-gender-and-skill-level"
+    },
+    "shotscope": {
+      "name": "Shot Scope, distribution of driving distances",
+      "url": "https://shotscope.com/blog/practice-green/stats-and-data/distribution-of-driving-distances-2022/"
+    },
+    "trackman": {
+      "name": "TrackMan, performance of the average male amateur",
+      "url": "https://blog.trackmangolf.com/performance-of-the-average-male-amateur/"
+    },
+    "usga": {
+      "name": "USGA, quantitative analysis of recreational golfer club hitting (2023 update)",
+      "url": "https://www.usga.org/content/dam/usga/images/course-care/GolferExperience/DI_Golfer_Performance_Measurement%202023%20Update.pdf"
+    }
+  }
+}

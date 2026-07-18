@@ -38,9 +38,9 @@ export const SITE_TITLE = "OpenGolfLab";
 export const SITE_TAGLINE = "Your sim is the lab. Your swings are the data.";
 /** Mission-level line for the home page / brand. */
 export const SITE_MISSION =
-  "GSPro-driven community analytics: open, crowd-sourced equipment testing where every shot counts.";
+  "An open dataset of real amateur golf shots, hit under controlled indoor conditions, tagged with club, ball and launch monitor.";
 export const SITE_DESCRIPTION =
-  "OpenGolfLab is GSPro-driven community analytics: an open, free effort to build robust, crowd-sourced comparisons of golf balls and clubs, standardized so everyone tests the same way. Powered by Golf Sim Analytics, a free Windows app for GSPro.";
+  "OpenGolfLab is building an open dataset of real amateur golf shots hit under controlled indoor conditions — tagged with club, ball and launch monitor — to answer what actually belongs in your bag, and show you where you stack up. Powered by Golf Sim Analytics, a free Windows app for GSPro.";
 
 /** Canonical production origin (no trailing slash). */
 export const SITE_URL = "https://opengolflab.com";
@@ -75,6 +75,11 @@ export const LAB_SECTIONS = [
     href: "/lab/community",
     label: "Community Data",
     blurb: "Crowd-sourced norms from anonymized, opt-in GSPro sessions.",
+  },
+  {
+    href: "/lab/benchmarks",
+    label: "Benchmarks",
+    blurb: "Where do you stack up? Enter a number, see your percentile.",
   },
 ] as const;
 

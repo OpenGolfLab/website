@@ -1,0 +1,470 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import LabNav from "../../components/LabNav.astro";
+import benchmarks from "../../data/benchmarks.sources.json";
+import "../../styles/lab.css";
+
+const title = "Benchmarks, The Lab";
+const description =
+  "Where do you stack up? Enter your driver carry, total distance, ball speed or club speed and see your estimated percentile among male amateur golfers, built from published, cited data until the community dataset replaces it with measured numbers.";
+
+const { metrics, sourceList } = benchmarks;
+
+// Sources actually referenced by at least one metric, in stable order.
+const sourceEntries = Object.entries(sourceList);
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight lab-hero">
+    <div class="grid-bg"></div>
+    <div class="container lab-hero-inner">
+      <span class="pill lab-band-pill lab-status progress">◐ Sourced, awaiting community data</span>
+      <h1>Benchmarks</h1>
+      <p class="lede" style="margin-top:1rem;">
+        Where do you actually stack up? Enter one number from your launch
+        monitor and see your estimated percentile among male amateur golfers.
+        Today these curves are modeled from published, cited data; as the
+        community dataset clears its thresholds, they're replaced by measured
+        percentiles from real GSPro sessions.
+      </p>
+      <div class="hero-cta" style="margin-top:1.6rem;">
+        <a href="/download" class="btn btn-primary">Contribute your sessions</a>
+        <a href="/lab/community" class="btn btn-secondary">See community data</a>
+      </div>
+    </div>
+  </section>
+
+  <LabNav />
+
+  <div class="container lab-body">
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">The calculator</p>
+        <h2>Enter a number, see your rank</h2>
+      </div>
+
+      <div class="card bench-card">
+        <form id="bench-form" class="bench-form" autocomplete="off">
+          <label class="bench-field">
+            <span class="bench-label">Metric</span>
+            <select id="bench-metric">
+              {metrics.map((m: any, i: number) => (
+                <option value={m.key} selected={i === 0}>
+                  {m.label} ({m.unit})
+                </option>
+              ))}
+            </select>
+          </label>
+          <label class="bench-field">
+            <span class="bench-label">Your number</span>
+            <input
+              id="bench-value"
+              type="number"
+              inputmode="decimal"
+              step="any"
+              min="0"
+              placeholder="e.g. 230"
+            />
+          </label>
+          <button type="submit" class="btn btn-primary bench-go">Where do I rank?</button>
+        </form>
+
+        <div id="bench-result" class="bench-result" hidden>
+          <p class="bench-pct-line">
+            <span id="bench-pct" class="bench-pct tnum"></span>
+            <span class="bench-pct-caption">estimated percentile, male amateurs</span>
+          </p>
+          <p id="bench-verdict" class="bench-verdict"></p>
+
+          <div class="bench-ladder" aria-hidden="false">
+            <div class="bench-axis">
+              <div id="bench-you" class="bench-you">
+                <span class="bench-you-dot"></span>
+                <span class="bench-you-label">You</span>
+              </div>
+              <div id="bench-marks"></div>
+            </div>
+          </div>
+
+          <div class="bench-actions">
+            <button type="button" id="bench-copy" class="btn btn-secondary">Copy your result</button>
+            <span id="bench-copied" class="bench-copied" hidden>Copied</span>
+          </div>
+          <p class="lab-caption bench-caption">
+            Modeled from published amateur data (sources below), not yet
+            measured by this project. On-course tracking sits behind the
+            distance figures, so sim carry can read a touch different. Treat
+            the percentile as an honest estimate, not a decimal-place truth.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Method</p>
+        <h2>Where these curves come from</h2>
+        <p class="text-muted" style="max-width:68ch;">
+          Each metric is modeled as a normal distribution whose mean comes
+          straight from a published source and whose spread is calibrated to a
+          second published statistic, never invented. Estimates beyond the 5th
+          and 95th percentile are reported as bounds because thin tails are
+          where models lie. The full seed data, every anchor and its source,
+          ships in the site's open repository.
+        </p>
+      </div>
+      <div class="bench-method">
+        {metrics.map((m: any) => (
+          <div class="card bench-method-card">
+            <h3>{m.label}</h3>
+            <p class="bench-method-stat tnum">
+              mean {m.mean} {m.unit} · sd {m.sd} {m.unit}
+            </p>
+            <p class="text-dim">{m.calibration}</p>
+          </div>
+        ))}
+      </div>
+      <div class="bench-sources">
+        <p class="eyebrow" style="margin-bottom:0.4rem;">Sources</p>
+        <ul>
+          {sourceEntries.map(([, s]: [string, any]) => (
+            <li>
+              <a href={s.url} rel="noopener" target="_blank">{s.name}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <span class="pill lab-band-pill progress">The upgrade</span>
+        <h2>Sourced today, measured tomorrow</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          These curves exist so the question has an answer today. The real
+          version, percentiles measured from anonymized community GSPro
+          sessions, sliced by swing speed and gated by the same publish
+          thresholds as everything else in <a href="/lab/community">Community
+          Data</a>, replaces them the moment the dataset supports it. Every
+          contributed session brings that forward.
+        </p>
+        <div class="hero-cta" style="margin-top:1.2rem;">
+          <a href="/download" class="btn btn-primary">Get the app</a>
+          <a href="/lab#methodology" class="btn btn-secondary">Read the methodology</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script define:vars={{ metrics }}>
+  // Vanilla, dependency-free percentile calculator. Normal CDF via the
+  // Abramowitz–Stegun erf approximation (plenty for whole-number percentiles).
+  const byKey = Object.fromEntries(metrics.map((m) => [m.key, m]));
+
+  function normCdf(x, mean, sd) {
+    const z = (x - mean) / (sd * Math.SQRT2);
+    const t = 1 / (1 + 0.3275911 * Math.abs(z));
+    const y =
+      1 -
+      (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t -
+        0.284496736) * t + 0.254829592) * t * Math.exp(-z * z);
+    const erf = z >= 0 ? y : -y;
+    return 0.5 * (1 + erf);
+  }
+
+  function ordinal(n) {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  }
+
+  const form = document.getElementById("bench-form");
+  const metricEl = document.getElementById("bench-metric");
+  const valueEl = document.getElementById("bench-value");
+  const resultEl = document.getElementById("bench-result");
+  const pctEl = document.getElementById("bench-pct");
+  const verdictEl = document.getElementById("bench-verdict");
+  const youEl = document.getElementById("bench-you");
+  const marksEl = document.getElementById("bench-marks");
+  const copyBtn = document.getElementById("bench-copy");
+  const copiedEl = document.getElementById("bench-copied");
+
+  let lastSentence = "";
+
+  function render() {
+    const m = byKey[metricEl.value];
+    const v = parseFloat(valueEl.value);
+    if (!m || !isFinite(v) || v <= 0) return;
+
+    const raw = Math.round(normCdf(v, m.mean, m.sd) * 100);
+    const pct = Math.min(99, Math.max(1, raw));
+
+    // Honest tails: beyond p5/p95 the model reports a bound, not a point.
+    let pctText;
+    let phrase;
+    if (raw >= 95) {
+      pctText = "95th+";
+      phrase = "beyond the 95th percentile, the model stops pretending to precision up here";
+    } else if (raw <= 5) {
+      pctText = "<5th";
+      phrase = "below the 5th percentile, plenty of headroom, and speed is trainable";
+    } else {
+      pctText = ordinal(pct);
+      const share = pct >= 50
+        ? `longer or faster than roughly ${pct} of 100 male amateurs`
+        : `roughly ${100 - pct} of 100 male amateurs are ahead, for now`;
+      phrase = share;
+    }
+
+    pctEl.textContent = pctText;
+    verdictEl.textContent =
+      `${m.label} of ${v} ${m.unit}: ${phrase}.`;
+    lastSentence =
+      `My ${m.label.toLowerCase()} (${v} ${m.unit}) is ~${pctText} percentile among male amateurs — via opengolflab.com/lab/benchmarks`;
+
+    // Ladder: position markers and the "you" dot on the metric's axis.
+    const span = m.axis.max - m.axis.min;
+    const clampPct = (val) =>
+      Math.min(100, Math.max(0, ((val - m.axis.min) / span) * 100));
+
+    marksEl.innerHTML = "";
+    m.markers.forEach((mk) => {
+      const el = document.createElement("div");
+      el.className = "bench-mark";
+      el.style.left = clampPct(mk.value) + "%";
+      el.innerHTML =
+        `<span class="bench-mark-tick"></span>` +
+        `<span class="bench-mark-value tnum">${mk.value}</span>` +
+        `<span class="bench-mark-label">${mk.label}</span>`;
+      marksEl.appendChild(el);
+    });
+    youEl.style.left = clampPct(v) + "%";
+
+    resultEl.hidden = false;
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    render();
+  });
+  metricEl.addEventListener("change", () => {
+    if (!resultEl.hidden) render();
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    if (!lastSentence) return;
+    try {
+      await navigator.clipboard.writeText(lastSentence);
+      copiedEl.hidden = false;
+      setTimeout(() => (copiedEl.hidden = true), 1600);
+    } catch {
+      /* clipboard unavailable; quietly do nothing */
+    }
+  });
+</script>
+
+<style>
+  /* ---- Calculator card ---- */
+  .bench-card {
+    max-width: 760px;
+  }
+  .bench-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+  }
+  .bench-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    flex: 1 1 200px;
+  }
+  .bench-label {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .bench-form select,
+  .bench-form input {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    font: inherit;
+    padding: 0.55rem 0.7rem;
+    border-radius: 4px;
+    min-width: 0;
+  }
+  .bench-form select:focus-visible,
+  .bench-form input:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+  }
+  .bench-go {
+    flex: 0 0 auto;
+  }
+
+  /* ---- Result ---- */
+  .bench-result {
+    margin-top: 1.6rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.4rem;
+  }
+  .bench-pct-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+  .bench-pct {
+    font-family: var(--font-mono);
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--green);
+    line-height: 1;
+  }
+  .bench-pct-caption {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .bench-verdict {
+    margin-top: 0.6rem;
+    color: var(--text-muted);
+    max-width: 60ch;
+  }
+
+  /* ---- Ladder ---- */
+  .bench-ladder {
+    margin-top: 1.5rem;
+    padding-block: 2.4rem 3.4rem;
+  }
+  .bench-axis {
+    position: relative;
+    height: 2px;
+    background: var(--border-strong);
+  }
+  .bench-mark {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    width: max-content;
+    max-width: 9rem;
+  }
+  .bench-mark-tick {
+    display: block;
+    width: 1px;
+    height: 12px;
+    margin: -5px auto 0;
+    background: var(--text-dim);
+  }
+  .bench-mark-value {
+    display: block;
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .bench-mark-label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    line-height: 1.25;
+  }
+  .bench-you {
+    position: absolute;
+    bottom: 0;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 1;
+  }
+  .bench-you-dot {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin: 0 auto;
+    margin-bottom: -7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px var(--green-tint);
+  }
+  .bench-you-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .bench-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 0.6rem;
+  }
+  .bench-copied {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--green);
+  }
+  .bench-caption {
+    margin-top: 1.1rem;
+    max-width: 66ch;
+  }
+
+  /* ---- Method cards ---- */
+  .bench-method {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .bench-method-card h3 {
+    font-size: 1.02rem;
+  }
+  .bench-method-stat {
+    margin-top: 0.3rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--green);
+  }
+  .bench-method-card p.text-dim {
+    margin-top: 0.45rem;
+    font-size: 0.88rem;
+  }
+  .bench-sources {
+    margin-top: 1.5rem;
+  }
+  .bench-sources ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .bench-sources a {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .bench-sources a:hover {
+    color: var(--green);
+  }
+
+  @media (max-width: 700px) {
+    .bench-method {
+      grid-template-columns: 1fr;
+    }
+    .bench-mark-label {
+      display: none;
+    }
+  }
+</style>
