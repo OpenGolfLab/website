@@ -1,0 +1,101 @@
+---
+interface Section {
+  href: string;
+  label: string;
+  id?: string;
+  [key: string]: unknown;
+}
+
+interface Props {
+  sections: readonly Section[];
+  ariaLabel: string;
+  mode: "route" | "spy";
+  rootHref?: string;
+}
+
+const { sections, ariaLabel, mode, rootHref } = Astro.props;
+
+// "route" mode: active computed from the current path, normalized by
+// stripping trailing slashes. rootHref (if given) matches exactly only,
+// so it doesn't light up on every child route; any other href matches
+// exactly OR as a path prefix.
+const path = Astro.url.pathname.replace(/\/+$/, "") || "/";
+const isRouteActive = (href: string) =>
+  href === rootHref ? path === href : path === href || path.startsWith(href + "/");
+---
+
+<div class="section-nav-bar">
+  <div class="container">
+    <nav class="section-nav" aria-label={ariaLabel}>
+      {
+        sections.map((section, i) => {
+          const active = mode === "route" ? isRouteActive(section.href) : i === 0;
+          return (
+            <a
+              href={section.href}
+              data-section={section.id}
+              class:list={["section-nav-link", { active }]}
+              aria-current={mode === "route" && active ? "page" : undefined}
+            >
+              {section.label}
+            </a>
+          );
+        })
+      }
+    </nav>
+  </div>
+</div>
+
+<style>
+  /* Sits directly under the sticky site nav, and sticks below it on scroll. */
+  .section-nav-bar {
+    position: sticky;
+    top: var(--nav-h);
+    z-index: 90;
+    background: var(--bg-translucent);
+    backdrop-filter: saturate(140%) blur(12px);
+    -webkit-backdrop-filter: saturate(140%) blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .section-nav {
+    display: flex;
+    align-items: stretch;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .section-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .section-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding: 0.85rem 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .section-nav-link:hover {
+    color: var(--text-muted);
+  }
+  .section-nav-link.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+  .section-nav-link:first-child {
+    padding-left: 0;
+  }
+
+  @media (max-width: 700px) {
+    .section-nav-link {
+      font-size: 0.76rem;
+      padding: 0.75rem 0.7rem;
+    }
+  }
+</style>

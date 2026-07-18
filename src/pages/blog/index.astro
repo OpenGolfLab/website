@@ -36,7 +36,7 @@ const filters = ["All", ...present];
         <p class="text-muted">No posts yet, check back soon.</p>
       ) : (
         <>
-          <div class="filter-bar" role="tablist" aria-label="Filter posts by category">
+          <div class="filter-bar" role="group" aria-label="Filter posts by category">
             {filters.map((f, i) => (
               <button
                 class:list={["filter-btn", { active: i === 0 }]}
