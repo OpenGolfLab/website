@@ -20,7 +20,7 @@ const acts = [
     state: "done",
     stateLabel: "Shipped",
     title: "Build the instruments",
-    body: "Golf Sim Analytics captures every GSPro shot automatically, free. The Gear Guide maps every major driver, iron, wedge and ball against live street prices. And the contribution pipeline, consent-gated, anonymized, quality-controlled, is built and tested end to end.",
+    body: "Golf Sim Analytics captures every GSPro shot automatically, free. The Gear Guide maps every major driver, iron, wedge and ball at today's prices. And the contribution pipeline, opt-in only, anonymized on your machine, every shot screened, is built and tested end to end.",
   },
   {
     mark: "◐",
@@ -73,39 +73,40 @@ const payoffs = [
 ];
 
 // ---- Methodology (merged from the old /lab/methodology page) ---------------
-// The pipeline, stage by stage. Precise rules, the narrative version is the
-// "How it works" band above; the privacy details live on /privacy. No overlap.
+// The pipeline, stage by stage, told the way you'd explain it to a friend —
+// the enforcement details stay, the jargon doesn't. The narrative version is
+// the "How it works" band above; the privacy details live on /privacy.
 const stages = [
   {
     n: "01",
-    title: "Consent gate",
-    body: `Contribution is off by default. The export path refuses to run without a recorded consent (policy v1.0), there is no code path that shares data without it. Withdrawing consent stops future exports immediately.`,
+    title: "You play, the app records",
+    body: `Golf Sim Analytics captures every GSPro shot automatically while you play, range sessions and full rounds alike. It all lives on your machine, and the app is fully useful without ever sharing a thing.`,
   },
   {
     n: "02",
-    title: "Anonymize at the source",
-    body: `The bundle is built inside the app, on your machine, before anything is transmitted, anonymization is not a server-side promise. Only mapped shot metrics are included (data format v1.1); names, paths and timestamps are dropped by construction. A random, persisted id exists solely to de-duplicate submissions.`,
-    link: { href: "/privacy", label: "Exactly what's in a bundle →" },
+    title: "Sending your data is your call",
+    body: `Sharing is off until you switch it on, and the app literally cannot export without that recorded choice (consent policy v1.0); there is no code path around it. Change your mind and future exports stop on the spot.`,
   },
   {
     n: "03",
-    title: "Validate & screen",
-    body: `A submission must carry the core measurements, ball speed, launch angle, spin and carry, per club, or it doesn't enter the pool. Plausibility screens then drop mislabeled and impossible shots (the 280-yard "7-iron") before they can touch a published number.`,
+    title: "Your name stays home",
+    body: `The bundle is built on your PC before anything is sent, anonymization is not a server-side promise. Shot metrics only (data format v1.1): names, file paths and timestamps are stripped out by construction, and a random id exists just so the same submission can't be counted twice.`,
+    link: { href: "/privacy", label: "Exactly what's in a bundle →" },
   },
   {
     n: "04",
-    title: "One golfer, one vote",
-    body: `Each contributor is reduced to a single summary per club before pooling. Five drives or five hundred, every golfer moves the result equally, volume buys no influence.`,
+    title: "Every shot gets screened",
+    body: `A submission has to carry real measurements (ball speed, launch angle, spin and carry, per club) or it never enters the pool. Then the implausible stuff is dropped before it can touch a published number: the 280-yard "7-iron", the wedge spinning like a driver, shots logged under the wrong club.`,
   },
   {
     n: "05",
-    title: "Robust aggregation",
-    body: `Published values are medians with P10–P90 ranges, never means. One perfect drive or one cold top can drag an average; it cannot budge the middle value of a crowd.`,
+    title: "Every golfer counts once",
+    body: `Before pooling, each contributor is boiled down to one summary per club. What we publish is the middle of the crowd: the median, with the 10th–90th percentile range around it. A golfer who uploads every night and one who shares a single session move the result exactly the same amount, so enthusiasm can't tilt a benchmark, and neither can one perfect drive or one cold top.`,
   },
   {
     n: "06",
-    title: "Publish threshold",
-    body: `No club publishes until at least ${minContributors} golfers have contributed it. Below the threshold, the number simply doesn't exist publicly, a thin sample is worse than no sample.`,
+    title: "Benchmarks wait for a crowd",
+    body: `Nothing publishes until at least ${minContributors} golfers have contributed it. Below that, the number simply doesn't exist publicly; we'd rather show nothing than sway your opinion (or your wallet) with a thin sample. As the pool grows, so do the views: club and ball benchmarks first, then launch monitor, age and handicap cuts.`,
   },
 ];
 
@@ -204,10 +205,10 @@ const limits = [
           <span class="lab-flow-n tnum">03</span>
           <h3>We aggregate</h3>
           <p>
-            Quality control drops mislabeled and implausible shots. Each golfer
-            is reduced to one summary per club, one golfer, one vote, then
-            combined with robust medians so no single big session can move a
-            number. The exact rules are in the
+            Screening drops mislabeled and implausible shots. Each golfer
+            counts once, one summary per club, then results publish as
+            medians with 10th–90th percentile ranges, so no single big
+            session can move a number. The exact rules are in the
             <a href="#methodology"> methodology</a>.
           </p>
         </li>
@@ -225,7 +226,7 @@ const limits = [
     <section class="lab-band" id="methodology">
       <div class="lab-band-head">
         <p class="eyebrow">Methodology</p>
-        <h2>Six stages, in order</h2>
+        <h2>Six stages, from your bay to a benchmark</h2>
         <p class="text-muted" style="max-width:66ch;">
           Crowd-sourced data is easy to do badly, so every rule here is
           specific, versioned, and enforced in code anyone can read. Nothing

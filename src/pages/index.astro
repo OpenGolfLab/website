@@ -8,64 +8,67 @@ const market = loadMarket();
 const balls = loadBallMarket();
 const community = loadCommunity();
 
-// The Lab's two pillars, promoted from the Lab overview to the homepage.
-// Order matters: Community Data feeds the Gear Guide, so it renders first
-// with an arrow between them. Same honest live/in-progress states.
-const labTiles = [
+// The three big-ticket items, front and center right after the hero: the
+// app, the community dataset it can feed, and the gear guide that dataset
+// will sharpen. Each tile is the short pitch; a brief unpack section below
+// teases each one, and the full story lives on its own page.
+const pillars = [
   {
-    href: "/lab/community",
-    eyebrow: "Measured",
+    href: "/golf-sim-analytics",
+    eyebrow: "The app",
+    label: PRODUCT_NAME,
+    live: true,
+    liveText: "Free · Windows · 15 dashboards",
+    blurb:
+      "Plugs straight into GSPro and logs every shot on its own. No CSV exports, no pushing files to a phone app. Carry trends, club gapping, dispersion and shot quality build themselves while you play.",
+    covers: [
+      "Automatic shot capture",
+      "Carry trends & club gapping",
+      "Dispersion & shot quality",
+    ],
+  },
+  {
+    href: "/lab",
+    eyebrow: "The community dataset",
     label: "Community Data",
     live: community.hasCommunityData,
     liveText: community.hasCommunityData
       ? `${community.totalContributors} golfers · ${community.totalShots.toLocaleString()} shots`
       : "Collecting first dataset",
     blurb:
-      "Anonymized, opt-in GSPro sessions aggregated into numbers no single golfer can produce alone. One golfer, one vote, so a big session can't skew a result.",
+      "If you want, share your shots (anonymized, one opt-in) and help answer what nobody else can: how far clubs actually go, how launch monitors really compare, which balls hold up for big hitters.",
     covers: [
-      "Launch & spin norms by club",
-      "Driver dispersion",
-      "Quality tiers",
+      "How far clubs actually carry",
+      "Launch monitors, compared",
+      "Ball vs. ball, measured",
     ],
   },
   {
     href: "/gear",
-    eyebrow: "Where it pays off",
+    eyebrow: "Data-driven gear guide",
     label: "Gear Guide",
     live: market.hasLineups,
     liveText: market.hasLineups
       ? `${market.modelCount} drivers · ${balls.hasLineups ? `${balls.modelCount} balls · ` : ""}irons · wedges`
       : "Not published yet",
     blurb:
-      "Where every driver, iron, wedge and ball sits (forgiveness to distance, soft to max spin) and what it actually costs today. Researched specs and live street prices now, sharpened by community numbers as the dataset grows.",
+      "Every major driver, iron, wedge and ball mapped by what it's built to do, at today's prices. As community data comes online, the guide gets graded against real shots from real golfers.",
     covers: [
-      "Driver lineup spectrum",
-      "Iron & wedge maps",
-      ...(balls.hasLineups ? ["Golf ball map"] : []),
-      "Street price vs. MSRP",
+      "Full lineups mapped",
+      "Today's price vs. MSRP",
+      "Community numbers, next",
     ],
   },
 ];
 
-// The flywheel trio: individual value → comparative value → collective value,
-// in that order. Replaces the old method-first trio; the method still lives
-// on /lab#methodology where the detail belongs.
-const ideas = [
-  {
-    n: "01",
-    title: "Contribute your shots",
-    body: "The app captures every GSPro shot automatically, and sharing is a single opt-in. No account, no name, no manual entry, your sessions just count.",
-  },
-  {
-    n: "02",
-    title: "Unlock your benchmarks",
-    body: "See where you actually stack up: your carry, dispersion and strike quality against golfers at your swing speed, not a tour pro's table.",
-  },
-  {
-    n: "03",
-    title: "Every shot sharpens the answer",
-    body: "Ball comparisons, gapping by handicap, launch and spin norms, free and open for every golfer, and a little sharper with every session shared.",
-  },
+// The community unpack's teaser questions — the short version of the
+// "Answer what nobody else can" payoffs on /lab#roadmap, where each one
+// is spelled out in full.
+const questions = [
+  "What does a premium ball actually buy you?",
+  "What do real gaps look like at your handicap?",
+  "How do launch monitors truly compare?",
+  "What does a 2020 driver give up to a 2026?",
 ];
 ---
 
@@ -108,51 +111,51 @@ const ideas = [
     </div>
   </section>
 
-  <!-- ========================= THE IDEA ========================= -->
-  <section class="section" id="why">
+  <!-- ==================== THE BIG THREE ==================== -->
+  <section class="section" id="pillars">
     <div class="container">
-      <p class="eyebrow">Why this exists</p>
-      <h2 class="mission-h">The clubs and ball you use matter</h2>
-      <p class="lede" style="margin-top:0.9rem;max-width:64ch;">
-        OpenGolfLab exists to build the data you need to choose them well.
-      </p>
-      <p class="text-muted moat" style="max-width:70ch;">
-        The data that could answer it doesn't exist anywhere else. Tour numbers
-        describe professionals. Shot-tracker datasets are closed, and blown
-        around by wind, temperature and elevation. Manufacturer testing is done
-        with robots, not everyday golfers. A sim bay is a controlled lab, so
-        pooled indoor shots, tagged with club, ball and launch monitor, make
-        cleaner comparisons than any of them. That's the dataset we're
-        building, in the open.
-      </p>
-
-      <ol class="idea-grid">
+      <div class="lab-tiles">
         {
-          ideas.map((it) => (
-            <li class="card idea">
-              <span class="idea-n tnum">{it.n}</span>
-              <h3>{it.title}</h3>
-              <p class="text-muted">{it.body}</p>
-            </li>
+          pillars.map((t) => (
+            <a href={t.href} class="card lab-tile">
+              <div class="lab-tile-top">
+                <span class="lab-tile-eyebrow">{t.eyebrow}</span>
+                <span class:list={["pill", "lab-tile-pill", t.live ? "live" : "progress"]}>
+                  {t.live ? "Live now" : "In progress"}
+                </span>
+              </div>
+              <h3>{t.label}</h3>
+              <p class="lab-tile-stat tnum">{t.liveText}</p>
+              <p class="lab-tile-blurb">{t.blurb}</p>
+              <ul class="lab-tile-list">
+                {t.covers.map((c) => (
+                  <li>
+                    <span class="lab-tile-mark">{t.live ? "✓" : "◐"}</span>
+                    {c}
+                  </li>
+                ))}
+              </ul>
+              <span class="lab-tile-go">Open {t.label} →</span>
+            </a>
           ))
         }
-      </ol>
-
+      </div>
     </div>
   </section>
 
-  <!-- ==================== THE TOOL (APP) ==================== -->
+  <!-- ==================== UNPACK 1: THE APP ==================== -->
   <section class="section" style="padding-top:0;">
     <div class="container">
       <div class="tool card">
         <div class="tool-copy">
-          <p class="eyebrow">The instrument</p>
-          <h2>{PRODUCT_NAME} is the instrument</h2>
+          <p class="eyebrow">01 · The app</p>
+          <h2>Every shot, analyzed automatically</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:52ch;">
-            {PRODUCT_NAME}, our free GSPro companion, captures every shot
-            automatically and turns it into 15 dashboards, so you get sharper
-            practice today and (only if you opt in) help build the shared
-            dataset tomorrow.
+            {PRODUCT_NAME} sits alongside GSPro and captures every swing as
+            you hit it, range sessions and full rounds alike. Fifteen
+            dashboards turn them into carry trends, gapping, dispersion and
+            strike quality, with no spreadsheets and nothing to export. It's
+            fully useful on its own, before you ever share a shot.
           </p>
           <div class="hero-cta">
             <a href="/golf-sim-analytics" class="btn btn-primary">Explore the app</a>
@@ -173,50 +176,47 @@ const ideas = [
     </div>
   </section>
 
-  <!-- ==================== THE LAB: TWO PILLARS ==================== -->
+  <!-- ==================== UNPACK 2: COMMUNITY DATA ==================== -->
   <section class="section" id="lab" style="padding-top:0;">
     <div class="container">
-      <p class="eyebrow">The Lab</p>
-      <h2>From community shots to gear answers</h2>
-      <p class="lede" style="margin-top:0.9rem;max-width:66ch;">
-        Community Data is the input: anonymized, opt-in GSPro sessions pooled
-        into measured performance numbers. The Gear Guide is where they pay
-        off: the insights that tell you what to actually buy.
+      <p class="eyebrow">02 · The community dataset</p>
+      <h2>Answer what nobody else can</h2>
+      <p class="text-muted moat" style="max-width:70ch;">
+        Tour numbers describe professionals. Shot-tracker datasets are closed,
+        and blown around by wind and temperature. Robot testing isn't golfers.
+        A sim bay is a controlled lab, so pooled indoor shots, tagged with
+        club, ball and launch monitor, can settle questions nothing else can:
       </p>
+      <ul class="q-list">
+        {questions.map((q) => <li class="card q-item">{q}</li>)}
+      </ul>
+      <p class="text-muted" style="margin-top:1.1rem;max-width:70ch;">
+        Sharing is entirely your choice, anonymized on your machine before
+        anything is sent, and every golfer counts once no matter how much they
+        play. The full method is public.
+      </p>
+      <div class="hero-cta">
+        <a href="/lab" class="btn btn-secondary">See how the Lab works →</a>
+      </div>
+    </div>
+  </section>
 
-      <div class="lab-tiles">
-        {
-          labTiles.map((t, i) => (
-            <Fragment>
-              {i > 0 && (
-                <div class="lab-arrow" aria-hidden="true">
-                  <span class="lab-arrow-glyph">→</span>
-                  <span class="lab-arrow-label">feeds&nbsp;into</span>
-                </div>
-              )}
-              <a href={t.href} class="card lab-tile">
-              <div class="lab-tile-top">
-                <span class="lab-tile-eyebrow">{t.eyebrow}</span>
-                <span class:list={["pill", "lab-tile-pill", t.live ? "live" : "progress"]}>
-                  {t.live ? "Live now" : "In progress"}
-                </span>
-              </div>
-              <h3>{t.label}</h3>
-              <p class="lab-tile-stat tnum">{t.liveText}</p>
-              <p class="lab-tile-blurb">{t.blurb}</p>
-              <ul class="lab-tile-list">
-                {t.covers.map((c) => (
-                  <li>
-                    <span class="lab-tile-mark">{t.live ? "✓" : "◐"}</span>
-                    {c}
-                  </li>
-                ))}
-              </ul>
-                <span class="lab-tile-go">Open {t.label} →</span>
-              </a>
-            </Fragment>
-          ))
-        }
+  <!-- ==================== UNPACK 3: GEAR GUIDE ==================== -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <p class="eyebrow">03 · Data-driven gear guide</p>
+      <h2>A gear guide graded by measurements, not marketing</h2>
+      <p class="text-muted moat" style="max-width:70ch;">
+        Today the Gear Guide maps every major driver, iron, wedge and ball by
+        what it's built to do, at today's prices, useful the day you need it.
+        The long game is better: as community data starts to come online, it
+        gets woven into the guide, checking claims against how gear actually
+        performs for everyday golfers. When the numbers show a bargain ball
+        hanging with a premium one at your swing speed, the guide will say
+        so.
+      </p>
+      <div class="hero-cta">
+        <a href="/gear" class="btn btn-secondary">Browse the Gear Guide →</a>
       </div>
     </div>
   </section>
@@ -320,65 +320,32 @@ const ideas = [
     color: var(--text-dim);
     text-align: center;
   }
-  .mission-h {
-    max-width: 22ch;
-  }
   .moat {
     margin-top: 1rem;
     font-size: 0.97rem;
   }
 
-  /* ---- Idea trio ---- */
-  .idea-grid {
-    margin-top: 2.5rem;
-    list-style: none;
-    padding: 0;
+  /* ---- The big three tiles ---- */
+  .lab-tiles {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1.1rem;
-  }
-  .idea {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-  }
-  .idea-n {
-    font-family: var(--font-mono);
-    font-size: 0.95rem;
-    color: var(--green);
-    letter-spacing: 0.1em;
-  }
-  .idea h3 {
-    margin-top: 0.5rem;
-    font-size: 1.2rem;
-  }
-  /* ---- Lab tiles (promoted from the Lab overview) ---- */
-  .lab-tiles {
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 1.1rem;
     align-items: stretch;
   }
-  .lab-arrow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.3rem;
-    padding-inline: 0.15rem;
+
+  /* ---- Community unpack: teaser questions ---- */
+  .q-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.9rem;
   }
-  .lab-arrow-glyph {
-    font-size: 1.7rem;
-    line-height: 1;
-    color: var(--green);
-  }
-  .lab-arrow-label {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
+  .q-item {
+    font-size: 0.97rem;
+    color: var(--text);
+    padding: 0.95rem 1.1rem;
   }
   .lab-tile {
     display: flex;
@@ -502,16 +469,9 @@ const ideas = [
   }
 
   @media (max-width: 900px) {
-    .idea-grid,
-    .lab-tiles {
+    .lab-tiles,
+    .q-list {
       grid-template-columns: 1fr;
-    }
-    .lab-arrow {
-      flex-direction: row;
-      padding-block: 0.1rem;
-    }
-    .lab-arrow-glyph {
-      transform: rotate(90deg);
     }
     .tool {
       grid-template-columns: 1fr;
