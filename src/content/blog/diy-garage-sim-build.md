@@ -19,6 +19,11 @@ tags: ["diy", "garage-sim", "build-guide", "hardware"]
   .dgs-fig .step-num{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#fff}
   .dgs-fig .dir{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;letter-spacing:.5px;fill:#1d4a22}
   .dgs-photo{width:100%;border-radius:6px;margin:.4rem 0}
+  .prose table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}
+  .prose th,.prose td{padding:.55rem .8rem;vertical-align:top;border-bottom:1px solid rgba(150,150,150,.28);line-height:1.45}
+  .prose th{font-weight:700;border-bottom:2px solid rgba(150,150,150,.5)}
+  .prose td:first-child,.prose th:first-child{min-width:170px}
+  .prose td:last-child,.prose th:last-child{white-space:nowrap}
 </style>
 
 I couldn't take my simulator apart to document it, so this guide was rebuilt from photos, video, and a tape measure. It's everything you need to replicate the build: schematics with the build steps attached to each one, and a complete parts list with prices and links.
