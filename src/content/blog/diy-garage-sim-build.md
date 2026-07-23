@@ -13,24 +13,23 @@ tags: ["diy", "garage-sim", "build-guide", "hardware"]
   .dgs-fig figcaption{font-size:.85rem;opacity:.75;margin-top:.4rem;font-style:italic}
   .dgs-note{border-left:4px solid #b3541e;background:rgba(179,84,30,.08);padding:.6rem 1rem;margin:1rem 0;font-size:.93rem}
   .dgs-warn{border-left:4px solid #b32020;background:rgba(179,32,32,.08);padding:.6rem 1rem;margin:1rem 0;font-size:.93rem}
-  .dgs-fig .lbl{font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#222}
-  .dgs-fig .lbl-sm{font-family:Arial,Helvetica,sans-serif;font-size:13px;fill:#444}
-  .dgs-fig .dim{font-family:Arial,Helvetica,sans-serif;font-size:14px;fill:#b3541e}
+  .dgs-fig .lbl{font-family:Arial,Helvetica,sans-serif;font-size:16px;fill:#222}
+  .dgs-fig .lbl-sm{font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#333}
+  .dgs-fig .dim{font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#b3541e}
   .dgs-fig .step-num{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;fill:#fff}
   .dgs-fig .dir{font-family:Arial,Helvetica,sans-serif;font-size:14px;font-weight:bold;letter-spacing:.5px;fill:#1d4a22}
   .dgs-photo{width:100%;border-radius:6px;margin:.4rem 0}
-  .prose table{width:100%;border-collapse:collapse;margin:1.2rem 0;font-size:.95rem}
-  .prose th,.prose td{padding:.55rem .8rem;vertical-align:top;border-bottom:1px solid rgba(150,150,150,.28);line-height:1.45}
-  .prose th{font-weight:700;border-bottom:2px solid rgba(150,150,150,.5)}
-  .prose td:first-child,.prose th:first-child{min-width:150px}
-  .prose td,.prose th{overflow-wrap:anywhere}
+  .prose table{border-collapse:collapse;margin:1.2rem 0;font-size:.94rem;display:block;overflow-x:auto;max-width:100%}
+  .prose th,.prose td{padding:.5rem .7rem;vertical-align:top;border-bottom:1px solid rgba(150,150,150,.28);line-height:1.45;word-break:keep-all;overflow-wrap:normal;hyphens:none;min-width:90px}
+  .prose td:first-child,.prose th:first-child{min-width:140px}
+  .prose th{font-weight:700;border-bottom:2px solid rgba(150,150,150,.5);text-align:left}
 </style>
 
-I couldn't take my simulator apart to document it, so this guide was rebuilt from photos, video, and a tape measure. It's everything you need to replicate the build: schematics with the build steps attached to each one, and a complete parts list with prices and links.
+I couldn't take my simulator apart to document it, so this guide was rebuilt from photos, video, and a tape measure. Everything you need to replicate it is here: schematics with build steps, and a complete parts list with prices and links.
 
 ## 1. The concept
 
-A full golf simulator — 7 ft 7 in × 10 ft impact screen, turf hitting platform, projector, launch monitor — that folds flat against the garage wall into a plywood cabinet just **17 in deep, 10 ft 6 in wide, and 8 ft tall**. The car still parks in the bay.
+A full golf simulator — 7 ft 7 in × 10 ft impact screen, turf hitting platform, projector, launch monitor — that folds flat against the garage wall into a plywood cabinet just **17 in deep, 10 ft 6 in wide, and 8 ft tall** — the 17 in being the layer stack: screen frame, both platforms folded turf-to-turf and hoisted vertical, the closed doors, and some breathing room. The car still parks in the bay.
 
 <img class="dgs-photo" src="/images/blog/diy-garage-sim/closed-front.jpg" alt="Simulator closed: a flat plywood cabinet against the garage wall" />
 
@@ -64,68 +63,70 @@ Stowing is the reverse: fold the hitting platform onto the large platform, hoist
 | Launch monitor | 8 ft behind center of the hitting mat — 17 ft from screen (18 ft from back wall) |
 
 <figure class="dgs-fig">
-<svg viewBox="0 0 960 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side section of the deployed simulator">
+<svg viewBox="0 0 960 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Side section of the deployed simulator">
   <line x1="40" y1="370" x2="920" y2="370" stroke="#333" stroke-width="3"/>
   <line x1="40" y1="370" x2="40" y2="30" stroke="#333" stroke-width="3"/>
   <line x1="40" y1="30" x2="920" y2="30" stroke="#333" stroke-width="2"/>
-  <text x="46" y="24" class="lbl-sm">ceiling 10 ft 10 in</text>
-  <text x="46" y="60" class="dir">← BACK WALL</text>
-  <text x="912" y="60" class="dir" text-anchor="end">GARAGE DOOR →</text>
+  <text x="48" y="22" class="dir">← BACK WALL</text>
+  <text x="480" y="22" class="lbl-sm" text-anchor="middle">ceiling 10 ft 10 in</text>
+  <text x="912" y="22" class="dir" text-anchor="end">GARAGE DOOR →</text>
   <rect x="44" y="82" width="12" height="288" fill="#c9a06b" stroke="#8a6a3f"/>
   <text x="30" y="230" class="lbl" transform="rotate(-90 30 230)">screen frame 8 ft tall</text>
   <rect x="58" y="97" width="6" height="273" fill="#eceff1" stroke="#888"/>
-  <line x1="64" y1="150" x2="150" y2="150" stroke="#999" stroke-width="0.8"/>
-  <text x="156" y="146" class="lbl-sm">impact screen 7 ft 7 in — 12 in off wall, 10×8 net behind</text>
-  <path d="M64,58 Q 300,88 560,60" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <text x="300" y="55" class="lbl-sm">ceiling baffle net</text>
-  <rect x="58" y="38" width="34" height="18" fill="#c0392b" stroke="#7c241a"/>
-  <text x="98" y="50" class="lbl-sm">hoist on wall, ~10 ft high</text>
-  <line x1="75" y1="56" x2="190" y2="346" stroke="#999" stroke-width="1.4"/>
+  <line x1="64" y1="160" x2="140" y2="160" stroke="#999" stroke-width="0.8"/>
+  <text x="146" y="165" class="lbl-sm">impact screen 7 ft 7 in · 12 in off wall · net behind</text>
+  <rect x="58" y="36" width="34" height="18" fill="#c0392b" stroke="#7c241a"/>
+  <text x="100" y="50" class="lbl-sm">hoist ~10 ft high</text>
+  <path d="M240,56 Q 400,86 560,58" fill="none" stroke="#444" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="250" y="50" class="lbl-sm">ceiling baffle net</text>
+  <line x1="423" y1="30" x2="423" y2="70" stroke="#555" stroke-width="3"/>
+  <rect x="400" y="70" width="46" height="22" fill="#f4f4f4" stroke="#555"/>
+  <text x="452" y="86" class="lbl-sm">BenQ TK710STi</text>
+  <line x1="423" y1="92" x2="70" y2="115" stroke="#9db8d6" stroke-width="1" stroke-dasharray="5,4"/>
+  <line x1="423" y1="92" x2="70" y2="360" stroke="#9db8d6" stroke-width="1" stroke-dasharray="5,4"/>
+  <rect x="560" y="36" width="56" height="20" fill="#ddd" stroke="#777"/>
+  <text x="622" y="50" class="lbl-sm">door opener (13 ft)</text>
+  <line x1="75" y1="54" x2="190" y2="346" stroke="#999" stroke-width="1.4"/>
   <circle cx="190" cy="348" r="5" fill="none" stroke="#777" stroke-width="1.5"/>
   <line x1="190" y1="350" x2="70" y2="362" stroke="#999" stroke-width="1"/>
   <line x1="190" y1="350" x2="300" y2="358" stroke="#999" stroke-width="1"/>
-  <text x="200" y="330" class="lbl-sm">steel lift cables in X (slack when deployed)</text>
+  <line x1="138" y1="212" x2="230" y2="200" stroke="#999" stroke-width="0.8"/>
+  <text x="236" y="204" class="lbl-sm">steel lift cable (slack when down)</text>
   <rect x="58" y="360" width="16" height="9" fill="#b98f57" stroke="#8a6a3f"/>
   <rect x="78" y="352" width="238" height="14" fill="#c9a06b" stroke="#8a6a3f"/>
-  <text x="120" y="348" class="lbl">large platform 7 ft</text>
   <rect x="316" y="352" width="144" height="14" fill="#d9b57e" stroke="#8a6a3f"/>
-  <text x="330" y="350" class="lbl">hitting platform 4 ft</text>
   <circle cx="78" cy="366" r="4" fill="#b3541e"/>
-  <line x1="58" y1="378" x2="78" y2="378" stroke="#b3541e"/>
-  <text x="44" y="392" class="dim">2×10 base rail + 2 T-hinges · 1¾ in fold clearance</text>
   <circle cx="316" cy="362" r="4" fill="#b3541e"/>
-  <text x="292" y="392" class="dim">fold hinge</text>
-  <rect x="400" y="44" width="46" height="22" fill="#f4f4f4" stroke="#555"/>
-  <rect x="416" y="34" width="12" height="10" fill="#555"/>
-  <text x="392" y="84" class="lbl-sm">BenQ TK710STi</text>
-  <line x1="423" y1="66" x2="70" y2="110" stroke="#9db8d6" stroke-width="1" stroke-dasharray="5,4"/>
-  <line x1="423" y1="66" x2="70" y2="360" stroke="#9db8d6" stroke-width="1" stroke-dasharray="5,4"/>
-  <rect x="500" y="36" width="56" height="20" fill="#ddd" stroke="#777"/>
-  <text x="498" y="72" class="lbl-sm">door opener (13 ft)</text>
-  <rect x="690" y="344" width="26" height="22" fill="#333"/>
-  <text x="655" y="336" class="lbl-sm">launch monitor</text>
   <circle cx="390" cy="290" r="9" fill="none" stroke="#555" stroke-width="2"/>
   <line x1="390" y1="299" x2="390" y2="336" stroke="#555" stroke-width="2"/>
   <line x1="390" y1="308" x2="372" y2="326" stroke="#555" stroke-width="2"/>
   <line x1="390" y1="308" x2="408" y2="326" stroke="#555" stroke-width="2"/>
   <line x1="390" y1="336" x2="378" y2="360" stroke="#555" stroke-width="2"/>
   <line x1="390" y1="336" x2="402" y2="360" stroke="#555" stroke-width="2"/>
-  <line x1="40" y1="404" x2="415" y2="404" stroke="#b3541e" stroke-width="1"/>
-  <line x1="40" y1="404" x2="40" y2="398" stroke="#b3541e"/><line x1="415" y1="404" x2="415" y2="398" stroke="#b3541e"/>
-  <text x="150" y="416" class="dim">projector: 9 ft 5 in from screen</text>
-  <line x1="440" y1="404" x2="703" y2="404" stroke="#b3541e" stroke-width="1"/>
-  <line x1="703" y1="404" x2="703" y2="398" stroke="#b3541e"/>
-  <text x="470" y="416" class="dim">launch monitor: 18 ft from back wall (17 ft from screen)</text>
+  <rect x="690" y="344" width="26" height="22" fill="#333"/>
+  <text x="655" y="336" class="lbl-sm">launch monitor</text>
   <text x="850" y="360" class="dim">24 ft total</text>
+  <text x="100" y="392" class="lbl">large platform 7 ft</text>
+  <text x="322" y="392" class="lbl">hitting platform 4 ft</text>
+  <line x1="78" y1="370" x2="78" y2="404" stroke="#b3541e" stroke-width="0.8"/>
+  <text x="44" y="418" class="dim">base: 2×10 rail + 2 T-hinges</text>
+  <line x1="316" y1="370" x2="316" y2="404" stroke="#b3541e" stroke-width="0.8"/>
+  <text x="290" y="418" class="dim">fold hinge</text>
+  <line x1="40" y1="440" x2="415" y2="440" stroke="#b3541e" stroke-width="1"/>
+  <line x1="40" y1="440" x2="40" y2="433" stroke="#b3541e"/><line x1="415" y1="440" x2="415" y2="433" stroke="#b3541e"/>
+  <text x="110" y="458" class="dim">projector: 9 ft 5 in from screen</text>
+  <line x1="440" y1="440" x2="703" y2="440" stroke="#b3541e" stroke-width="1"/>
+  <line x1="703" y1="440" x2="703" y2="433" stroke="#b3541e"/>
+  <text x="450" y="458" class="dim">launch monitor: 18 ft from back wall (17 ft from screen)</text>
 </svg>
 <figcaption>Fig. 1 — Side section, deployed. The hoist lives on the back wall about 10 ft up, directly above the stowed unit; its lift cables stay attached at all times and go slack when the platform is down.</figcaption>
 </figure>
 
-<div class="dgs-warn"><strong>Safety first.</strong> The raised platform is several hundred pounds hanging from a cable. Lag the hoist through solid blocking into the wall framing, keep the lift cables attached at all times, never stand under or in front of the platform while it moves, and add a mechanical catch (chain or barrel bolts to the wall frame) as a backup when stowed. Every rigging component — cable, clamps, thimbles, carabiners/quick links, turnbuckles, pulley, and the welded corner rings — must be rated well above the platform's weight; use heavy-duty load-rated hardware only, never hardware-store decorative pieces. Verify your wall framing can take the load before trusting it.</div>
+<div class="dgs-warn"><strong>Safety first.</strong> The raised platform is several hundred pounds hanging from a cable. Lag the hoist through solid blocking into the wall framing, keep the lift cables attached at all times, never stand under or in front of the platform while it moves, and add a mechanical catch (chain or barrel bolts to the wall frame) as a backup when stowed. Every rigging component — cable, clamps, thimbles, carabiners/quick links, turnbuckles, pulley, and the welded corner rings — must be rated well above the platform's weight; use load-rated hardware only — the package should state a working load limit (WLL); if it doesn't, don't use it, and target a WLL of at least twice the platform weight for every link. Never decorative pieces. Verify your wall framing can take the load before trusting it.</div>
 
 ## 2. Screen wall
 
-Fixed 2×4 stud wall against the back of the garage. The screen hangs inside it from ball bungees so it floats free of the framing.
+The screen mounts to the enclosure itself — the 2×10 side frames, the top shelving/plate, and the bottom plate — so it floats ~12 in off the back wall on its bungee anchors and can give on impact. The bungee attachment points go in with the enclosure sides (Section 6), so the screen hangs right after that.
 
 <figure class="dgs-fig">
 <svg viewBox="0 0 760 345" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front elevation of the open screen bay with numbered build steps">
@@ -142,24 +143,13 @@ Fixed 2×4 stud wall against the back of the garage. The screen hangs inside it 
   <text x="360" y="336" class="dim">10 ft</text>
   <line x1="650" y1="9" x2="650" y2="302" stroke="#b3541e"/>
   <text x="656" y="160" class="dim">7 ft 7 in</text>
-  <g>
-    <circle cx="112" cy="30" r="11" fill="#2e6b34"/><text x="108" y="34" class="step-num">1</text>
-    <circle cx="112" cy="150" r="11" fill="#2e6b34"/><text x="108" y="154" class="step-num">2</text>
-    <circle cx="160" cy="30" r="11" fill="#2e6b34"/><text x="156" y="34" class="step-num">3</text>
-    <circle cx="380" cy="60" r="11" fill="#2e6b34"/><text x="376" y="64" class="step-num">4</text>
-    <circle cx="160" cy="286" r="11" fill="#2e6b34"/><text x="156" y="290" class="step-num">5</text>
-    <circle cx="380" cy="316" r="11" fill="#2e6b34"/><text x="376" y="320" class="step-num">6</text>
-  </g>
 </svg>
-<figcaption>Fig. 2 — Open bay, front elevation. Numbers match the steps below. Foam pipe insulation and black vinyl wrap every hard edge the ball could find.</figcaption>
+<figcaption>Fig. 2 — Open bay, front elevation: the 7 ft 7 in × 10 ft SIGPRO Premium screen floating in the enclosure, with the edges and top padded in foam and black vinyl.</figcaption>
 </figure>
 
-1. **Frame the wall** — 2×4 stud wall ~10 ft 6 in wide × 8 ft tall: top plate, bottom plate, studs 16 in on center, doubled studs at both ends where the door hinges land. Anchor to wall studs/concrete. *(takes about half a day total)*
-2. **Sheath the center** with 23/32 plywood wherever a ball strike could reach framing gaps (3 sheets covers it).
-3. **Set the screen 12 in off the back wall** — the slotted steel angle perimeter (spaced on blocks) holds the screen ~12 in proud of the wall so it floats and has room to give. Hang a 10 ft × 8 ft black golf net in that gap, behind the screen, to absorb impact energy before it ever reaches the framing.
-4. **Hang the screen** with ball bungees through every grommet. Start top center, work outward, then sides, then bottom. Tension until wrinkles pull out but the screen still gives on impact.
-5. **Pad the edges** — foam pipe insulation over exposed angle and frame edges, then staple black vinyl strips over the perimeter for the finished dark border.
-6. **Lay EVA gym tiles** on the floor across the front of the wall — they pad the bottom rail and quiet ball drops.
+- **Set the screen 12 in off the back wall** — the bungee anchors hold the screen ~12 in proud of the wall so it floats and has room to give. Hang a 10 ft × 8 ft black golf net in that gap, behind the screen, to absorb impact energy before it reaches anything solid.
+- **Pad the top and any exposed edges** — any foam works (pipe insulation, EVA gym tiles); wrap it in black vinyl for a cleaner look.
+- **Lay EVA gym tiles** on the floor across the front — they pad the bottom rail and quiet ball drops.
 
 <img class="dgs-photo" src="/images/blog/diy-garage-sim/deployed-screen.jpg" alt="Screen bay open with padded walls and turf" />
 
@@ -169,17 +159,17 @@ The heart of the build: a framed deck that hinges at the wall and hoists vertica
 
 ### Base rail & pivot hinges
 
-Before the platform comes the foundation it swings on: a **2×10 laid flat on the slab, 10 ft wide, about 5 in off the back wall**, locked down with **three 4-in concrete anchors**. It lives inside the 10-ft footprint, hidden by the side walls once they close. The entire large platform **rests and pivots on this rail through two large T-hinges** — this is the single joint the whole folding mechanism turns on, so it gets the beefiest hardware in the build.
+Before the platform comes the foundation it swings on: a **2×10 laid flat on the slab, 10 ft wide, about 5 in off the back wall**, locked down with **three 3/8-in × 4-in wedge anchors** (hammer drill + 3/8-in masonry bit: drill through the 2×10 into the slab, vacuum the hole, tap the anchor in, tighten the nut — at least 2 in of anchor in the concrete). It lives inside the 10-ft footprint, hidden by the side walls once they close. The entire large platform **rests and pivots on this rail through two large T-hinges** — this is the single joint the whole folding mechanism turns on, so it gets the beefiest hardware in the build.
 
-The nuance that makes it strong *and* folds flat: the T-hinges don't grab a little rim board — they bolt to the back ends of **two 2×4s that run the platform's entire 7-ft depth**, with **three horizontal 2×4s** tying between them. Those full-length runners carry the fold load straight down solid, continuous members, which is far stronger than a rim held on with brackets. And the plywood deck stops **1¾ in short of the runner ends**, so they overhang — that setback is the clearance that lets the platform lie flat against the 2×10 when stowed vertical.
+The nuance that makes it strong *and* folds flat: the T-hinges don't grab a little rim board — they bolt to the back ends of **two 2×4s that run the platform's entire 7-ft depth**, with **three horizontal 2×4s** tying between them. Those continuous runners carry the fold load far better than a rim held on with brackets. And the plywood deck stops **1¾ in short of the runner ends**, so the runner ends overhang — that's the clearance that lets the platform sit flat against the 2×10.
 
 <figure class="dgs-fig">
-<svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg">
   <text x="50" y="22" class="dir">← BACK WALL</text>
   <rect x="50" y="36" width="540" height="46" fill="#b98f57" stroke="#8a6a3f" stroke-width="2"/>
-  <text x="60" y="64" class="lbl">2×10 base rail — anchored to the slab</text>
+  <text x="258" y="70" class="lbl">2×10 base rail</text>
   <line x1="50" y1="86" x2="590" y2="86" stroke="#b3541e" stroke-width="1" stroke-dasharray="7,5"/>
-  <text x="516" y="100" class="dim">pivot line</text>
+  <text x="505" y="106" class="dim">pivot line</text>
   <rect x="190" y="86" width="14" height="210" fill="#a9762f" stroke="#6f4a1e"/>
   <rect x="430" y="86" width="14" height="210" fill="#a9762f" stroke="#6f4a1e"/>
   <g fill="#b98f57"><rect x="50" y="150" width="140" height="10"/><rect x="204" y="150" width="226" height="10"/><rect x="444" y="150" width="146" height="10"/></g>
@@ -191,12 +181,12 @@ The nuance that makes it strong *and* folds flat: the T-hinges don't grab a litt
     <rect x="395" y="58" width="84" height="14"/><rect x="430" y="72" width="14" height="44"/>
   </g>
   <circle cx="197" cy="86" r="5" fill="#e6e6e6" stroke="#333"/><circle cx="437" cy="86" r="5" fill="#e6e6e6" stroke="#333"/>
-  <text x="250" y="52" class="lbl">large T-hinge → 2×10 base rail (×2)</text>
-  <text x="250" y="230" class="lbl-sm">2×4 runner — runs the platform's full 7-ft depth (continuous)</text>
+  <text x="250" y="26" class="lbl">large T-hinge → 2×10 base rail (×2)</text>
+  <text x="250" y="230" class="lbl-sm">2×4 runner — full 7-ft depth, continuous</text>
   <line x1="606" y1="86" x2="606" y2="122" stroke="#b3541e" stroke-width="1"/>
   <line x1="602" y1="86" x2="610" y2="86" stroke="#b3541e"/><line x1="602" y1="122" x2="610" y2="122" stroke="#b3541e"/>
-  <text x="512" y="112" class="dim">1¾ in overhang</text>
-  <text x="50" y="322" class="dim">the runners span the whole platform, so the T-hinge load path is continuous — far stronger than a bracketed rim</text>
+  <text x="612" y="110" class="dim">1¾ in</text>
+  <text x="66" y="322" class="dim">continuous runners = continuous load path — far stronger than a bracketed rim</text>
 </svg>
 <figcaption>Fig. 3a — The hinge joint with the deck removed. Each large T-hinge bolts to the 2×10 base rail and to the back end of a 2×4 that runs the platform's full 7-ft depth — so the fold load travels down a continuous member, not a bracketed rim. The plywood is held back 1¾ in, leaving the runner ends overhanging for fold clearance against the 2×10. The photo below shows the joint.</figcaption>
 </figure>
@@ -209,7 +199,7 @@ The nuance that makes it strong *and* folds flat: the T-hinges don't grab a litt
 <figure class="dgs-fig">
 <svg viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
   <line x1="40" y1="34" x2="600" y2="34" stroke="#b3541e" stroke-width="3" stroke-dasharray="8,5"/>
-  <text x="250" y="24" class="dim">back / wall edge — base-hinge line</text>
+  <text x="52" y="28" class="dim">back / wall edge</text>
   <rect x="40" y="40" width="560" height="380" fill="#f0e3c8" stroke="#8a6a3f" stroke-width="2"/>
   <g fill="#b98f57">
     <rect x="48" y="146" width="60" height="9"/><rect x="206" y="146" width="68" height="9"/><rect x="366" y="146" width="68" height="9"/><rect x="526" y="146" width="66" height="9"/>
@@ -230,11 +220,11 @@ The nuance that makes it strong *and* folds flat: the T-hinges don't grab a litt
     <rect x="414" y="20" width="52" height="13"/><rect x="434" y="33" width="12" height="44"/>
   </g>
   <circle cx="200" cy="40" r="4" fill="#e6e6e6" stroke="#333"/><circle cx="440" cy="40" r="4" fill="#e6e6e6" stroke="#333"/>
-  <text x="245" y="15" class="lbl-sm">T-hinges bolt to the two runner back ends → 2×10 (Fig. 3a)</text>
+  <text x="320" y="14" class="lbl-sm" text-anchor="middle">T-hinges bolt to the runner back ends → 2×10 (Fig. 3a)</text>
   <text x="188" y="300" class="lbl-sm" transform="rotate(-90 188 300)">2×4 T-hinge runner (full depth)</text>
   <text x="108" y="300" class="lbl-sm" transform="rotate(-90 108 300)">2×4 joist (full depth)</text>
   <text x="250" y="200" class="lbl-sm">2×4 blocking, staggered</text>
-  <text x="250" y="414" class="lbl-sm">2×4 rim on edge · framing laid FLAT so deck + turf finish flush</text>
+  <text x="150" y="410" class="lbl-sm">rim on edge · interior FLAT — deck ~1 in below rim</text>
   <line x1="40" y1="440" x2="600" y2="440" stroke="#b3541e" stroke-width="3" stroke-dasharray="8,5"/>
   <text x="200" y="456" class="dim">fold hinge line → hitting platform</text>
   <line x1="612" y1="40" x2="612" y2="420" stroke="#b3541e"/><line x1="608" y1="40" x2="616" y2="40" stroke="#b3541e"/><line x1="608" y1="420" x2="616" y2="420" stroke="#b3541e"/>
@@ -244,19 +234,19 @@ The nuance that makes it strong *and* folds flat: the T-hinges don't grab a litt
     <circle cx="72" cy="95" r="11" fill="#2e6b34"/><text x="68" y="99" class="step-num">1</text>
     <circle cx="330" cy="236" r="11" fill="#2e6b34"/><text x="326" y="240" class="step-num">2</text>
     <circle cx="470" cy="290" r="11" fill="#2e6b34"/><text x="466" y="294" class="step-num">3</text>
-    <circle cx="440" cy="55" r="11" fill="#2e6b34"/><text x="436" y="59" class="step-num">4</text>
+    <circle cx="386" cy="62" r="11" fill="#2e6b34"/><text x="382" y="66" class="step-num">4</text>
     <circle cx="560" cy="95" r="11" fill="#2e6b34"/><text x="556" y="99" class="step-num">5</text>
-    <circle cx="300" cy="440" r="11" fill="#2e6b34"/><text x="296" y="444" class="step-num">6</text>
+    <circle cx="150" cy="456" r="11" fill="#2e6b34"/><text x="146" y="460" class="step-num">6</text>
   </g>
 </svg>
-<figcaption>Fig. 3 — Large-platform framing (underside). Six evenly-spaced 2×4s run the full 7-ft depth; the two aligned with the T-hinges carry the fold load, the other four are joists. Short 2×4 blocking, staggered between them, stiffens the deck — there are no continuous interior cross members. Everything but the on-edge rim is laid flat so the plywood and turf finish flush.</figcaption>
+<figcaption>Fig. 3 — Large-platform framing (underside). Six evenly-spaced 2×4s run the full 7-ft depth; the two aligned with the T-hinges carry the fold load, the other four are joists. Short 2×4 blocking, staggered between them, stiffens the deck — there are no continuous interior cross members. Everything but the on-edge rim is laid flat, so the plywood and turf finish about an inch below the rim — a lip that helps keep balls on the deck.</figcaption>
 </figure>
 
-1. **Frame the deck** — build a 2×4 perimeter rim **on edge**, then run **six 2×4s the full 7-ft depth**: two lined up with the T-hinges (these carry the fold load), two more between them, and one against each side rail. Keep them and the blocking **flat** (1½ in) inside the on-edge rim so the plywood and turf finish flush. Square by matching diagonals. *(a full day for phases 3–4)*
+1. **Frame the deck** — build a 2×4 perimeter rim **on edge** (2½-in exterior construction screws for framing — not drywall screws, which snap; 1⅝-in screws for plywood), then run **six 2×4s the full 7-ft depth**: two lined up with the T-hinges (these carry the fold load), two more between them, and one against each side rail. Keep them and the blocking **flat** (1½ in) inside the on-edge rim so the plywood and turf finish sit roughly an inch below the rim (helps keep balls contained). Square it by matching diagonals: hook your tape corner-to-corner both ways and rack the frame until the two measurements match. *(a full day for phases 3–4)*
 2. **Add staggered blocking** — short 2×4 blocks between the verticals, staggered row to row, to stiffen the deck. There are no full-length interior cross members — just blocking.
-3. **Deck & surface it** — 23/32 plywood (seams on framing) + glue-and-stapled turf, edge-banded with 1×4, held back **1¾ in** from the runners' back ends so they overhang for fold clearance.
-4. **Bolt the T-hinges** — carriage-bolt a large T-hinge to the **back end of each full-depth runner** and across to the 2×10 base rail. Because the hinges load into members that run the whole platform, the load path stays continuous and strong — no reliance on brackets.
-5. **Install the lift rings** — welded corner rings plus the two interior cable anchors (see Fig. 5 for the rigging).
+3. **Deck & surface it** — cover with 23/32 plywood + glued/stapled turf. Add thick turf, or 1/4–1/2 in gym tiles under the turf, to keep the ball from bouncing loudly. Hold the deck back **1¾ in** from the runners' back ends so they overhang for fold clearance.
+4. **Bolt the T-hinges** — through-bolt a large T-hinge to the **back end of each full-depth runner** and across to the 2×10 base rail — 5/16-in bolts with washers and nylock nuts, not screws (screws work loose under repeated folding); loading into full-length 2×4s keeps the load path continuous and strong.
+5. **Lift rings** — corner rings attached on the garage-door side of the platform (see Fig. 5 for placement).
 6. **Hinge the front rail** to the hitting platform (next section).
 
 <img class="dgs-photo" src="/images/blog/diy-garage-sim/platform-rigging.jpg" alt="Underside of large platform showing framing, blocking, hitting strip pocket, and cable rigging" />
@@ -272,24 +262,23 @@ The nuance that makes it strong *and* folds flat: the T-hinges don't grab a litt
   <g stroke="#b98f57" stroke-width="5"><line x1="44" y1="190" x2="120" y2="190"/><line x1="200" y1="190" x2="280" y2="190"/><line x1="360" y1="190" x2="440" y2="190"/></g>
   <rect x="40" y="70" width="480" height="240" fill="none" stroke="#8a6a3f" stroke-width="8"/>
   <rect x="368" y="120" width="60" height="140" fill="#333" stroke="#000"/>
-  <line x1="286" y1="150" x2="366" y2="165" stroke="#555" stroke-width="1"/>
-  <text x="150" y="146" class="lbl-sm">SIGPRO Softy pocket</text>
-  <text x="150" y="162" class="lbl-sm">28 × 12 in, set on end (portrait)</text>
-  <text x="150" y="290" class="lbl-sm">2×4 rim on edge (3½ in)</text>
+  <text x="210" y="146" class="lbl-sm">SIGPRO Softy pocket</text>
+  <text x="210" y="164" class="lbl-sm">28 × 12 in, portrait</text>
+  <text x="150" y="290" class="lbl-sm">2×4 rim laid FLAT (1½ in)</text>
   <line x1="24" y1="70" x2="24" y2="310" stroke="#b3541e"/><line x1="20" y1="70" x2="28" y2="70" stroke="#b3541e"/><line x1="20" y1="310" x2="28" y2="310" stroke="#b3541e"/>
   <text x="18" y="196" class="dim" transform="rotate(-90 18 196)">4 ft deep</text>
   <line x1="40" y1="330" x2="520" y2="330" stroke="#b3541e"/><line x1="40" y1="330" x2="40" y2="324" stroke="#b3541e"/><line x1="520" y1="330" x2="520" y2="324" stroke="#b3541e"/>
   <text x="255" y="344" class="dim">8 ft wide</text>
-  <text x="60" y="366" class="dim">2×4 joists + blocking laid FLAT (1½ in) — deck + turf finish flush with, not above, the rim</text>
+  <text x="110" y="368" class="dim">2×4 joists + blocking laid FLAT (1½ in)</text>
 </svg>
-<figcaption>Fig. 4 — Hitting-platform framing (underside), 8 ft wide × 4 ft deep. Same recipe as the large platform: a 2×4 rim on edge with the joists and blocking laid flat inside it, so the plywood deck and turf finish flush with — not above — the rim. The SIGPRO Softy drops into a blocked 28 × 12 in pocket set on end (portrait) toward the right side, and the long back edge hinges to the large platform.</figcaption>
+<figcaption>Fig. 4 — Hitting-platform framing (underside), 8 ft wide × 4 ft deep. The SIGPRO Softy drops into a blocked 28 × 12 in pocket set on end (portrait) toward the right side, and the long back edge hinges to the large platform.</figcaption>
 </figure>
 
-1. **Frame & deck** — 8-ft 2×4 rims **on edge**, 4-ft joists at 16 in on center laid **flat**, plus a blocking row, then one 23/32 plywood sheet. As with the large platform, the flat joists keep the deck and turf from rising above the rim.
+1. **Frame & deck** — unlike the large platform, the rim on the hitting platform lays **flat** (1½ in tall, instead of the large platform's 3½-in on-edge rim). That keeps your club from catching the raised lip if the ball is set too far back in the mat. Then 4-ft joists at 16 in on center ("OC" — center of one joist to center of the next, so plywood edges land on wood), a blocking row, and one 23/32 plywood sheet.
 2. **Frame the SIGPRO Softy pocket** — block out a 28 × 12 in opening at your stance line with a plywood sub-floor beneath, so the Softy sits flush with the surface.
-3. **Surface it** with the two 5×4 hitting mats, trimming around the pocket so the Softy drops in flush — this is the stance and walk-up area.
-4. **Hinge its long edge** to the large platform's front rail with **two hinges** (into the notched middle 8 ft) so it folds turf-to-turf onto the large platform.
-5. **Cover the hinge gap** with a yoga-mat strip, velcroed in place soft-side-up, so clubs and toes never find the seam when deployed.
+3. **Surface it** with the two 5×4 mats, trimming the edges and the pocket so the Softy drops in flush.
+4. **Hinge its long edge** to the large platform's front rail with **two through-bolted hinges** (into the notched middle 8 ft) so it folds turf-to-turf onto the large platform. When stowed, the whole hitting platform hangs off these two hinges three feet in the air — bolts with washers and nuts, not screws, and check them during the shakedown.
+5. **Optional: counter-sink the fold hinges** so they sit flush with the turf. Otherwise, keep them out of the way of the hitting strip so you can putt toward the screen.
 
 <figure class="dgs-fig">
 <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg">
@@ -341,21 +330,21 @@ The hoist mounts to the **back wall about 10 ft up, directly above the stowed un
   <text x="300" y="428" class="lbl-sm" text-anchor="middle">hoist clips the cable's middle with a carabiner</text>
   <text x="40" y="452" class="lbl-sm">● welded corner rings (4) · ○ interior anchors (2) · dark line = single lifting cable</text>
 </svg>
-<figcaption>Fig. 5 — Rigging, plan view (looking down, back wall at top). One steel lifting cable is carabinered to an interior anchor on each side, threads out through the outer front-corner loop on the left, across through the front-corner loop on the right, and back — the corner loops act as pulleys that equalize the pull. The hoist line clips to the middle of that cross-span with a carabiner and lifts the front edge, tipping the platform up on its base T-hinges.</figcaption>
+<figcaption>Fig. 5 — Hoist cable connection view (looking down, back wall at top). One steel lifting cable is carabinered to an interior anchor on each side, threads out through the outer front-corner loop on the left, across through the front-corner loop on the right, and back — the corner loops act as pulleys that equalize the pull. The hoist line clips to the middle of that cross-span with a carabiner and lifts the front edge, tipping the platform up on its base T-hinges.</figcaption>
 </figure>
 
-1. **Mount the hoist** — lag it through solid blocking into the wall framing ~10 ft up, centered, directly above where the platform top lands when vertical. *(2–3 hours)*
-2. **Bolt the corner ring loops** — a welded steel ring on a screw-down bracket at each corner; the two **outer front-corner loops** are the ones the lifting cable threads through, so make those bombproof.
+1. **Mount the hoist** — screw a 2×10 block flat across two wall studs with four 3/8-in × 3½-in lag screws (heavy hex-head wood screws — predrill 1/4-in pilots, drive with a socket wrench), then bolt the hoist to that block ~10 ft up, centered above where the platform top lands when vertical. *(2–3 hours)*
+2. **Bolt the corner ring loops** at each corner; the two **outer front-corner loops** are what the cable threads through. Cable sliding through a fixed ring under load wears both parts — inspect those loops and that stretch of cable every few stows; if you see fray or grooving, swap the rings for small rated pulley blocks.
 3. **Set the two interior anchors** — a rated ring loop set into the deck a bit inboard on each side. These take the two cable ends.
-4. **Run the single cable** — carabiner one end to the left interior anchor, thread it out through the left front-corner loop, across and through the right front-corner loop, then carabiner the other end to the right interior anchor. Terminate the ends with a thimble and two-to-three cable clamps, snugged until the platform hangs level.
-5. **Clip the hoist to the middle** — carabiner the hoist line to the center of the cable's cross-span, then raise slowly to confirm an even lift and a flat stow.
-6. **Add a safety catch** — pin the raised platform to the wall frame with a chain or barrel bolts whenever it's stowed, and mount the remote holster by the door latch.
+4. **Run the single cable** — carabiner one end to the left interior anchor, thread it out through the left front-corner loop, across and through the right front-corner loop, then carabiner the other end to the right interior anchor. Terminate each end in a loop around a thimble (the teardrop insert that keeps cable from kinking), locked with at least two cable clamps — saddle on the load side, U-bolt over the dead tail — then adjust until the platform hangs level.
+5. **Clip the hoist to the middle** — carabiner the hoist line to the center of the cable's cross-span, then raise slowly to confirm an even lift and a flat stow. One rating note: "880-lb" hoists are 880 lb only on the double line — the single line that clips here is rated 440 lb. The pivot geometry means the cable only carries roughly half the stack's weight, so there's margin — but run that math for your build before trusting it.
+6. **Add a limit stop and a mechanical catch** — a limit switch (or disciplined remote use) so the hoist stops once the platform is fully vertical, plus a mechanical catch (chain or barrel bolts into the wall frame) so the stowed platform never depends on the cable alone. Wall-mounting a hoist also isn't its designed orientation — the fasteners get pulled outward, not just sideways — so through-bolt the blocking and load-test before trusting it.
 
 <img class="dgs-photo" src="/images/blog/diy-garage-sim/platform-hoisting.jpg" alt="Platform mid-hoist, rotating up toward the wall" />
 
-## 6. Enclosure sides (15.5-in plywood)
+## 6. Enclosure sides (15.5-in-wide plywood skin)
 
-Each fixed side edge of the enclosure is framed with a **2×10 that stands on the floor-anchored base 2×10 and runs up the full 8 ft**, then skinned with **15.5-in plywood** so the whole side reads as one clean panel (no separate 2×4 corner post). A **slotted steel angle** ([Hillman 1½ × 1½ × 3 ft](https://www.lowes.com/pd/Hillman-1-1-2-in-W-x-1-1-2-in-H-x-3-ft-L-Zinc-Plated-Steel-Perforated-Slotted-Angle/3059259)) fastened to the 2×10's garage-door-facing edge is where the impact screen's **ball bungees** clip. The door **hinge mounts on the outside** of the side and connects to the **interior of the door**, so the door folds against the side cleanly. Black acoustic foam on the inside face kills ball noise.
+Each fixed side edge is framed with a **2×10 that stands on the floor-anchored base 2×10 and runs up 8 ft**, connected to the shelving in my case. Those without preinstalled shelving will need a top plate (another 2×10) to frame out the enclosure — and screw that top frame back into the wall studs so an 8-ft wall of swinging doors can't pull the enclosure over. Outside the 2×10 framing, a **15.5-in-wide strip of the same 23/32 plywood** (a width, not a thickness — rip it from a full sheet) is used so it reads as one clean enclosure. A **slotted steel angle** ([Hillman 1½ × 1½](https://www.lowes.com/pd/Hillman-1-1-2-in-W-x-1-1-2-in-H-x-3-ft-L-Zinc-Plated-Steel-Perforated-Slotted-Angle/3059259)) on the 2×10's garage-door edge is the screen's ball-bungee attachment; the door hinge mounts on the outside of the side and connects to the door's interior. Acoustic foam on the inside face kills ball noise.
 
 <figure class="dgs-fig">
 <svg viewBox="0 0 720 480" xmlns="http://www.w3.org/2000/svg">
@@ -380,12 +369,12 @@ Each fixed side edge of the enclosure is framed with a **2×10 that stands on th
   <text x="306" y="186" class="lbl-sm">acoustic foam (inside face)</text>
   <line x1="122" y1="414" x2="184" y2="414" stroke="#999" stroke-width="0.9" marker-end="url(#s6)"/>
   <text x="34" y="418" class="lbl-sm">door hinge</text>
-  <line x1="300" y1="372" x2="266" y2="392" stroke="#999" stroke-width="0.9" marker-end="url(#s6)"/>
-  <text x="306" y="368" class="lbl-sm">slotted angle iron on the front edge —</text>
-  <text x="306" y="384" class="lbl-sm">the screen's ball bungees clip here</text>
+  <line x1="300" y1="360" x2="266" y2="390" stroke="#999" stroke-width="0.9" marker-end="url(#s6)"/>
+  <text x="306" y="352" class="lbl-sm">slotted angle iron on the front edge —</text>
+  <text x="306" y="370" class="lbl-sm">the screen's ball bungees clip here</text>
   <line x1="366" y1="434" x2="304" y2="410" stroke="#999" stroke-width="0.9" marker-end="url(#s6)"/>
   <text x="372" y="438" class="lbl-sm">ball bungee</text>
-  <text x="446" y="388" class="lbl-sm">impact screen</text>
+  <text x="560" y="388" class="lbl-sm">impact screen</text>
   <text x="470" y="466" class="lbl-sm">bifold door</text>
 </svg>
 <figcaption>Fig. 6 — Enclosure side, plan view of the front-left corner. The side is a 2×10 with the plywood skin on the outside and acoustic foam on the inside. The bifold door hinges off the side at the corner; a slotted steel angle iron on the 2×10's front edge anchors the impact screen's ball bungees, and the screen runs across the front just inboard of the door.</figcaption>
@@ -401,6 +390,15 @@ Each fixed side edge of the enclosure is framed with a **2×10 that stands on th
 3. **Mount the slotted angle** — fasten a slotted steel angle to the 2×10's garage-door-facing edge; this is the screen's ball-bungee attachment point.
 4. **Hang the door off the outside** — mount the hinge on the outside face of the side, connecting to the interior of the door.
 5. **Pad the inside** — glue black acoustic foam to the interior face.
+
+### Hanging the screen
+
+Now that the sides are framed, the screen has something to clip to. The slotted steel angle on each side takes the **left and right edges** — 4–5 ball bungees per side (not one per grommet). For the **top and bottom**, drive 4–5 [Everbilt 3/16 in × 2 in zinc screw eyes](https://www.homedepot.com/p/Everbilt-3-16-in-x-2-in-Zinc-Screw-Eye-3-Piece-824271/314745880) straight into the top shelving (the top of the enclosure) and the bottom plate, and clip the screen to those. Tension until the wrinkles pull out but the screen still gives on impact.
+
+<figure class="dgs-fig">
+<img class="dgs-photo" src="/images/blog/diy-garage-sim/screen-bungee.jpg" alt="Ball bungee clipping the screen grommet to the slotted steel angle on the side" />
+<figcaption>How the screen clips on: a ball bungee through the screen grommet, hooked into the slotted steel angle on the 2×10 side edge.</figcaption>
+</figure>
 
 ## 7. Bifold doors / side walls
 
@@ -423,10 +421,11 @@ Each side is a bifold pair: a **3-ft-wide outer door on the outside (hinged to t
   <rect x="356" y="150" width="8" height="22" fill="#333"/><rect x="396" y="150" width="8" height="22" fill="#333"/>
   <rect x="362" y="290" width="36" height="20" fill="#fff" stroke="#333" stroke-width="1.5"/>
   <line x1="380" y1="290" x2="380" y2="310" stroke="#333" stroke-width="1"/>
-  <text x="406" y="304" class="lbl-sm">caster cutout where the doors meet</text>
-  <line x1="140" y1="332" x2="380" y2="332" stroke="#b3541e"/>
-  <line x1="140" y1="332" x2="140" y2="325" stroke="#b3541e"/><line x1="380" y1="332" x2="380" y2="325" stroke="#b3541e"/>
-  <text x="200" y="336" class="dim">3 ft outer + 2 ft inner = 5 ft per side</text>
+  <line x1="398" y1="308" x2="470" y2="336" stroke="#999" stroke-width="0.8"/>
+  <text x="476" y="341" class="lbl-sm">caster cutout where the doors meet</text>
+  <line x1="140" y1="324" x2="380" y2="324" stroke="#b3541e"/>
+  <line x1="140" y1="324" x2="140" y2="317" stroke="#b3541e"/><line x1="380" y1="324" x2="380" y2="317" stroke="#b3541e"/>
+  <text x="146" y="341" class="dim">3 ft outer + 2 ft inner = 5 ft/side</text>
   <line x1="650" y1="1" x2="650" y2="310" stroke="#b3541e"/>
   <line x1="650" y1="1" x2="643" y2="1" stroke="#b3541e"/><line x1="650" y1="310" x2="643" y2="310" stroke="#b3541e"/>
   <text x="656" y="160" class="dim">8 ft</text>
@@ -448,8 +447,8 @@ Each side is a bifold pair: a **3-ft-wide outer door on the outside (hinged to t
 
 1. **Build four panels** — 2×4 perimeter frames with horizontal mid-rails, skinned one side with 23/32 plywood, corner braces and mending plates at the joints. Two 3-ft outer doors, two 2-ft inner sections, all 8 ft tall. *(a full day)*
 2. **Join each pair** — heavy strap hinges top and bottom connect each outer door to its inner section so the pair bifolds.
-3. **Hang each pair** by its wide 3-ft outer door on the wall frame's doubled end studs (three 4-in butt hinges per side); the 2-ft inner section swings in to meet the center latch.
-4. **Add locking casters** at the base of the meeting stiles, recessed into a cutout at the bottom where the doors come together — the casters carry the door weight and let each pair roll open; the hinges just guide them.
+3. **Hang each pair** by its wide 3-ft outer door on the wall frame's doubled end studs — two 2×4s screwed face-to-face at each end so the hinge screws bite solid wood (three 4-in butt hinges per side; swap at least one screw per hinge leaf for a 2½-in screw that reaches the stud); the 2-ft inner section swings in to meet the center latch.
+4. **Add locking casters (wheels)** at the bottom of each inner door's meeting stile (the vertical edge where the doors come together), recessed into a cutout. Pick the caster height so the wheel just touches the floor with the door hanging level — it should share the weight with the hinges, not lift the door off them.
 5. **Pad the interior faces** with acoustic wedge foam (spray adhesive). When open, these faces are the sound- and ball-deadening side walls.
 6. **Latch hardware** — slide bolt and two pull handles where the outer doors meet.
 
@@ -463,13 +462,13 @@ Each side is a bifold pair: a **3-ft-wide outer door on the outside (hinged to t
 ## 9. Stowing, and the shakedown
 
 <figure class="dgs-fig">
-<svg viewBox="0 0 430 335" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Folded stack cross-section">
+<svg viewBox="0 0 480 335" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Folded stack cross-section">
   <line x1="20" y1="300" x2="410" y2="300" stroke="#333" stroke-width="3"/>
   <line x1="60" y1="300" x2="60" y2="20" stroke="#333" stroke-width="3"/>
   <rect x="64" y="24" width="30" height="16" fill="#c0392b" stroke="#7c241a"/>
   <text x="100" y="36" class="lbl-sm">hoist (~10 ft high, above the stack)</text>
   <text x="118" y="293" class="dir">← BACK WALL</text>
-  <text x="418" y="293" class="dir" text-anchor="end">GARAGE DOOR →</text>
+  <text x="468" y="293" class="dir" text-anchor="end">GARAGE DOOR →</text>
   <rect x="62" y="44" width="14" height="251" fill="#c9a06b" stroke="#8a6a3f"/>
   <rect x="78" y="76" width="10" height="128" fill="#e2c48f" stroke="#8a6a3f"/>
   <circle cx="83" cy="76" r="3" fill="#b3541e"/>
@@ -484,10 +483,10 @@ Each side is a bifold pair: a **3-ft-wide outer door on the outside (hinged to t
   <text x="40" y="170" class="lbl" transform="rotate(-90 40 170)">8 ft tall</text>
   <text x="130" y="100" class="lbl-sm">layers, wall out:</text>
   <text x="130" y="117" class="lbl-sm">1. screen frame + screen (fixed)</text>
-  <text x="130" y="134" class="lbl-sm">2. hitting platform — hangs from top (~3 ft off floor)</text>
+  <text x="130" y="134" class="lbl-sm">2. hitting platform — hangs ~3 ft off floor</text>
   <text x="130" y="151" class="lbl-sm">3. large platform, hoisted vertical</text>
   <text x="130" y="168" class="lbl-sm">4. bifold doors, closed &amp; latched</text>
-  <text x="130" y="185" class="lbl-sm">5. 2×10 base rail on floor — 1–3 flush on top; doors close outside</text>
+  <text x="130" y="185" class="lbl-sm">5. base 2×10 — 1–3 sit on it, doors outside</text>
 </svg>
 <figcaption>Fig. 8 — The stowed stack: 17 in of garage depth, hoist parked above. The screen frame, hitting platform, and large platform all sit flush on top of the floor-anchored 2×10 base rail, while the bifold doors close just outside it. The 4-ft hitting platform hangs from the top of the vertical large platform, ~3 ft off the floor.</figcaption>
 </figure>
@@ -512,7 +511,7 @@ Each side is a bifold pair: a **3-ft-wide outer door on the outside (hinged to t
 
 ### Hardware & rigging — ballpark ~$800
 
-Rather than itemize every fastener, budget roughly **$800** for the hardware bucket. The components: the platform's two large T-hinges plus the door and strap hinges; locking casters; a slide-bolt latch and pull handles; corner braces and mending plates; slotted steel angle and ball bungees to hang the screen; foam pipe insulation and black vinyl for the screen border; the lift rigging (rated steel cable, thimbles, clamps, carabiners, welded corner rings, interior anchors, and a pulley); concrete wedge anchors for the base rail; deck and plywood screws; construction adhesive and staples; industrial velcro; a projector mount; a safety chain; and golf barrier netting.
+Rather than itemize every fastener, budget roughly **$800** for the hardware bucket. The components: the platform's two large T-hinges plus the door and strap hinges; locking casters; a slide-bolt latch and pull handles; corner braces and mending plates; slotted steel angle and ball bungees to hang the screen; [screw eyes](https://www.homedepot.com/p/Everbilt-3-16-in-x-2-in-Zinc-Screw-Eye-3-Piece-824271/314745880) that anchor the screen top and bottom; foam pipe insulation and black vinyl for the screen border; the lift rigging (rated steel cable, thimbles, clamps, carabiners, welded corner rings, interior anchors, and a pulley); concrete anchors for the base rail; fasteners/plywood screws; construction adhesive and staples; industrial velcro; a projector mount; a safety chain; and golf barrier netting.
 
 ### Golf-specific components
 
@@ -548,4 +547,4 @@ Rather than itemize every fastener, budget roughly **$800** for the hardware buc
 
 ## 11. Notes & remaining assumptions
 
-A few details in the drawings are still my best reconstruction from photos — sanity-check against your space before cutting: joist spacing (16 in OC with three blocking rows), hinge counts (2 base T-hinges / 2 fold / 3 per door side / 4 strap), the hitting-strip pocket location on the stance line, and the plywood count of 11 sheets (3 large-platform deck + 1 hitting-platform + 3 wall + 4 door skins). Turf coverage assumes two 3×10 rolls on the large platform plus two 5×4 mats on the hitting platform.
+A few details in the drawings are still my best reconstruction from photos — sanity-check against your space before cutting: joist spacing (16 in OC with three blocking rows), hinge counts (2 base T-hinges / 2 fold / 3 per door side / 4 strap), the hitting-strip pocket location on the stance line, and the plywood count (5 sheets in my build — buy an extra if your cuts don't nest tightly). Turf coverage assumes two 3×10 rolls on the large platform plus two 5×4 mats on the hitting platform.
