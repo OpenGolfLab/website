@@ -147,7 +147,7 @@ The screen mounts to the enclosure itself — the 2×10 side frames, the top she
 <figcaption>Fig. 2 — Open bay, front elevation: the 7 ft 7 in × 10 ft SIGPRO Premium screen floating in the enclosure, with the edges and top padded in foam and black vinyl.</figcaption>
 </figure>
 
-- **Set the screen 12 in off the back wall** — the bungee anchors hold the screen ~12 in proud of the wall so it floats and has room to give. Hang a 10 ft × 8 ft black golf net in that gap, behind the screen, to absorb impact energy before it reaches anything solid.
+- **Set the screen 12 in off the back wall** — the bungee anchors hold the screen ~12 in from the wall so it floats and has room to give. Hang a 10 ft × 8 ft black golf net in that gap, behind the screen, to absorb impact energy from hard hits before it reaches the wall behind.
 - **Pad the top and any exposed edges** — any foam works (pipe insulation, EVA gym tiles); wrap it in black vinyl for a cleaner look.
 - **Lay EVA gym tiles** on the floor across the front — they pad the bottom rail and quiet ball drops.
 
@@ -398,6 +398,11 @@ Now that the sides are framed, the screen has something to clip to. The slotted 
 <figure class="dgs-fig">
 <img class="dgs-photo" src="/images/blog/diy-garage-sim/screen-bungee.jpg" alt="Ball bungee clipping the screen grommet to the slotted steel angle on the side" />
 <figcaption>How the screen clips on: a ball bungee through the screen grommet, hooked into the slotted steel angle on the 2×10 side edge.</figcaption>
+</figure>
+
+<figure class="dgs-fig">
+<img class="dgs-photo" src="/images/blog/diy-garage-sim/screen-top-eyes.jpg" alt="Screen top edge: ball bungees through the grommets up to screw eyes in the top shelving" />
+<figcaption>The top edge: screw eyes driven into the top shelving give the bungees an anchor, so the screen hangs taut across the full 10 ft.</figcaption>
 </figure>
 
 ## 7. Bifold doors / side walls
