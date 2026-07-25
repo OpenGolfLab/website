@@ -1,7 +1,22 @@
 {
-  "generated_date": "2026-07-18",
-  "count": 13,
+  "generated_date": "2026-07-25",
+  "count": 14,
   "contributions": [
+    {
+      "display_name": "BriskApex-264d",
+      "date": "2026-07-25",
+      "shots": 61,
+      "clubs": [
+        "4I",
+        "7I",
+        "8I",
+        "9I",
+        "Dr",
+        "Gw",
+        "Lw"
+      ],
+      "launch_monitor": ""
+    },
     {
       "display_name": "tim",
       "date": "2026-07-18",

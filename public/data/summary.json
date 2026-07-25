@@ -1,33 +1,33 @@
 {
-  "generated_date": "2026-07-18",
+  "generated_date": "2026-07-25",
   "schema_version": "2.0",
   "tiers": {
     "community": {
       "totals": {
-        "contributors": 15,
-        "shots": 1557
+        "contributors": 16,
+        "shots": 1612
       },
       "clubs": [
         {
           "club": "Dr",
-          "contributors": 13,
-          "shots": 989,
+          "contributors": 14,
+          "shots": 1008,
           "carry": {
-            "med": 276,
+            "med": 277,
             "p10": 270,
-            "p90": 290,
-            "spread_mad": 15
+            "p90": 289,
+            "spread_mad": 14
           },
-          "ball": 164,
-          "launch": 14.1,
+          "ball": 167,
+          "launch": 14.3,
           "spin": {
             "value": null,
             "min_tier": "verified"
           },
           "dispersion": {
-            "offline_bias": 7,
+            "offline_bias": 5,
             "lateral_mad": 22,
-            "depth_mad": 15
+            "depth_mad": 14
           }
         }
       ],
