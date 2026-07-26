@@ -6,9 +6,17 @@ interface Props {
   xCaption: string;
   yCaption: string;
   legend: { cls: string; label: string }[];
+  /**
+   * "Your starting point" overlays, one per player bucket, pre-projected into
+   * this map's own coordinates. Rendered hidden; the active one is revealed by
+   * CSS off `data-focus` on <html>, so no client script needs to know anything
+   * about this map's (piecewise) scales.
+   */
+  focus?: { key: string; x: number; y: number; w: number; h: number }[];
 }
 
-const { map, regionLabel, svgLabel, xCaption, yCaption, legend } = Astro.props;
+const { map, regionLabel, svgLabel, xCaption, yCaption, legend, focus = [] } =
+  Astro.props;
 ---
 
 <div class="ballmap-wrap" role="region" aria-label={regionLabel}>
@@ -18,6 +26,19 @@ const { map, regionLabel, svgLabel, xCaption, yCaption, legend } = Astro.props;
     role="img"
     aria-label={svgLabel}
   >
+    {/* Starting-point shading, behind everything so dots and labels stay
+        readable through it. */}
+    {focus.map((f) => (
+      <rect
+        class="ballmap-focus"
+        data-focus-key={f.key}
+        x={f.x}
+        y={f.y}
+        width={f.w}
+        height={f.h}
+      />
+    ))}
+
     {/* midlines */}
     <line class="ballmap-mid" x1={map.xMid} y1={map.PAD.t} x2={map.xMid} y2={map.bottom} />
     <line class="ballmap-mid" x1={map.PAD.l} y1={map.yMid} x2={map.right} y2={map.yMid} />
@@ -89,6 +110,21 @@ const { map, regionLabel, svgLabel, xCaption, yCaption, legend } = Astro.props;
     width: 100%;
     height: auto;
     display: block;
+  }
+  /* Starting-point shading. Hidden until <html data-focus="..."> matches, which
+     keeps the whole mechanism in CSS — no script has to re-derive this map's
+     piecewise scales to place a rectangle on it. */
+  .ballmap-focus {
+    fill: var(--focus-fill, rgba(90, 160, 220, 0.14));
+    stroke: var(--focus-stroke, rgba(90, 160, 220, 0.55));
+    stroke-width: 1.5;
+    stroke-dasharray: 6 4;
+    opacity: 0;
+    transition: opacity 0.25s var(--ease);
+    pointer-events: none;
+  }
+  .ballmap-focus.is-active {
+    opacity: 1;
   }
   .ballmap-mid {
     stroke: var(--border-strong);

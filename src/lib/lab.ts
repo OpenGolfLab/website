@@ -81,10 +81,23 @@ function loadLineupMarket(relPath: string, tickStep: number, roundStep: number) 
   const axisTicks: number[] = [];
   for (let v = tickStep; v <= axisMaxRounded; v += tickStep) axisTicks.push(v);
 
-  const pricingLineups = lineups.map((l: any) => ({
-    brand: l.brand,
-    models: [...(l.models ?? [])].sort((a: any, b: any) => a.price - b.price),
-  }));
+  // Pricing chart rows: one flat list ranked by street price, most expensive
+  // first. Deliberately NOT grouped by brand — grouping answers "what does
+  // TaylorMade charge", which the spectrum and quadrant charts on the same page
+  // already cover, whereas the question this chart exists for is "what does
+  // this category cost, and what's cheap", and that only reads cleanly off a
+  // single ranked axis. Ties break alphabetically so the order is stable
+  // between builds rather than depending on file order.
+  const pricingRanked = allModels
+    .map((m: any) => ({
+      ...m,
+      label: `${m.brand} ${m.name}`.trim(),
+      savings: m.msrp - m.price,
+    }))
+    .sort(
+      (a: any, b: any) =>
+        b.price - a.price || a.label.localeCompare(b.label),
+    );
 
   // Spectrum: sort each brand's models by position, then stagger label height
   // only where neighboring models sit close enough on the track to collide,
@@ -118,7 +131,7 @@ function loadLineupMarket(relPath: string, tickStep: number, roundStep: number) 
     biggestDiscount,
     axisMaxRounded,
     axisTicks,
-    pricingLineups,
+    pricingRanked,
     spectrumLineups,
   };
 }
