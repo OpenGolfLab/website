@@ -1,0 +1,41 @@
+---
+import SectionNav from "./SectionNav.astro";
+import { GUIDE_SECTIONS } from "../consts";
+---
+
+{/* One-page jump nav for the user guide, same scroll-spy pattern as GearNav —
+    the guide is long and read by jumping to the part you need. */}
+<SectionNav sections={GUIDE_SECTIONS} ariaLabel="User guide sections" mode="spy" />
+
+<script>
+  // Scroll-spy: highlight the section whose top has passed just below the two
+  // stacked sticky bars. Plain scroll math keeps it robust across resizes and
+  // tall/short sections (an IntersectionObserver threshold struggles with both).
+  const links = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>("a[data-section]"),
+  );
+  const entries = links
+    .map((link) => {
+      const id = link.dataset.section ?? "";
+      const section = document.getElementById(id);
+      return section ? { link, section } : null;
+    })
+    .filter((e): e is { link: HTMLAnchorElement; section: HTMLElement } => !!e);
+
+  if (entries.length) {
+    const OFFSET = 150; // ~ site nav + guide nav height, plus a little
+    const spy = () => {
+      let current = entries[0];
+      for (const entry of entries) {
+        if (entry.section.getBoundingClientRect().top - OFFSET <= 0) {
+          current = entry;
+        }
+      }
+      for (const { link } of entries) link.classList.remove("active");
+      current.link.classList.add("active");
+    };
+    spy();
+    window.addEventListener("scroll", spy, { passive: true });
+    window.addEventListener("resize", spy, { passive: true });
+  }
+</script>
