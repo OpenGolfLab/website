@@ -5,17 +5,17 @@
     "community": {
       "totals": {
         "contributors": 17,
-        "shots": 1658
+        "shots": 1669
       },
       "clubs": [
         {
           "club": "Dr",
           "contributors": 15,
-          "shots": 1027,
+          "shots": 1039,
           "carry": {
             "med": 278,
             "p10": 271,
-            "p90": 290,
+            "p90": 289,
             "spread_mad": 14
           },
           "ball": 170,
@@ -68,7 +68,7 @@
           1,
           0,
           0,
-          1,
+          0,
           1,
           0,
           0,
