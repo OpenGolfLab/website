@@ -148,7 +148,6 @@ const limits = [
 
 <BaseLayout title={title} description={description}>
   <section class="section-tight lab-hero">
-    <div class="grid-bg"></div>
     <div class="container lab-hero-inner">
       <span class="pill lab-status">◐ Community dataset in progress</span>
       <h1>The Lab</h1>
@@ -248,6 +247,38 @@ const limits = [
           ))
         }
       </ol>
+    </section>
+
+    {/* The sourcing caveats that used to be repeated under all nine Gear Guide
+        figures, stated once. Every figure over there links here. */}
+    <section class="lab-band" id="gear-sourcing">
+      <div class="lab-band-head">
+        <h2>How the Gear Guide is sourced</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          Everything on the <a href="/gear">Gear Guide</a> is researched by
+          hand. None of it is community-measured yet.
+        </p>
+      </div>
+      <div class="gear-sourcing">
+        <div class="card">
+          <h3>Placements</h3>
+          <p>
+            Estimated from head construction, published specs, stated
+            manufacturer positioning and published MOI. Iron lofts and wedge
+            bounce figures are manufacturer standard specs; each wedge is
+            plotted at its 56° option's signature bounce. Crowd-measured
+            placements are <a href="#roadmap">on the roadmap</a>.
+          </p>
+        </div>
+        <div class="card">
+          <h3>Prices</h3>
+          <p>
+            Checked by hand against live retailer listings, so they drift —
+            always confirm at the retailer before buying. Direct-to-consumer
+            brands run frequent promos. We take no commission on any link.
+          </p>
+        </div>
+      </div>
     </section>
 
     <section class="lab-band">
@@ -383,6 +414,19 @@ const limits = [
 </BaseLayout>
 
 <style>
+  /* ---- Gear Guide sourcing ---- */
+  .gear-sourcing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--gap);
+  }
+  .gear-sourcing h3 {
+    margin-bottom: 0.5rem;
+  }
+  .gear-sourcing p {
+    color: var(--text-muted);
+  }
+
   /* ---- How it works ---- */
   .lab-flow {
     list-style: none;
@@ -400,17 +444,17 @@ const limits = [
     gap: 0.4rem;
   }
   .lab-flow-n {
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--green);
-    letter-spacing: 0.1em;
   }
   .lab-flow h3 {
     font-size: 1.05rem;
   }
   .lab-flow p {
     color: var(--text-dim);
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   /* ---- The plan: three acts ---- */
@@ -430,7 +474,7 @@ const limits = [
     border-top: 1px solid var(--border);
   }
   .act-mark {
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     font-size: 1.15rem;
     line-height: 1.4;
     text-align: center;
@@ -439,16 +483,15 @@ const limits = [
     color: var(--green);
   }
   .is-now .act-mark {
-    color: var(--amber);
+    color: var(--green-bright);
   }
   .is-next .act-mark {
     color: var(--text-dim);
   }
   .act-state {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-dim);
     margin-bottom: 0.25rem;
   }
@@ -456,7 +499,7 @@ const limits = [
     color: var(--green);
   }
   .is-now .act-state {
-    color: var(--amber);
+    color: var(--green-bright);
   }
   .act h3 {
     font-size: 1.3rem;
@@ -482,12 +525,12 @@ const limits = [
   .payoff p {
     margin-top: 0.35rem;
     color: var(--text-dim);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
   }
 
   .exploring {
     margin-top: 1.4rem;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
   }
 
   /* ---- Methodology: pipeline stages ---- */
@@ -507,10 +550,10 @@ const limits = [
     border-top: 1px solid var(--border);
   }
   .stage-n {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--green);
-    letter-spacing: 0.1em;
     padding-top: 0.2rem;
   }
   .stage h3 {
@@ -525,8 +568,8 @@ const limits = [
   .stage-link {
     display: inline-block;
     margin-top: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--green);
   }
 
@@ -541,7 +584,7 @@ const limits = [
     grid-template-columns: 7rem 1.4fr 1fr;
     gap: 1rem;
     padding: 0.9rem 1.1rem;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     color: var(--text-muted);
     background: var(--surface);
   }
@@ -549,21 +592,20 @@ const limits = [
     border-top: 1px solid var(--border);
   }
   .tiers-head {
-    font-family: var(--font-mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 600;
     color: var(--text-dim);
     background: var(--bg-elevated);
   }
   .tier-name {
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
     font-weight: 600;
     color: var(--green);
   }
   .tiers-note {
     margin-top: 1rem;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     max-width: 68ch;
   }
 

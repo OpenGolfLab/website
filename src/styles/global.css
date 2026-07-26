@@ -205,14 +205,12 @@ main > section.section:nth-of-type(even),
 main > section.section-tight:nth-of-type(even) {
   background: var(--bg-elevated);
 }
+/* A label, not a decoration: readable size, body font, no shouting. */
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--green);
-  font-weight: 600;
-  margin-bottom: 0.9rem;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  font-weight: 500;
+  margin-bottom: 0.6rem;
 }
 .lede {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
@@ -227,17 +225,12 @@ main > section.section-tight:nth-of-type(even) {
   gap: 0.55rem;
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 0.95rem;
-  letter-spacing: 0.04em;
+  font-size: 1rem;
   padding: 0.75rem 1.4rem;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.3s var(--ease);
-  text-transform: uppercase;
-  will-change: transform;
-}
-.btn:active {
-  transform: translateY(1px);
+  transition: background 0.15s var(--ease), color 0.15s var(--ease),
+    border-color 0.15s var(--ease);
 }
 .btn-primary {
   background: var(--text);
@@ -247,7 +240,6 @@ main > section.section-tight:nth-of-type(even) {
 .btn-primary:hover {
   background: var(--bg);
   color: var(--text);
-  transform: translateY(-2px);
 }
 .btn-secondary {
   background: transparent;
@@ -256,17 +248,16 @@ main > section.section-tight:nth-of-type(even) {
 }
 .btn-secondary:hover {
   border-color: var(--text);
-  transform: translateY(-2px);
 }
+/* Support CTA: same neutral treatment as any other secondary action.
+   The amber was a second accent competing with the green for no reason. */
 .btn-coffee {
   background: transparent;
-  color: var(--amber);
-  border: 1px solid var(--amber);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
 }
 .btn-coffee:hover {
-  background: var(--amber);
-  color: var(--bg);
-  transform: translateY(-2px);
+  border-color: var(--text);
 }
 .btn-lg {
   font-size: 1rem;
@@ -289,63 +280,34 @@ main > section.section-tight:nth-of-type(even) {
   display: inline-flex;
   align-items: baseline;
   gap: 0.5rem;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  letter-spacing: 0.04em;
+  font-size: 0.95rem;
   padding: 0.4rem 0.7rem;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
   white-space: nowrap;
 }
 .stat-chip b {
-  color: var(--green-bright);
+  color: var(--text);
   font-weight: 600;
-  font-size: 0.95rem;
 }
 .stat-chip .label {
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
 }
 
 /* ---------- Pill / tag ---------- */
 .pill {
   display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
+  font-size: 0.9rem;
   padding: 0.25rem 0.6rem;
-  border-radius: 999px;
-  border: 1px solid var(--border-strong);
-  color: var(--text);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
   background: var(--surface);
 }
 
-/* ---------- Grid / dot-matrix backdrop (launch-monitor readout feel) ---- */
-.grid-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image: radial-gradient(
-    var(--green-tint) 1px,
-    transparent 1.4px
-  );
-  background-size: 32px 32px;
-  mask-image: radial-gradient(
-    ellipse 80% 70% at 50% 0%,
-    #000 0%,
-    transparent 78%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 70% at 50% 0%,
-    #000 0%,
-    transparent 78%
-  );
-}
+/* The dot-matrix backdrop was retired in the readability pass; every
+   `.grid-bg` div has been removed from the markup too. */
 
 /* ---------- Prose (blog) ---------- */
 .prose {
@@ -416,6 +378,31 @@ main > section.section-tight:nth-of-type(even) {
 .prose strong {
   color: var(--text);
   font-weight: 600;
+}
+
+/* ---------- Figures ---------------------------------------------------------
+   The graphics are the argument, so they get the room and the prose gets out
+   of the way. A figure carries at most one short caption; anything longer —
+   sourcing, sample sizes, caveats — is a link to the methodology, not a wall
+   of fine print under the chart. */
+.figure {
+  margin: 0;
+}
+.figure > figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  max-width: 60ch;
+}
+.source-link {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border-strong);
+}
+.source-link:hover {
+  color: var(--text-muted);
 }
 
 /* ---------- Utility ---------- */

@@ -19,7 +19,6 @@ const filters = ["All", ...present];
 
 <BaseLayout title={title} description={description}>
   <section class="section-tight blog-hero">
-    <div class="grid-bg"></div>
     <div class="container blog-hero-inner">
       <p class="eyebrow">Field notes</p>
       <h1>The OpenGolfLab blog</h1>
@@ -131,8 +130,8 @@ const filters = ["All", ...present];
     gap: 0.5rem;
   }
   .filter-btn {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     letter-spacing: 0.04em;
     color: var(--text-muted);
     background: var(--surface);
@@ -157,17 +156,15 @@ const filters = ["All", ...present];
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-family: var(--font-mono);
-    font-size: 0.82rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--text-dim);
     letter-spacing: 0.02em;
   }
 
   /* Category pill colors */
   .cat {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.76rem;
+    font-size: 0.95rem;
   }
   .cat-Research {
     color: var(--green);

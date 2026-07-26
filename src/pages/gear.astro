@@ -386,26 +386,26 @@ const ballProfiles = [
   {
     tag: "105+ mph driver",
     title: "The speed player",
-    body: "You compress everything. A firm tour ball turns that speed into carry and still bites on the greens.",
-    quadrant: "↖ Shop the top-left: fast swing, tour spin",
+    body: "A firm tour ball turns that speed into carry and still bites.",
+    quadrant: "↖ Shop the top-left",
   },
   {
     tag: "Fast, but ballooning",
     title: "The spin fighter",
-    body: "Plenty of speed, too much height and curve. Firm and low-spin flattens the flight and buys roll.",
-    quadrant: "↗ Shop the top-right: fast swing, low spin",
+    body: "Firm and low-spin flattens the flight and buys roll.",
+    quadrant: "↗ Shop the top-right",
   },
   {
     tag: "85–105 mph driver",
     title: "The all-rounder",
-    body: "Most golfers. Mid-compression urethane near the middle of the map keeps greenside spin without costing ball speed.",
-    quadrant: "◎ Shop the center, either side of the crosshair",
+    body: "Mid-compression urethane: greenside spin, no ball speed lost.",
+    quadrant: "◎ Shop the center",
   },
   {
     tag: "Under 85 mph · seniors · slice fighters",
     title: "The smooth swinger",
-    body: "Soft, low-spin balls launch higher, curve less, and feel better at lower speeds, less backspin means less sidespin too.",
-    quadrant: "↘ Shop the bottom-right: slower swing, straight and soft",
+    body: "Soft and low-spin launches higher and curves less.",
+    quadrant: "↘ Shop the bottom-right",
   },
 ];
 
@@ -510,26 +510,26 @@ const ironProfiles = [
   {
     tag: "20+ handicap · learning contact",
     title: "The improver",
-    body: "Mishits are your normal shot, so buy forgiveness first: wide soles, big faces and strong lofts that turn thin strikes into playable ones.",
-    quadrant: "↖ Shop the top-left: max help, juiced lofts",
+    body: "Buy forgiveness first: wide soles turn thin strikes playable.",
+    quadrant: "↖ Shop the top-left",
   },
   {
     tag: "Mid handicap · chasing carry",
     title: "The distance shopper",
-    body: "Hollow-body players distance irons hide a hot, flexing face in a compact head, speed on mishits without the shovel look at address.",
-    quadrant: "↗ Shop the top-right: compact looks, hidden speed",
+    body: "Hollow bodies hide a hot face in a compact head.",
+    quadrant: "↗ Shop the top-right",
   },
   {
     tag: "Slower swing · ball won't climb",
     title: "The launch seeker",
-    body: "Stronger lofts make a low-flight problem worse. Lightweight builds and weaker high-launch lofts buy you height, and height is carry.",
-    quadrant: "↙ Shop the bottom-left: forgiving, honest lofts",
+    body: "Strong lofts make low flight worse. Height is carry.",
+    quadrant: "↙ Shop the bottom-left",
   },
   {
     tag: "Single digits · flights the ball",
     title: "The ball-striker",
-    body: "You trade distance help for precision: traditional lofts, thin toplines, and heads that move the ball both ways on demand.",
-    quadrant: "↘ Shop the bottom-right: feel and workability",
+    body: "Traditional lofts and thin toplines, worked both ways.",
+    quadrant: "↘ Shop the bottom-right",
   },
 ];
 
@@ -621,26 +621,26 @@ const wedgeProfiles = [
   {
     tag: "Higher handicap · fat & thin chips",
     title: "The improver",
-    body: "Cavity-back wedges add forgiveness and wide, high-bounce soles that skid through fat strikes instead of digging, the short-game safety net.",
-    quadrant: "↖ Shop the top-left: forgiving cavity, plenty of bounce",
+    body: "Wide, high-bounce soles skid through fat strikes instead of digging.",
+    quadrant: "↖ Shop the top-left",
   },
   {
     tag: "Steep swing · lush turf & soft bunkers",
     title: "The digger",
-    body: "A steep attack takes big divots, so you need bounce to keep the leading edge from burying. Tour heads with high-bounce soles still let you work the face.",
-    quadrant: "↗ Shop the top-right: tour head, high bounce",
+    body: "Big divots need bounce to keep the leading edge from burying.",
+    quadrant: "↗ Shop the top-right",
   },
   {
     tag: "Slower swing · wants help around greens",
     title: "The forgiving picker",
-    body: "A shallow, sweeping swing on normal turf over-bounces a wide sole. A forgiving head with less bounce sits flusher behind the ball at address.",
-    quadrant: "↙ Shop the bottom-left: forgiving, lower bounce",
+    body: "A sweeping swing over-bounces a wide sole. Less bounce sits flusher.",
+    quadrant: "↙ Shop the bottom-left",
   },
   {
     tag: "Shallow sweeper · firm turf, tight lies",
     title: "The shot-maker",
-    body: "You pick it clean off tight lies and open the face for spin. Low-bounce tour blades and full-face heads sit flush and reward hands and face control.",
-    quadrant: "↘ Shop the bottom-right: tour blade, low bounce",
+    body: "Low-bounce blades sit flush on tight lies and reward face control.",
+    quadrant: "↘ Shop the bottom-right",
   },
 ];
 
@@ -682,16 +682,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
 
 <BaseLayout title={title} description={description}>
   <section class="section-tight lab-hero">
-    <div class="grid-bg"></div>
     <div class="container lab-hero-inner">
-      <span class="pill lab-band-pill live lab-status">● Live now</span>
       <h1>Gear Guide</h1>
       <p class="lede" style="margin-top:1rem;">
-        What clubs and balls exist? What are they designed to do? And what do
-        they actually cost today? Every placement is researched by hand from
-        published specs, and every price is tracked against live retailer
-        listings, the community-measured numbers are the
-        <a href="/lab/community">separate effort next door</a>.
+        Every club and ball, mapped by what it does and what it costs today.
       </p>
       {
         hasLineups && (
@@ -715,13 +709,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {/* ---- Driver spectrum ---- */}
           <section class="lab-band" id="drivers">
             <div class="lab-band-head">
-              <p class="eyebrow">Equipment</p>
               <h2 id="lineups">2026 Driver Lineup Spectrum</h2>
               <p class="text-muted" style="max-width:66ch;">
-                A complete map of every major manufacturer's current driver
-                lineup, plotted across a spectrum from maximum forgiveness to
-                pure distance. Use this matrix to understand exactly where a
-                club sits in a brand's ecosystem.
+                Every current driver, placed from maximum forgiveness to pure
+                distance.
               </p>
             </div>
 
@@ -764,58 +755,42 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
             />
 
             <p class="lab-caption">
-              Positions are researched estimates from manufacturer positioning +
-              published MOI; not yet community data.
+              <a class="source-link" href="/lab#gear-sourcing">How placements are researched</a>
             </p>
 
-            {/* Which half of the spectrum is yours? Turns the map into a decision. */}
-            <aside class="fit-nudge card">
-              <p class="eyebrow">Which half are you shopping in?</p>
-              <p class="fit-nudge-lead text-muted">
-                The spectrum tells you where each head sits, your own dispersion
-                tells you where <em>you</em> sit. Pull up your driver numbers in
-                the <a href="/golf-sim-analytics">dispersion dashboard</a> (or
-                any 30+ shot sample) and use this rule of thumb:
-              </p>
-              <ul class="fit-nudge-list">
-                <li>
-                  <span class="fit-nudge-range tnum">±25 yd or wider</span>
-                  <span>
-                    or a two-way miss → shop the <b>max-forgiveness half</b>.
-                    Width is costing you more strokes than length is buying.
-                  </span>
-                </li>
-                <li>
-                  <span class="fit-nudge-range tnum">±18–25 yd</span>
-                  <span>
-                    with a one-way miss → the <b>balanced core</b>, biased
-                    toward whichever end matches your miss.
-                  </span>
-                </li>
-                <li>
-                  <span class="fit-nudge-range tnum">under ±18 yd</span>
-                  <span>
-                    and chasing carry → you've earned the <b>distance end</b>.
-                    You're the golfer those heads are actually built for.
-                  </span>
-                </li>
-              </ul>
-              <p class="fit-nudge-foot text-dim">
-                The strokes math behind the rule gets its own write-up soon;
-                and a 40-shot demo session beats any rule of thumb.
-              </p>
-            </aside>
+            {/* The rule of thumb as a figure: three bands running left to right
+                in the same order as the spectrum above, so your dispersion
+                number points straight at the half of it you should shop. */}
+            <figure class="figure fit-figure">
+              <p class="fit-figure-title">Your dispersion picks your half</p>
+              <div class="fit-bands">
+                <div class="fit-band">
+                  <span class="fit-band-num tnum">±25 yd +</span>
+                  <span class="fit-band-where">Max forgiveness</span>
+                </div>
+                <div class="fit-band">
+                  <span class="fit-band-num tnum">±18–25 yd</span>
+                  <span class="fit-band-where">Balanced core</span>
+                </div>
+                <div class="fit-band">
+                  <span class="fit-band-num tnum">under ±18 yd</span>
+                  <span class="fit-band-where">Distance end</span>
+                </div>
+              </div>
+              <figcaption>
+                Measure yours over 30+ shots in the
+                <a href="/golf-sim-analytics">dispersion dashboard</a>.
+              </figcaption>
+            </figure>
           </section>
 
           {/* ---- Pricing ---- */}
           <section class="lab-band">
             <div class="lab-band-head">
-              <p class="eyebrow">Pricing</p>
               <h2 id="pricing">Driver Pricing</h2>
               <p class="text-muted" style="max-width:66ch;">
-                Today's best retail prices vs. MSRP. Hollow dot = MSRP. Filled
-                dot = lowest price found today, connected by a line, green
-                marks a real discount. Click any row to shop.
+                Hollow dot = MSRP. Filled dot = today's best price. Click a row
+                to shop.
               </p>
               <p class="lab-stat-line tnum">
                 {modelCount} drivers · median street price ${medianPrice}
@@ -836,8 +811,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
             />
 
             <p class="lab-caption">
-              Prices are checked by hand and will drift, always confirm at the
-              retailer. We take no commission on any link here.
+              <a class="source-link" href="/lab#gear-sourcing">How prices are tracked</a>
             </p>
           </section>
 
@@ -845,17 +819,12 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {irons.hasLineups && ironMap && (
             <section class="lab-band" id="irons">
               <div class="lab-band-head">
-                <p class="eyebrow">Equipment</p>
                 <h2 id="iron-map">2026 Iron Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Every major iron lineup on the two axes that actually decide
-                  the fit: how much help the head gives you (right = less) and
-                  what's really stamped on the 7-iron (up = stronger loft). A
-                  "7-iron" here spans 27° to 35°, a two-club difference, so
-                  the vertical axis is your defense against loft-jacking:
-                  before believing a distance claim, check how much of it is
-                  just a 6-iron with a 7 on the sole. Color marks the category.
-                  Hover any iron for its construction and set price.
+                  Help from the head (right = less) against what's really
+                  stamped on the 7-iron (up = stronger). Those lofts span 27°
+                  to 35° — a two-club difference — so the vertical axis is your
+                  loft-jacking check. Hover any dot.
                 </p>
               </div>
 
@@ -874,10 +843,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Covers the major OEMs plus the direct-to-consumer brands people
-                actually shop. Placements are researched estimates from head
-                construction, published specs and stated positioning; 7-iron
-                lofts are manufacturer standard specs, not yet community data.
+                <a class="source-link" href="/lab#gear-sourcing">How placements are researched</a>
               </p>
 
               {/* Which quadrant are you? */}
@@ -898,15 +864,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {irons.hasLineups && (
             <section class="lab-band">
               <div class="lab-band-head">
-                <p class="eyebrow">Pricing</p>
                 <h2 id="iron-pricing">Iron Pricing, per set, as sold</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  The price each linked page actually charges for its stock
-                  set. Set makeups vary, some brands sell 4-PW steel, some
-                  8-piece sets, some price per club (shown as ×7), hover a
-                  row for the exact configuration behind the number. Hollow
-                  dot = list price. Filled dot = price at the link today;
-                  green marks a real discount. Click any row to shop.
+                  Set makeups vary — hover a row for the exact configuration
+                  behind the number.
                 </p>
                 <p class="lab-stat-line tnum">
                   {irons.modelCount} iron sets · median ${irons.medianPrice}
@@ -928,11 +889,8 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Every price was checked against the linked page by hand and
-                will drift, PXG and the direct-to-consumer brands in
-                particular run frequent promos, and graphite shafts typically
-                add $100–200. Always confirm at the retailer; no commission
-                taken on any link.
+                Graphite shafts typically add $100–200.
+                <a class="source-link" href="/lab#gear-sourcing">How prices are tracked</a>
               </p>
             </section>
           )}
@@ -941,16 +899,11 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {wedges.hasLineups && wedgeMap && (
             <section class="lab-band" id="wedges">
               <div class="lab-band-head">
-                <p class="eyebrow">Equipment</p>
                 <h2 id="wedge-map">2026 Wedge Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Every major wedge on the two axes that actually decide the
-                  fit: how forgiving the head is (right = less, more workable)
-                  and how much bounce its signature sole carries (up = more).
-                  Bounce is the setting most golfers get wrong, too little and
-                  the leading edge digs on soft turf and steep swings; too much
-                  and it skips off firm turf and tight lies. Color marks the
-                  head type. Hover any wedge for its bounce, grind and price.
+                  Forgiveness (right = less) against bounce (up = more). Too
+                  little bounce digs on soft turf; too much skips off tight
+                  lies. Hover any dot.
                 </p>
               </div>
 
@@ -969,12 +922,8 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Covers the major OEMs plus the direct-to-consumer brands people
-                actually shop. Each wedge is plotted at its 56° option's
-                signature bounce; most models offer a range of lofts, bounces
-                and grinds, so hover for the sole options. Placements are
-                researched estimates from construction and stated positioning,
-                not yet community data.
+                Plotted at each model's 56° bounce.
+                <a class="source-link" href="/lab#gear-sourcing">How placements are researched</a>
               </p>
 
               {/* Which quadrant are you? */}
@@ -995,14 +944,9 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {wedges.hasLineups && (
             <section class="lab-band">
               <div class="lab-band-head">
-                <p class="eyebrow">Pricing</p>
                 <h2 id="wedge-pricing">Wedge Pricing, per wedge</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Wedges are sold one at a time, so this is the price of a single
-                  head as the linked page lists it. Hover a row for the bounce
-                  and grind behind the number. Hollow dot = list price. Filled
-                  dot = price at the link today; green marks a real discount.
-                  Click any row to shop.
+                  One head at a time. Hover a row for its bounce and grind.
                 </p>
                 <p class="lab-stat-line tnum">
                   {wedges.modelCount} wedges · median ${wedges.medianPrice}
@@ -1024,10 +968,8 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Single-wedge prices, checked by hand against the linked page and
-                sure to drift, the direct-to-consumer brands in particular run
-                frequent promos, and premium finishes or custom grinds add cost.
-                Always confirm at the retailer; no commission taken on any link.
+                Premium finishes and custom grinds add cost.
+                <a class="source-link" href="/lab#gear-sourcing">How prices are tracked</a>
               </p>
             </section>
           )}
@@ -1036,14 +978,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {balls.hasLineups && ballMap && (
             <section class="lab-band" id="balls">
               <div class="lab-band-head">
-                <p class="eyebrow">Equipment</p>
                 <h2 id="ball-map">2026 Golf Ball Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Every major ball on the two axes that actually decide the
-                  fit: how much it spins (right = less) and how firm it is
-                  (up = firmer, built for faster swings). Find your quadrant
-                  below, then shop the dots inside it. Hover any ball for its
-                  construction.
+                  Spin (right = less) against firmness (up = firmer, for faster
+                  swings). Find your quadrant below, then shop the dots in it.
                 </p>
               </div>
 
@@ -1065,10 +1003,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Placements are researched estimates from construction, cover
-                material, compression and published robot data, not yet
-                community data. Real, crowd-measured ball comparisons are{" "}
-                <a href="/lab#roadmap">next on the roadmap</a>.
+                <a class="source-link" href="/lab#gear-sourcing">How placements are researched</a>
               </p>
 
               {/* Which quadrant are you? */}
@@ -1089,12 +1024,9 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
           {balls.hasLineups && (
             <section class="lab-band">
               <div class="lab-band-head">
-                <p class="eyebrow">Pricing</p>
                 <h2 id="ball-pricing">Ball Pricing, per dozen</h2>
                 <p class="text-muted" style="max-width:66ch;">
-                  Today's best street price per dozen vs. MSRP. Hollow dot =
-                  MSRP. Filled dot = lowest price found today, green marks a
-                  real discount. Click any row to shop.
+                  Hollow dot = MSRP. Filled dot = today's best price.
                 </p>
                 <p class="lab-stat-line tnum">
                   {balls.modelCount} balls · median ${balls.medianPrice}/dozen
@@ -1115,9 +1047,8 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               />
 
               <p class="lab-caption">
-                Single-dozen prices, bulk and subscription deals (looking at
-                you, direct-to-consumer brands) can run lower. Checked by hand,
-                will drift, no commission taken.
+                Bulk and subscription deals can run lower.
+                <a class="source-link" href="/lab#gear-sourcing">How prices are tracked</a>
               </p>
             </section>
           )}
@@ -1133,12 +1064,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
     {/* ---- What's coming to this section ---- */}
     <section class="lab-band">
       <div class="lab-band-head">
-        <span class="pill lab-band-pill progress">Next up</span>
         <h2>Coming to the Gear Guide</h2>
         <p class="text-muted" style="max-width:66ch;">
-          Drivers, irons, wedges and balls are all mapped and priced above. The
-          same treatment is planned for the rest of the bag, see the{" "}
-          <a href="/lab#roadmap">full roadmap</a> for where this sits.
+          The rest of the bag gets the same treatment. See the
+          <a href="/lab#roadmap">roadmap</a>.
         </p>
       </div>
 
@@ -1148,20 +1077,14 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
             <h3>Fairway woods &amp; hybrids</h3>
             <span class="pill lab-planned-pill">Planned</span>
           </div>
-          <p>
-            The long-game gap-fillers mapped from forgiveness to speed, with the
-            same street-price treatment as the rest of the bag.
-          </p>
+          <p>Mapped from forgiveness to speed, priced like the rest.</p>
         </div>
         <div class="lab-planned">
           <div class="lab-planned-head">
             <h3>Putters</h3>
             <span class="pill lab-planned-pill">Planned</span>
           </div>
-          <p>
-            Head style, hosel and balance mapped so you can match a putter to
-            your stroke, blade to mallet, and everything between.
-          </p>
+          <p>Head style, hosel and balance, matched to your stroke.</p>
         </div>
       </div>
     </section>
@@ -1196,7 +1119,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
     display: flex;
     justify-content: space-between;
     font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-muted);
     margin-left: 140px;
@@ -1266,7 +1189,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
     position: absolute;
     bottom: calc(100% + 5px + (var(--stagger, 0) * 20px));
     font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     line-height: 1.25;
     color: var(--text);
     white-space: nowrap;
@@ -1296,7 +1219,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
   }
   .ball-profile-tag {
     font-family: var(--font-body);
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     font-weight: 600;
     color: var(--green);
   }
@@ -1304,68 +1227,55 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
     font-size: 1.15rem;
   }
   .ball-profile p {
-    font-size: 0.92rem;
+    font-size: 0.95rem;
   }
   .ball-profile-picks {
     margin-top: auto;
     padding-top: 0.6rem;
     font-family: var(--font-body);
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     color: var(--text);
     border-top: 1px solid var(--border);
   }
 
-  /* ---- "Which half are you shopping in?" nudge ---- */
-  .fit-nudge {
+  /* ---- "Your dispersion picks your half" figure ----------------------------
+     Three bands in the same left-to-right order as the spectrum above, so the
+     reader maps a number straight onto a region of that chart. */
+  .fit-figure {
     margin-top: 1.5rem;
     max-width: 1000px;
+  }
+  .fit-figure-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.85rem;
+  }
+  .fit-bands {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .fit-band {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3rem;
+    padding: 1.1rem 1.25rem;
+    background: var(--surface);
   }
-  .fit-nudge-lead {
-    font-size: 0.95rem;
-    max-width: 66ch;
-  }
-  .fit-nudge-list {
-    list-style: none;
-    padding: 0;
-    margin: 0.25rem 0 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.65rem;
-  }
-  .fit-nudge-list li {
-    display: flex;
-    gap: 1rem;
-    align-items: baseline;
-    font-size: 0.92rem;
-    color: var(--text-muted);
-    border-top: 1px solid var(--border);
-    padding-top: 0.65rem;
-  }
-  .fit-nudge-list b {
-    color: var(--text);
+  .fit-band-num {
+    font-size: 1.35rem;
     font-weight: 600;
-  }
-  .fit-nudge-range {
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: 0.9rem;
     color: var(--green);
-    flex: 0 0 130px;
-    white-space: nowrap;
   }
-  .fit-nudge-foot {
-    font-size: 0.85rem;
+  .fit-band-where {
+    font-size: 1rem;
+    color: var(--text-muted);
   }
   @media (max-width: 700px) {
-    .fit-nudge-list li {
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-    .fit-nudge-range {
-      flex-basis: auto;
+    .fit-bands {
+      grid-template-columns: 1fr;
     }
   }
 

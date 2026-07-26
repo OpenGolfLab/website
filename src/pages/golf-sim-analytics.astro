@@ -13,45 +13,21 @@ import {
 const title = "Golf Sim Analytics";
 const description = `${PRODUCT_NAME} is a free Windows app for GSPro, zero-click capture, 15 interactive dashboards, live rounds, speed training, and unlimited local history. Free, open source, no account.`;
 
-// Hero feature chips, the app's signature capabilities, at a glance.
-const heroChips = [
-  {
-    label: "Zero-click capture",
-    icon: "M13 2 4.5 13.5H11L10 22l8.5-11.5H12L13 2Z",
-  },
-  {
-    label: "Deep per-shot metrics",
-    icon: "M4 20V10m6 10V4m6 16v-7m4 7H2",
-  },
-  {
-    label: "Unlimited history",
-    icon: "M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
-  },
-  {
-    label: "Local-first & private",
-    icon: "M7 10V7a5 5 0 0 1 10 0v3m-11 0h12a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z",
-  },
-  {
-    label: "No account · $0 forever",
-    icon: "M12 2v20m5-17H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6",
-  },
-];
-
 // What a manual-entry phone app can't do, the sim-rig exclusives.
 const simOnly = [
   {
     title: "Live rounds",
-    body: "Shots stream onto a live dispersion chart as you hit, then the round archives itself when you finish.",
+    body: "Shots stream onto a live dispersion chart, then the round archives itself.",
     icon: "M2 12h4l3-8 4 16 3-8h6",
   },
   {
     title: "Automatic scorecards",
-    body: "Every sim round scored hole-by-hole, birdies, scoring breakdown, longest drives. You never type a number.",
+    body: "Every round scored hole-by-hole. You never type a number.",
     icon: "M4 22V4c4-2 8 2 12 0v12c-4 2-8-2-12 0",
   },
   {
     title: "Speed training",
-    body: "Cruising speed, fatigue curve, and long-term progression, tracked across every session you've ever hit.",
+    body: "Cruising speed, fatigue curve and progression across every session.",
     icon: "m12 14 4-4M3.34 19a10 10 0 1 1 17.32 0",
   },
 ];
@@ -60,19 +36,19 @@ const simOnly = [
 const dataRules = [
   {
     title: "Local Parquet files",
-    body: "Every shot lives on your PC, right next to the app. No cloud, no account, works offline.",
+    body: "Every shot lives on your PC. No cloud, no account, works offline.",
   },
   {
     title: "Reversible edits",
-    body: "Hide a session or reassign a mis-clubbed shot and it's stored as a sidecar, your archived data is never touched.",
+    body: "Edits store as sidecars. Your archived data is never touched.",
   },
   {
     title: "Yours after uninstall",
-    body: "Removing the app leaves your entire shot history on disk, exactly where it was.",
+    body: "Uninstalling leaves your entire shot history on disk.",
   },
   {
     title: "Honest install",
-    body: "The installer is unsigned, so Windows shows a one-time SmartScreen caution, explained plainly in the install guide.",
+    body: "The installer is unsigned, so Windows shows a one-time SmartScreen caution.",
   },
 ];
 
@@ -128,25 +104,6 @@ const dashboards = [
   },
 ];
 
-// The three core features of the app.
-const features = [
-  {
-    title: "Historical tracking",
-    body: "Every session is filed into a local, career-long record you can slice by club, session, or date, trends emerge instead of vanishing when GSPro closes.",
-    icon: "M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z",
-  },
-  {
-    title: "Live session logging",
-    body: "Start a live session and shots stream in as you hit, no exporting CSVs from GSPro required.",
-    icon: "M2 12h4l3-8 4 16 3-8h6",
-  },
-  {
-    title: "Community data contribution",
-    body: "Opt in to share anonymized ball and club metrics and help build the open equipment dataset in the Lab. Entirely optional, the app is fully useful without it.",
-    icon: "M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2m18 0v-2a4 4 0 0 0-3-3.85M15 3.13a4 4 0 0 1 0 7.75M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z",
-  },
-];
-
 const softwareLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -167,14 +124,12 @@ const softwareLd = {
 
   <!-- ============================ HERO ============================ -->
   <section class="app-hero">
-    <div class="grid-bg"></div>
     <div class="container app-hero-inner">
       <div class="app-hero-copy">
         <h1>Golf Sim Analytics</h1>
         <p class="lede" style="margin-top:1.1rem;">
-          A free Windows app that turns every GSPro session into deep,
-          interactive analytics, automatically. No photo scans, no CSV
-          wrangling, no account, and nothing leaves your machine.
+          Every GSPro session, turned into analytics automatically. No CSV
+          imports or exports.
         </p>
         <div class="hero-cta">
           <a href={LATEST_DOWNLOAD_URL} class="btn btn-primary btn-lg" rel="noopener">
@@ -186,24 +141,8 @@ const softwareLd = {
           </a>
           <a href="/download" class="btn btn-secondary btn-lg">Install guide &amp; FAQ</a>
         </div>
-        <div class="hero-chips" role="list" aria-label="App features">
-          {
-            heroChips.map((c) => (
-              <span class="feature-chip" role="listitem">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d={c.icon}
-                    stroke="currentColor"
-                    stroke-width="1.8"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-                {c.label}
-              </span>
-            ))
-          }
-        </div>
+        {/* The five icon chips that sat here restated the free-note below and
+            the feature sections further down. The screenshot does the work. */}
         <p class="app-free-note">Free · {PRODUCT_OS} · Open source</p>
       </div>
     </div>
@@ -220,34 +159,12 @@ const softwareLd = {
     />
   </section>
 
-  <!-- ======================= THREE FEATURES ======================= -->
-  <section class="section">
-    <div class="container">
-      <h2>Three core features</h2>
-      <ul class="features">
-        {
-          features.map((f) => (
-            <li class="feature card">
-              <svg class="feature-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d={f.icon}
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
-              <h3>{f.title}</h3>
-              <p class="text-muted">{f.body}</p>
-            </li>
-          ))
-        }
-      </ul>
-    </div>
-  </section>
+  {/* "Three core features" lived here. Historical tracking and live logging
+      are both shown in the dashboard grid below, and community contribution
+      has its own section further down — so it was a third telling. */}
 
   <!-- ==================== DASHBOARDS (killer tiles) ==================== -->
-  <section class="section" style="padding-top:0;">
+  <section class="section">
     <div class="container">
       <h2>15 dashboards across six areas</h2>
       <p class="lede" style="margin-top:0.75rem;max-width:60ch;">
@@ -287,14 +204,8 @@ const softwareLd = {
           <p class="eyebrow">Club fitting</p>
           <h2>A free fitting bay in your garage</h2>
           <p class="text-muted" style="margin-top:0.85rem;max-width:54ch;">
-            Set up a head-to-head, two shafts, two adapter settings, and hit.
-            Each configuration is captured live and plotted against the other,
-            so the dispersion makes the call before your wallet does. Elsewhere
-            this is the paid tier; here it's just another dashboard.
-          </p>
-          <p class="text-muted" style="margin-top:0.75rem;max-width:54ch;">
-            Choosing between club <em>models</em>? That's what the Lab's
-            community data is for, thousands of pooled shots, one open protocol.
+            Two shafts, two settings, captured live and plotted against each
+            other. The dispersion makes the call before your wallet does.
           </p>
           <div class="hero-cta">
             <a href="/gear" class="btn btn-secondary">Open the Gear Guide</a>
@@ -322,9 +233,8 @@ const softwareLd = {
       <p class="eyebrow">Only possible in a sim</p>
       <h2>Analytics a phone app can't reach</h2>
       <p class="lede" style="margin-top:0.75rem;max-width:62ch;">
-        Manual-entry apps top out at a handful of typed-in shots. Your rig
-        produces hundreds per session, captured automatically, round after
-        round.
+        Manual-entry apps top out at a few typed-in shots. Your rig produces
+        hundreds a session, captured automatically.
       </p>
       <ul class="features">
         {
@@ -370,13 +280,11 @@ const softwareLd = {
   <section class="section" style="padding-top:0;">
     <div class="container">
       <div class="app-lab card">
-        <div class="grid-bg" style="opacity:0.5"></div>
         <div class="app-lab-inner">
-          <p class="eyebrow">Part of the bigger picture</p>
           <h2>A practice tool that can also be a research instrument</h2>
           <p class="lede" style="margin-top:0.75rem;">
-            Capture your shots for yourself, and, if you choose to, help build
-            the open equipment data taking shape in <a href="/lab">the Lab</a>.
+            Capture shots for yourself, and if you choose, help build the open
+            dataset in <a href="/lab">the Lab</a>.
           </p>
           <div class="hero-cta">
             <a href="/lab" class="btn btn-secondary">See the mission</a>
@@ -391,8 +299,7 @@ const softwareLd = {
     <div class="container final-cta">
       <h2>Start with your very next session</h2>
       <p class="lede mx-auto" style="margin-top:0.6rem;">
-        Free, private, and Windows-ready. Install it, play, and watch your
-        numbers show up.
+        Install it, play, and watch your numbers show up.
       </p>
       <div class="hero-cta" style="justify-content:center;">
         <a href={LATEST_DOWNLOAD_URL} class="btn btn-primary btn-lg" rel="noopener">Download for Windows</a>
@@ -427,34 +334,10 @@ const softwareLd = {
     gap: 0.8rem;
     margin-top: 1.6rem;
   }
-  .hero-chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    margin-top: 1.6rem;
-  }
-  .feature-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
-    padding: 0.45rem 0.85rem;
-    border-radius: 999px;
-    border: 1px solid var(--border-strong);
-    background: var(--surface);
-    color: var(--text);
-    white-space: nowrap;
-  }
-  .feature-chip svg {
-    color: var(--green);
-    flex-shrink: 0;
-  }
   .app-free-note {
     margin-top: 1.1rem;
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--text-dim);
   }
   .app-hero-shot {
@@ -499,21 +382,15 @@ const softwareLd = {
     margin-bottom: 0.2rem;
   }
   .dash-cat {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--green);
     font-weight: 600;
   }
   .dash-stat {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.06em;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
     color: var(--text-dim);
-    border: 1px solid var(--border-strong);
-    border-radius: 999px;
-    padding: 0.2rem 0.6rem;
     white-space: nowrap;
   }
   .dash h3 {
