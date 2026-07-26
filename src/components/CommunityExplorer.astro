@@ -135,19 +135,6 @@
 
   const usable = (p: any) => p.carry != null && p.offline != null;
 
-  // Eleven of the published "contributors" are generated demo profiles built
-  // from one golfer's own sessions — real swings, invented identities (see
-  // SEED_CONTRIBUTORS in src/lib/lab.ts). They belong in the sample pool, not
-  // the real one: the gear, monitor and handicap attached to each was assigned
-  // at random, so filtering the plot by them describes nobody.
-  const SEED_CONTRIBUTORS = new Set([
-    "BombSquad", "DialedIn", "FadeRunner", "GarageGolfer", "HighBaller",
-    "LaunchCodes", "MidwestMasher", "NightRange", "SmoothTakeaway",
-    "SpinDoctor", "TurfDreams",
-  ]);
-  const isSeedPoint = (p: any) =>
-    SEED_CONTRIBUTORS.has(String(p.display_name || "").trim());
-
   async function boot() {
     let payload: any;
     try {
@@ -158,13 +145,7 @@
       $("x-offline").hidden = false;
       return;
     }
-    const published = (payload.points || []).filter(usable);
-    realPoints = published.filter((p: any) => !isSeedPoint(p));
-    // Seeded rows join the generated pool rather than the real one, so they
-    // pick up the hollow dots, the asterisk and the toggle automatically.
-    samplePoints = published
-      .filter(isSeedPoint)
-      .map((p: any) => ({ ...p, sample: true, seed: true }));
+    realPoints = (payload.points || []).filter(usable);
 
     // Sample pool is optional and additive: if it's missing, the explorer is
     // exactly what it was before it existed.
@@ -172,9 +153,9 @@
       const res = await fetch("/data/sample_points.json");
       if (res.ok) {
         const sample = await res.json();
-        samplePoints = samplePoints.concat(
-          (sample.points || []).filter(usable).map((p: any) => ({ ...p, sample: true })),
-        );
+        samplePoints = (sample.points || [])
+          .filter(usable)
+          .map((p: any) => ({ ...p, sample: true }));
       }
     } catch {
       /* no sample pool — carry on with real data only */
@@ -422,12 +403,7 @@
       `Median carry ${p.carry} yd · offline ${p.offline > 0 ? "+" : ""}${p.offline} yd`,
       `${p.n} shots`,
     ];
-    if (p.seed) {
-      rows.push("<em>* demo profile — real swings, but the name, gear and "
-        + "monitor were assigned at random</em>");
-    } else if (p.sample) {
-      rows.push("<em>* generated sample, not a real golfer</em>");
-    }
+    if (p.sample) rows.push("<em>* generated sample, not a real golfer</em>");
     const gear = gearLabel(p);
     if (gear !== NOT_SPECIFIED) rows.push(gear);
     if (p.ball_model) rows.push(`Ball: ${p.ball_model}`);
@@ -456,22 +432,12 @@
     const body = $("x-lb-body");
     board.forEach((e) => {
       const tr = document.createElement("tr");
-      const seed = SEED_CONTRIBUTORS.has(String(e.display_name || "").trim());
-      // The driver on a seeded row was assigned at random. Printing it next to
-      // a 286-yard carry attributes that carry to a club nobody swung, which is
-      // the single most misleading thing this table could do — so it's replaced
-      // rather than merely asterisked.
-      const gear = seed
-        ? `<span class="x-lb-gear x-lb-gear-seed">gear not real</span>`
-        : e.driver
-          ? `<span class="x-lb-gear">${escapeHTML(e.driver)}</span>`
-          : "";
-      if (seed) tr.className = "x-lb-seed";
+      const gear = e.driver
+        ? `<span class="x-lb-gear">${escapeHTML(e.driver)}</span>`
+        : "";
       tr.innerHTML =
         `<td class="tnum x-lb-rank">${e.rank}</td>` +
-        `<td class="x-lb-name">${escapeHTML(e.display_name)}` +
-          `${seed ? '<span class="x-sample-mark" title="Generated demo contributor">*</span>' : ""}` +
-          `${gear}</td>` +
+        `<td class="x-lb-name">${escapeHTML(e.display_name)}${gear}</td>` +
         `<td class="tnum"><strong>${e.ball_speed}</strong> mph</td>` +
         `<td class="tnum">${e.club_speed != null ? e.club_speed + " mph" : "–"}</td>` +
         `<td class="tnum">${Math.round(e.carry)} yd</td>` +
@@ -694,15 +660,6 @@
     font-size: 0.95rem;
     color: var(--text-dim);
     font-family: var(--font-body);
-  }
-  /* Seeded rows keep their place in the table (the ball speeds are real) but
-     must not look like a gear result. */
-  .x-lb-gear-seed {
-    color: var(--amber);
-    font-style: italic;
-  }
-  .x-lb-seed td {
-    opacity: 0.72;
   }
   .x-lb td strong { color: var(--green); }
 
