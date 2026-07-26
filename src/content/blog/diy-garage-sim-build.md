@@ -13,6 +13,8 @@ tags: ["diy", "garage-sim", "build-guide", "hardware"]
   .dgs-fig figcaption{font-size:.85rem;opacity:.75;margin-top:.4rem;font-style:italic}
   .dgs-note{border-left:4px solid #b3541e;background:rgba(179,84,30,.08);padding:.6rem 1rem;margin:1rem 0;font-size:.93rem}
   .dgs-warn{border-left:4px solid #b32020;background:rgba(179,32,32,.08);padding:.6rem 1rem;margin:1rem 0;font-size:.93rem}
+  .dgs-legal{border:1px solid rgba(150,150,150,.4);border-left:4px solid #b32020;background:rgba(150,150,150,.07);padding:.9rem 1.1rem;margin:0 0 1.8rem;font-size:.9rem;line-height:1.55}
+  .dgs-legal strong{display:block;margin-bottom:.35rem;letter-spacing:.02em;text-transform:uppercase;font-size:.82rem}
   .dgs-fig .lbl{font-family:Arial,Helvetica,sans-serif;font-size:16px;fill:#222}
   .dgs-fig .lbl-sm{font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#333}
   .dgs-fig .dim{font-family:Arial,Helvetica,sans-serif;font-size:15px;fill:#b3541e}
@@ -24,6 +26,15 @@ tags: ["diy", "garage-sim", "build-guide", "hardware"]
   .prose td:first-child,.prose th:first-child{min-width:140px}
   .prose th{font-weight:700;border-bottom:2px solid rgba(150,150,150,.5);text-align:left}
 </style>
+
+<div class="dgs-legal">
+<strong>Disclaimer</strong>
+I am not an engineer, architect, contractor, or licensed tradesperson. This post documents one simulator I built in my own garage, shared as a reference for other DIYers — it is not a professional plan, a structural specification, or a code-compliant drawing set, and it has not been reviewed by anyone qualified to call it one.
+
+Everything here is provided as-is, with no warranty of any kind. The design involves a heavy suspended platform, an electric hoist, mains wiring, ceiling anchors, and objects moving at speed — any of which can cause serious injury or property damage if they are misjudged, misapplied, or built into a structure that cannot carry them. Loads, fasteners, anchors, and clearances depend entirely on your own building, and mine tell you nothing about yours.
+
+You build at your own risk. Verify every load path, fixing, and electrical connection against your own conditions, your local building codes, and — for anything structural or electrical — a qualified professional. Pull your own permits where they are required. I accept no liability for any injury, loss, or damage arising from the use of, or reliance on, the information in this post.
+</div>
 
 I couldn't take my simulator apart to document it, so this guide was rebuilt from photos, video, and a tape measure. Everything you need to replicate it is here: schematics with build steps, and a complete parts list with prices and links.
 

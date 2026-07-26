@@ -1,0 +1,213 @@
+---
+/**
+ * The sample-data banner and its off switch.
+ *
+ * The community pool is small, so parts of this page are padded with generated
+ * data to show what the features do. That is a defensible thing to publish and
+ * an indefensible thing to publish quietly, so the state is stated at the top
+ * of the page, every generated row is marked wherever it appears, and turning
+ * it off is one click.
+ *
+ * The switch broadcasts `opengolflab:sample-toggle` and the choice is
+ * remembered locally. It is deliberately temporary: `REMOVE_AT_CONTRIBUTORS`
+ * below is the point at which the pool no longer needs padding, and both the
+ * banner and the switch are meant to be deleted then, along with
+ * scripts/generate-sample-data.mjs and public/data/sample_points.json.
+ */
+interface Props {
+  /** Contributors in the real pool right now. */
+  contributors: number;
+}
+const { contributors } = Astro.props;
+
+/** Real contributors at which sample data — and this component — get removed. */
+const REMOVE_AT_CONTRIBUTORS = 150;
+const remaining = Math.max(0, REMOVE_AT_CONTRIBUTORS - contributors);
+const pct = Math.min(100, (contributors / REMOVE_AT_CONTRIBUTORS) * 100);
+---
+
+<div class="sdb" data-remove-at={REMOVE_AT_CONTRIBUTORS}>
+  <div class="sdb-main">
+    <p class="sdb-title">
+      <span class="sdb-dot" aria-hidden="true"></span>
+      This page is showing sample data
+    </p>
+    <p class="sdb-body">
+      Real contributions are still thin, so the gear comparison and parts of the
+      explorer are padded with generated shots to show what they do. Sample rows
+      are marked with an asterisk<span class="sdb-star">*</span> wherever they
+      appear, and every sample product carries a placeholder name — none of them
+      is a real make or model. Your own data is never mixed into them.
+    </p>
+    <p class="sdb-body">
+      That includes eleven <strong>seeded demo contributors</strong> in the
+      published pool. Those are real swings from one golfer's own sessions, but
+      the display names, launch monitors, gear and handicap bands attached to
+      them were assigned at random — so they're marked and switched off here
+      like anything else generated. The per-club norms further down are
+      published as aggregates and still contain them; that section says so.
+    </p>
+    <p class="sdb-body sdb-sunset">
+      This switch disappears at <strong>{REMOVE_AT_CONTRIBUTORS} contributors</strong>,
+      when there's enough real data to stand on.
+      {contributors > 0 && (
+        <span class="tnum"> {contributors} so far, {remaining} to go.</span>
+      )}
+    </p>
+    <div class="sdb-progress" role="img"
+      aria-label={`${contributors} of ${REMOVE_AT_CONTRIBUTORS} contributors toward removing sample data`}>
+      <span class="sdb-progress-fill" style={`width:${pct}%`}></span>
+    </div>
+  </div>
+
+  <label class="sdb-switch">
+    <input type="checkbox" id="sdb-toggle" checked />
+    <span class="sdb-track" aria-hidden="true"><span class="sdb-thumb"></span></span>
+    <span class="sdb-label">Show sample data</span>
+  </label>
+</div>
+
+<script>
+  const KEY = "ogl:show-sample-data";
+  const box = document.getElementById("sdb-toggle") as HTMLInputElement | null;
+
+  if (box) {
+    // Default on — the page is mostly empty without it. An explicit previous
+    // choice wins.
+    const stored = localStorage.getItem(KEY);
+    box.checked = stored === null ? true : stored === "1";
+
+    const broadcast = () => {
+      document.documentElement.classList.toggle("no-sample-data", !box.checked);
+      document.dispatchEvent(
+        new CustomEvent("opengolflab:sample-toggle", {
+          detail: { showSample: box.checked },
+        }),
+      );
+    };
+
+    box.addEventListener("change", () => {
+      localStorage.setItem(KEY, box.checked ? "1" : "0");
+      broadcast();
+    });
+
+    // Fire once on load so listeners that booted before this script ran (and
+    // ones that boot after) both end up in the right state.
+    broadcast();
+    document.addEventListener("opengolflab:sample-ready", broadcast);
+  }
+</script>
+
+<style>
+  .sdb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.25rem;
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--amber);
+    background: rgba(189, 135, 60, 0.08);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .sdb-main {
+    flex: 1 1 32ch;
+    min-width: 0;
+  }
+  .sdb-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .sdb-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--amber);
+    flex-shrink: 0;
+  }
+  .sdb-body {
+    margin-top: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    max-width: 72ch;
+  }
+  .sdb-star {
+    color: var(--amber);
+    font-weight: 700;
+  }
+  .sdb-sunset strong {
+    color: var(--text);
+  }
+  .sdb-progress {
+    margin-top: 0.7rem;
+    height: 4px;
+    max-width: 320px;
+    background: var(--bg-elevated);
+  }
+  .sdb-progress-fill {
+    display: block;
+    height: 100%;
+    background: var(--amber);
+  }
+
+  /* Switch */
+  .sdb-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    user-select: none;
+  }
+  .sdb-switch input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .sdb-track {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    transition: background 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .sdb-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: var(--text-dim);
+    transition: transform 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .sdb-switch input:checked + .sdb-track {
+    background: rgba(189, 135, 60, 0.3);
+    border-color: var(--amber);
+  }
+  .sdb-switch input:checked + .sdb-track .sdb-thumb {
+    transform: translateX(18px);
+    background: var(--amber);
+  }
+  .sdb-switch input:focus-visible + .sdb-track {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 700px) {
+    .sdb {
+      flex-direction: column;
+    }
+  }
+</style>

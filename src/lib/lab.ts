@@ -81,10 +81,23 @@ function loadLineupMarket(relPath: string, tickStep: number, roundStep: number) 
   const axisTicks: number[] = [];
   for (let v = tickStep; v <= axisMaxRounded; v += tickStep) axisTicks.push(v);
 
-  const pricingLineups = lineups.map((l: any) => ({
-    brand: l.brand,
-    models: [...(l.models ?? [])].sort((a: any, b: any) => a.price - b.price),
-  }));
+  // Pricing chart rows: one flat list ranked by street price, most expensive
+  // first. Deliberately NOT grouped by brand — grouping answers "what does
+  // TaylorMade charge", which the spectrum and quadrant charts on the same page
+  // already cover, whereas the question this chart exists for is "what does
+  // this category cost, and what's cheap", and that only reads cleanly off a
+  // single ranked axis. Ties break alphabetically so the order is stable
+  // between builds rather than depending on file order.
+  const pricingRanked = allModels
+    .map((m: any) => ({
+      ...m,
+      label: `${m.brand} ${m.name}`.trim(),
+      savings: m.msrp - m.price,
+    }))
+    .sort(
+      (a: any, b: any) =>
+        b.price - a.price || a.label.localeCompare(b.label),
+    );
 
   // Spectrum: sort each brand's models by position, then stagger label height
   // only where neighboring models sit close enough on the track to collide,
@@ -118,7 +131,7 @@ function loadLineupMarket(relPath: string, tickStep: number, roundStep: number) 
     biggestDiscount,
     axisMaxRounded,
     axisTicks,
-    pricingLineups,
+    pricingRanked,
     spectrumLineups,
   };
 }
@@ -142,6 +155,37 @@ export function loadIronMarket() {
 export function loadWedgeMarket() {
   return loadLineupMarket("public/data/wedge-lineups.json", 60, 10);
 }
+
+// ---- Seeded demo contributors ---------------------------------------------
+//
+// Eleven of the sixteen "contributors" in the published pool are not people.
+// They were generated on 2026-07-17 from one golfer's own GSPro exports to give
+// this page enough data to show the concept, one fake contributor per source
+// file (see SEED_SUBMISSIONS.md in the private data repo).
+//
+// The shots are real swings. Everything that makes them look like a community
+// is not: display names, launch monitors, gear and ball models were assigned
+// AT RANDOM, and handicap/age bands were reverse-engineered from each file's
+// driver numbers to look plausible. That last part is what makes leaving them
+// unmarked indefensible — the driver leaderboard was attributing 286-yard
+// carries to a "PING G440 LST" that the golfer in question never swung,
+// because the golfer in question doesn't exist.
+//
+// So they get the same treatment as every other generated row on this page:
+// marked wherever they appear, and gone when sample data is switched off.
+//
+// This list is a stopgap. The real fix is deleting those submission folders in
+// the data repo and re-running the aggregator, which republishes everything
+// here without them — the procedure is in SEED_SUBMISSIONS.md. Until that
+// happens the site labels them defensively rather than trusting the feed.
+export const SEED_CONTRIBUTORS = new Set([
+  "BombSquad", "DialedIn", "FadeRunner", "GarageGolfer", "HighBaller",
+  "LaunchCodes", "MidwestMasher", "NightRange", "SmoothTakeaway",
+  "SpinDoctor", "TurfDreams",
+]);
+
+export const isSeed = (displayName: unknown): boolean =>
+  typeof displayName === "string" && SEED_CONTRIBUTORS.has(displayName.trim());
 
 // ---- Community: summary.json v2 (tiered) ----------------------------------
 // Written by the opengolflab-data aggregator. Optional: absent, or present with
@@ -208,6 +252,24 @@ export function loadCommunity() {
 
   const feed = loadFeed();
 
+  const publishedContributors = tierViews.find((t) => t.key === "all")?.contributors ?? 0;
+  const publishedShots = tierViews.find((t) => t.key === "all")?.shots ?? 0;
+
+  // How much of the published pool is seeded. Counted off the feed, which is
+  // the only per-contributor breakdown the aggregator publishes — the tier
+  // totals and per-club norms in summary.json are aggregates and cannot be
+  // decomposed here, which is exactly why they get a warning instead of a
+  // correction (see the seedNotice on the community page).
+  const seedContributorNames = new Set(
+    feed.items.filter((i: any) => i.isSeed).map((i: any) => i.displayName),
+  );
+  const seedShots = feed.items
+    .filter((i: any) => i.isSeed)
+    .reduce((sum: number, i: any) => sum + i.shots, 0);
+
+  const realContributors = Math.max(0, publishedContributors - seedContributorNames.size);
+  const realShots = Math.max(0, publishedShots - seedShots);
+
   return {
     summaryData,
     tierViews,
@@ -215,8 +277,16 @@ export function loadCommunity() {
     defaultTierKey,
     generatedDate: summaryData?.generated_date ?? null,
     minContributors: summaryData?.meta?.min_contributors ?? 8,
-    totalContributors: tierViews.find((t) => t.key === "all")?.contributors ?? 0,
-    totalShots: tierViews.find((t) => t.key === "all")?.shots ?? 0,
+    // Published totals include the seeded demo contributors. `real*` is what's
+    // left once they're taken out, and is what the page headline quotes — a
+    // count of golfers is the one number nobody should have to caveat.
+    publishedContributors,
+    publishedShots,
+    seedContributors: seedContributorNames.size,
+    seedShots,
+    totalContributors: realContributors,
+    totalShots: realShots,
+    hasSeedData: seedContributorNames.size > 0,
     feed,
   };
 }
@@ -246,6 +316,8 @@ export function loadFeed() {
     const clubs: string[] = Array.isArray(it.clubs) ? it.clubs : [];
     return {
       displayName: String(it.display_name ?? ""),
+      // Generated demo contributor, not a person — see SEED_CONTRIBUTORS.
+      isSeed: isSeed(it.display_name),
       date: String(it.date ?? ""),
       dateLabel: prettyDate(String(it.date ?? "")),
       shots: Number(it.shots ?? 0),

@@ -1,0 +1,581 @@
+---
+/**
+ * CommunityRanking — the headline table: which gear actually performs, once
+ * you take out who was swinging it and what measured it.
+ *
+ * The problem this exists to solve. Golfers do not pick equipment at random.
+ * Better players disproportionately play low-spin heads and tour urethane, and
+ * they also own the more accurate launch monitors. So the raw community average
+ * for a low-spin driver is high for two reasons stacked on top of each other —
+ * the driver, and the golfer — and a leaderboard built on raw averages cannot
+ * tell them apart. It reliably recommends whatever good players already own,
+ * which is exactly backwards for the person reading it.
+ *
+ * The fix is to standardize. Each row's metric is adjusted by the estimated
+ * effect of its handicap band and its launch-monitor class before products are
+ * compared, so what's left is closer to the equipment's own contribution. The
+ * adjustment is a plain additive back-fit (see `fitEffects`), not a full mixed
+ * model — it is transparent and it is stated on screen, because a ranking whose
+ * method you can't inspect is a ranking you should not trust.
+ *
+ * The covariate switches are deliberately user-facing rather than hidden. Turn
+ * "handicap" off and the table visibly reorders — that is the single most
+ * useful thing this component teaches, and it teaches it better than any
+ * paragraph.
+ */
+---
+
+<section class="lab-band" id="ranking">
+  <div class="lab-band-head">
+    <p class="eyebrow">Ranked</p>
+    <h2>Community gear ranking</h2>
+    <p class="text-muted" style="max-width:70ch;">
+      Which equipment actually performs, standardized so the comparison is fair.
+      Better golfers don't spread themselves evenly across the gear, so a raw
+      average ranks the driver good players already own, not the driver that
+      makes you better. These numbers adjust for that.
+    </p>
+  </div>
+
+  <div class="cr-shell" id="cr-shell" hidden>
+    <div class="cr-controls">
+      <div class="cr-row">
+        <span class="cr-lbl">Category</span>
+        <div class="cr-tabs" id="cr-cats" role="tablist" aria-label="Gear category"></div>
+      </div>
+      <div class="cr-row">
+        <span class="cr-lbl">Rank by</span>
+        <div class="cr-tabs" id="cr-metrics" role="tablist" aria-label="Ranking metric"></div>
+      </div>
+      <div class="cr-row">
+        <span class="cr-lbl">Standardize for</span>
+        <div class="cr-adjust" id="cr-adjust"></div>
+      </div>
+    </div>
+
+    <p class="cr-explain" id="cr-explain"></p>
+
+    <div class="cr-table-wrap">
+      <table class="cr-table">
+        <thead>
+          <tr>
+            <th scope="col" class="cr-th-rank">#</th>
+            <th scope="col">Product</th>
+            <th scope="col" class="cr-num" id="cr-th-adj">Standardized</th>
+            <th scope="col" class="cr-num">Raw average</th>
+            <th scope="col" class="cr-num">
+              Correction
+              <span class="cr-help" tabindex="0" role="note"
+                aria-label="Correction: how far standardizing moved this product from its raw average">?</span>
+            </th>
+            <th scope="col" class="cr-num">Golfers</th>
+          </tr>
+        </thead>
+        <tbody id="cr-body"></tbody>
+      </table>
+    </div>
+
+    <p class="cr-legend">
+      <strong>Raw average</strong> is what this product's users actually
+      recorded. <strong>Standardized</strong> is that number after the effect of
+      their handicap and launch monitor is taken out.
+      <strong>Correction</strong> is the gap between the two — how much of the
+      raw number was the golfer rather than the gear.
+      <span class="cr-down">Amber</span> means the raw figure was flattering it
+      (good players own it); <span class="cr-up">green</span> means it was being
+      held back (weaker players own it, and it's better than it looks).
+    </p>
+
+    <p class="cr-method" id="cr-method"></p>
+  </div>
+
+  <p class="cr-none" id="cr-none" hidden>
+    No gear rankings yet. Ranking equipment needs contributors to tag what
+    they're playing, and enough of them per model that the comparison means
+    something. <a href="/download">Contribute your sessions</a> to start it off,
+    or switch sample data back on to see how it works.
+  </p>
+</section>
+
+<script>
+  type Row = Record<string, any>;
+  const $ = (id: string) => document.getElementById(id)!;
+
+  /** Products need at least this many golfers before they're ranked at all. */
+  const MIN_GOLFERS = 4;
+
+  const CATEGORIES = [
+    { key: "driver", label: "Drivers" },
+    { key: "ball", label: "Balls" },
+  ];
+
+  /** `better:"low"` metrics rank ascending. `club` narrows ball rows. */
+  const METRICS: Record<string, any[]> = {
+    driver: [
+      { key: "carry_med", label: "Carry", unit: "yds", better: "high" },
+      { key: "mishit_loss", label: "Forgiveness", unit: "yds lost", better: "low" },
+      { key: "offline_mad", label: "Accuracy", unit: "yds offline", better: "low" },
+    ],
+    ball: [
+      { key: "carry_med", label: "Driver carry", unit: "yds", better: "high", club: "Dr" },
+      { key: "spin", label: "Wedge spin", unit: "rpm", better: "high", club: "Pw" },
+      { key: "spin", label: "Driver spin", unit: "rpm", better: "low", club: "Dr" },
+    ],
+  };
+
+  /** The covariates that can be standardized away, and how to read a row's level. */
+  const FACTORS = [
+    { key: "handicap", label: "Handicap", get: (r: Row) => r.handicap || "unknown" },
+    { key: "monitor", label: "Launch monitor", get: (r: Row) => r.monitor_kind || "unknown" },
+  ];
+
+  const state = {
+    category: "driver",
+    metricIdx: 0,
+    adjust: { handicap: true, monitor: true } as Record<string, boolean>,
+  };
+  let gear: Row[] = [];
+  let showSample = true;
+
+  const mean = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN);
+
+  /**
+   * Additive back-fit of the active covariates.
+   *
+   * Marginal means alone would double-count where covariates correlate — and
+   * these two do correlate, because better golfers own better monitors. So each
+   * factor's effects are re-estimated against the residual left by the others,
+   * a few passes, which converges quickly for two factors.
+   *
+   * Not a mixed model, and unbalanced cells make it approximate. That's stated
+   * on screen rather than buried here.
+   */
+  function fitEffects(rows: Row[], value: (r: Row) => number, factors: any[]) {
+    const mu = mean(rows.map(value));
+    const eff = factors.map(() => new Map<string, number>());
+    for (let pass = 0; pass < 4; pass++) {
+      factors.forEach((f, fi) => {
+        const groups = new Map<string, number[]>();
+        rows.forEach((r) => {
+          let others = 0;
+          factors.forEach((g, gi) => {
+            if (gi !== fi) others += eff[gi].get(g.get(r)) ?? 0;
+          });
+          const key = f.get(r);
+          const resid = value(r) - mu - others;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key)!.push(resid);
+        });
+        const next = new Map<string, number>();
+        groups.forEach((v, k) => next.set(k, mean(v)));
+        eff[fi] = next;
+      });
+    }
+    return { mu, eff };
+  }
+
+  function activeFactors() {
+    return FACTORS.filter((f) => state.adjust[f.key]);
+  }
+
+  function compute() {
+    const metric = METRICS[state.category][state.metricIdx];
+    const rows = gear.filter(
+      (g) => g.type === state.category
+        && (!metric.club || g.club === metric.club)
+        && typeof g[metric.key] === "number",
+    );
+    if (!rows.length) return { products: [], metric, factors: [] };
+
+    const value = (r: Row) => r[metric.key];
+    const factors = activeFactors();
+    const { eff } = factors.length
+      ? fitEffects(rows, value, factors)
+      : { eff: [] as Map<string, number>[] };
+
+    const byProduct = new Map<string, Row[]>();
+    rows.forEach((r) => {
+      if (!byProduct.has(r.product)) byProduct.set(r.product, []);
+      byProduct.get(r.product)!.push(r);
+    });
+
+    const products = [...byProduct.entries()]
+      .filter(([, rs]) => rs.length >= MIN_GOLFERS)
+      .map(([product, rs]) => {
+        const raw = mean(rs.map(value));
+        const adjusted = mean(
+          rs.map((r) => {
+            let corr = 0;
+            factors.forEach((f, fi) => { corr += eff[fi]?.get(f.get(r)) ?? 0; });
+            return value(r) - corr;
+          }),
+        );
+        return {
+          product,
+          raw,
+          adjusted,
+          shift: adjusted - raw,
+          n: rs.length,
+          sample: rs.some((r) => r.sample !== false),
+        };
+      });
+
+    products.sort((a, b) =>
+      metric.better === "low" ? a.adjusted - b.adjusted : b.adjusted - a.adjusted);
+    return { products, metric, factors };
+  }
+
+  function render() {
+    const { products, metric, factors } = compute();
+    const body = $("cr-body");
+    body.textContent = "";
+
+    $("cr-th-adj").textContent = factors.length ? "Standardized" : "Average";
+
+    if (!products.length) {
+      body.innerHTML =
+        `<tr><td colspan="6" class="cr-thin">Not enough golfers per product yet `
+        + `(needs ${MIN_GOLFERS}).</td></tr>`;
+      $("cr-explain").textContent = "";
+      return;
+    }
+
+    const unit = metric.unit;
+    const fmt = (v: number) =>
+      Math.abs(v) >= 1000 ? Math.round(v).toLocaleString() : (Math.round(v * 10) / 10).toFixed(1);
+
+    products.forEach((p, i) => {
+      const tr = document.createElement("tr");
+      if (i === 0) tr.className = "cr-lead";
+      const shift = p.shift;
+      const shiftTxt = Math.abs(shift) < 0.05 ? "—"
+        : `${shift > 0 ? "+" : "−"}${fmt(Math.abs(shift))}`;
+      tr.innerHTML =
+        `<td class="cr-th-rank tnum">${i + 1}</td>` +
+        `<td class="cr-name">${p.product}` +
+          `${p.sample ? '<span class="cr-star" title="Generated sample data">*</span>' : ""}</td>` +
+        `<td class="cr-num tnum cr-strong">${fmt(p.adjusted)} <span class="cr-unit">${unit}</span></td>` +
+        `<td class="cr-num tnum cr-dim">${fmt(p.raw)}</td>` +
+        `<td class="cr-num tnum ${shift < -0.05 ? "cr-down" : shift > 0.05 ? "cr-up" : "cr-dim"}">${shiftTxt}</td>` +
+        `<td class="cr-num tnum cr-dim">${p.n}</td>`;
+      body.appendChild(tr);
+    });
+
+    // The payoff line: how far the standardization actually moved things.
+    if (factors.length) {
+      const rawOrder = [...products].sort((a, b) =>
+        metric.better === "low" ? a.raw - b.raw : b.raw - a.raw);
+      const moved = products.filter((p, i) => rawOrder[i].product !== p.product).length;
+      const biggest = [...products].sort(
+        (a, b) => Math.abs(b.shift) - Math.abs(a.shift))[0];
+      $("cr-explain").innerHTML = moved
+        ? `Standardizing for ${factors.map((f) => f.label.toLowerCase()).join(" and ")} `
+          + `reordered <strong>${moved} of ${products.length}</strong> products. `
+          + `The biggest correction is <strong>${biggest.product}</strong>, `
+          + `${fmt(Math.abs(biggest.shift))} ${unit} `
+          + `${biggest.shift < 0 ? "worse" : "better"} than its raw average suggests.`
+        : `Standardizing for ${factors.map((f) => f.label.toLowerCase()).join(" and ")} `
+          + `didn't change the order here — the cohorts are evenly matched on this metric.`;
+    } else {
+      $("cr-explain").innerHTML =
+        `<strong>Unstandardized.</strong> This is the raw community average, `
+        + `which mostly ranks who owns what. Switch a factor back on.`;
+    }
+  }
+
+  function buildControls() {
+    const cats = $("cr-cats");
+    cats.textContent = "";
+    CATEGORIES.forEach((c) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cr-tab";
+      b.textContent = c.label;
+      b.dataset.key = c.key;
+      b.addEventListener("click", () => {
+        state.category = c.key;
+        state.metricIdx = 0;
+        buildMetrics();
+        syncTabs();
+        render();
+      });
+      cats.appendChild(b);
+    });
+
+    const adj = $("cr-adjust");
+    adj.textContent = "";
+    FACTORS.forEach((f) => {
+      const lab = document.createElement("label");
+      lab.className = "cr-check";
+      const box = document.createElement("input");
+      box.type = "checkbox";
+      box.checked = state.adjust[f.key];
+      box.addEventListener("change", () => {
+        state.adjust[f.key] = box.checked;
+        render();
+      });
+      lab.appendChild(box);
+      lab.appendChild(document.createTextNode(f.label));
+      adj.appendChild(lab);
+    });
+
+    buildMetrics();
+    syncTabs();
+  }
+
+  function buildMetrics() {
+    const wrap = $("cr-metrics");
+    wrap.textContent = "";
+    METRICS[state.category].forEach((m, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "cr-tab";
+      b.textContent = m.label;
+      b.dataset.idx = String(i);
+      b.addEventListener("click", () => {
+        state.metricIdx = i;
+        syncTabs();
+        render();
+      });
+      wrap.appendChild(b);
+    });
+  }
+
+  function syncTabs() {
+    $("cr-cats").querySelectorAll(".cr-tab").forEach((t) =>
+      t.classList.toggle("active", (t as HTMLElement).dataset.key === state.category));
+    $("cr-metrics").querySelectorAll(".cr-tab").forEach((t) =>
+      t.classList.toggle("active", Number((t as HTMLElement).dataset.idx) === state.metricIdx));
+  }
+
+  function applyVisibility() {
+    // Every gear row in the pool is generated today, so with sample data off
+    // there is nothing to rank. Say that, rather than hiding the section and
+    // leaving a gap where a feature was.
+    const usable = showSample && gear.length > 0;
+    ($("cr-shell") as HTMLElement).hidden = !usable;
+    ($("cr-none") as HTMLElement).hidden = usable;
+  }
+
+  async function boot() {
+    try {
+      const res = await fetch("/data/sample_points.json");
+      if (res.ok) {
+        const payload = await res.json();
+        gear = (payload.gear || []).map((g: Row) => ({ ...g, sample: true }));
+      }
+    } catch {
+      /* no pool — the empty state below covers it */
+    }
+    $("cr-method").textContent =
+      `Standardized by an additive back-fit: each row is corrected by the `
+      + `estimated effect of its handicap band and launch-monitor class before `
+      + `products are compared. It's a simple adjustment, not a full model — `
+      + `cells are unbalanced and a product with few golfers still moves around. `
+      + `Products need ${MIN_GOLFERS} golfers to appear at all.`;
+    if (gear.length) buildControls();
+    applyVisibility();
+    if (gear.length) render();
+    document.dispatchEvent(new CustomEvent("opengolflab:sample-ready"));
+  }
+
+  document.addEventListener("opengolflab:sample-toggle", (e: any) => {
+    showSample = Boolean(e.detail?.showSample);
+    applyVisibility();
+  });
+
+  boot();
+</script>
+
+<style>
+  .cr-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .cr-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+  }
+  .cr-lbl {
+    flex: 0 0 8.5rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+  }
+  .cr-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .cr-tab {
+    appearance: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.7rem;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .cr-tab:hover {
+    color: var(--text-muted);
+  }
+  .cr-tab.active {
+    color: var(--green-ink);
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .cr-adjust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .cr-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .cr-explain {
+    margin: 1rem 0 1.1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 72ch;
+  }
+  .cr-explain strong {
+    color: var(--text);
+  }
+
+  .cr-table-wrap {
+    overflow-x: auto;
+  }
+  .cr-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: 0.93rem;
+  }
+  .cr-table th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.4rem 0.6rem;
+    border-bottom: 1px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  .cr-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+  .cr-num {
+    text-align: right;
+  }
+  .cr-th-rank {
+    width: 2.5rem;
+    text-align: right;
+    color: var(--text-dim);
+  }
+  .cr-name {
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .cr-lead .cr-name,
+  .cr-lead .cr-strong {
+    color: var(--green-bright);
+  }
+  .cr-strong {
+    color: var(--text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .cr-dim {
+    color: var(--text-dim);
+  }
+  .cr-unit {
+    color: var(--text-dim);
+    font-size: 0.82em;
+    font-weight: 400;
+  }
+  /* A product the standardization moved DOWN is the interesting one — it means
+     the raw number was flattered by who was holding it. */
+  .cr-up {
+    color: var(--green);
+  }
+  .cr-down {
+    color: var(--amber);
+  }
+  .cr-star {
+    color: var(--amber);
+    font-weight: 700;
+  }
+  .cr-thin {
+    color: var(--text-dim);
+  }
+
+  .cr-legend {
+    margin-top: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 78ch;
+    padding: 0.75rem 0.9rem;
+    background: var(--bg-elevated);
+    border-left: 2px solid var(--border-strong);
+  }
+  .cr-legend strong {
+    color: var(--text);
+  }
+  .cr-help {
+    display: inline-grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.25rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    cursor: help;
+    text-transform: none;
+  }
+  .cr-method {
+    margin-top: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 78ch;
+  }
+  .cr-none {
+    font-family: var(--font-body);
+    color: var(--text-muted);
+    max-width: 66ch;
+  }
+
+  @media (max-width: 700px) {
+    .cr-lbl {
+      flex-basis: 100%;
+    }
+    .cr-table {
+      font-size: 0.88rem;
+    }
+  }
+</style>

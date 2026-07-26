@@ -1,246 +1,265 @@
 ---
+/**
+ * Street-price ranking — one horizontal bar per model, most expensive at the
+ * top, name down the left, price along the bottom.
+ *
+ * Replaces a brand-grouped dumbbell chart that plotted MSRP and street price as
+ * two dots joined by a connector, with the retailer printed in its own column.
+ * That put four things on every row (two dots, a saving, a retailer name) to
+ * answer a question, "what does this cost and what's cheap", that one bar
+ * answers. The retailer is still here, it's just the link target now rather
+ * than a column: the whole row goes to whichever retailer set `dealerUrl`,
+ * which is the cheapest one found for that model.
+ *
+ * MSRP survives only as a strikethrough on models actually selling below it —
+ * a discount is worth seeing, and on a full-price model the second number was
+ * a duplicate of the first.
+ */
 interface Props {
-  lineups: any[];
+  /** Flat, price-descending model list (lab.ts `pricingRanked`). */
+  models: any[];
   axisTicks: number[];
   axisMaxRounded: number;
   ariaLabel: string;
+  /** Optional hover text, e.g. the set config an iron price buys. */
   titleFor?: (brand: string, model: any) => string;
+  /** Unit suffix for the price readout, e.g. "/dz" on balls. */
+  priceSuffix?: string;
 }
 
-const { lineups, axisTicks, axisMaxRounded, ariaLabel, titleFor } = Astro.props;
+const {
+  models,
+  axisTicks,
+  axisMaxRounded,
+  ariaLabel,
+  titleFor,
+  priceSuffix = "",
+} = Astro.props;
 ---
 
-<div class="price-chart-wrap" role="region" aria-label={ariaLabel}>
-  <div class="price-chart-axis" aria-hidden="true">
-    <div class="price-chart-axis-spacer" />
-    <div class="price-chart-axis-ticks">
-      {axisTicks.map((t) => (
-        <span class="price-chart-axis-tick" style={`left:${(t / axisMaxRounded) * 100}%`}>${t}</span>
-      ))}
-    </div>
-  </div>
-
-  <div class="price-chart-body">
-    {lineups.map((lineup: any) => (
-      <div class="price-chart-group">
-        <div class="price-chart-brand">{lineup.brand}</div>
-        <div class="price-chart-bars">
-          {lineup.models.map((model: any) => {
-            const msrpPct = (model.msrp / axisMaxRounded) * 100;
-            const pricePct = (model.price / axisMaxRounded) * 100;
-            const savings = model.msrp - model.price;
-            const hasDiscount = savings > 0;
-            return (
-              <a
-                href={model.dealerUrl || "#"}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="price-row"
-                class:list={[{ discounted: hasDiscount }]}
-                title={titleFor ? titleFor(lineup.brand, model) : undefined}
-              >
-                <span class="price-row-model">{model.name}</span>
-                <div class="price-row-track">
-                  {axisTicks.map((t) => (
-                    <span class="price-chart-gridline" style={`left:${(t / axisMaxRounded) * 100}%`} aria-hidden="true" />
-                  ))}
+<div class="price-chart" role="region" aria-label={ariaLabel}>
+  <ol class="pc-rows">
+    {
+      models.map((model: any) => {
+        const pct = (model.price / axisMaxRounded) * 100;
+        const hasDiscount = model.savings > 0;
+        const dealer = model.dealer || "retailer";
+        return (
+          <li>
+            <a
+              href={model.dealerUrl || model.url || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="pc-row"
+              class:list={[{ discounted: hasDiscount }]}
+              title={titleFor ? titleFor(model.brand, model) : undefined}
+              aria-label={`${model.label}, $${model.price}${priceSuffix} at ${dealer}`}
+            >
+              <span class="pc-name">
+                <span class="pc-brand">{model.brand}</span>
+                {" "}
+                {model.name}
+              </span>
+              <span class="pc-track">
+                {axisTicks.map((t) => (
                   <span
-                    class="price-row-connector"
-                    style={`left:${Math.min(msrpPct, pricePct)}%; width:${Math.abs(msrpPct - pricePct)}%;`}
+                    class="pc-gridline"
+                    style={`left:${(t / axisMaxRounded) * 100}%`}
                     aria-hidden="true"
                   />
-                  <span class="price-row-dot msrp" style={`left:${msrpPct}%`} aria-hidden="true" />
-                  <span
-                    class="price-row-dot price"
-                    class:list={[{ discount: hasDiscount }]}
-                    style={`left:${pricePct}%`}
-                    aria-hidden="true"
-                  />
-                </div>
-                <span class="price-row-values tnum">
-                  <span class="price-row-price">${model.price}</span>
-                  {hasDiscount && <span class="price-row-msrp">${model.msrp}</span>}
-                  <span class="price-row-dealer">{model.dealer || "—"}</span>
+                ))}
+                <span class="pc-bar" style={`width:${pct}%`} aria-hidden="true" />
+              </span>
+              <span class="pc-price tnum">
+                <span class="pc-price-now">
+                  ${model.price}
+                  {priceSuffix}
                 </span>
-              </a>
-            );
-          })}
-        </div>
-      </div>
-    ))}
+                {hasDiscount && <span class="pc-price-msrp">${model.msrp}</span>}
+              </span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ol>
+
+  {/* Axis under the bars rather than above them: the eye lands on the most
+      expensive row first (the whole point of the sort), and a scale is only
+      needed once you're already reading bars. */}
+  <div class="pc-axis" aria-hidden="true">
+    <span class="pc-axis-spacer" />
+    <span class="pc-axis-ticks">
+      {axisTicks.map((t) => (
+        <span class="pc-axis-tick" style={`left:${(t / axisMaxRounded) * 100}%`}>
+          ${t}
+        </span>
+      ))}
+    </span>
+    <span class="pc-axis-pad" />
   </div>
 </div>
 
 <style>
-  /* ---- Pricing dumbbell chart ---- */
-  .price-chart-wrap {
+  .price-chart {
     border: 1px solid var(--border);
-    border-radius: var(--radius);
     background: var(--surface);
-    padding: 1.5rem 1.5rem 2rem;
+    padding: 1.25rem 1.5rem 1rem;
     max-width: 1000px;
   }
-  .price-chart-axis {
-    display: flex;
-    margin-bottom: 1.5rem;
+
+  .pc-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
-  .price-chart-axis-spacer {
-    width: 160px;
-    flex-shrink: 0;
+  .pc-rows li + li {
+    margin-top: 0.35rem;
   }
-  .price-chart-axis-ticks {
-    flex-grow: 1;
-    position: relative;
-    height: 1rem;
-    padding-right: 200px;
-  }
-  .price-chart-axis-tick {
-    position: absolute;
-    transform: translateX(-50%);
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--text-dim);
-  }
-  .price-chart-body {
-    display: flex;
-    flex-direction: column;
-    gap: 1.75rem;
-  }
-  .price-chart-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    width: 100%;
-  }
-  .price-chart-brand {
-    font-family: var(--font-head);
-    font-size: 1.05rem;
-    color: var(--green);
-    font-weight: 600;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0.25rem;
-  }
-  .price-chart-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
-  }
-  .price-row {
+
+  /* Whole row is the link — the target is the cheapest retailer for that
+     model, so there's no smaller thing worth aiming at. */
+  .pc-row {
     display: flex;
     align-items: center;
     gap: 1rem;
-    width: 100%;
     text-decoration: none;
+    padding: 0.3rem 0.4rem;
+    margin-inline: -0.4rem;
+    transition: background 0.15s var(--ease);
   }
-  .price-row-model {
+  .pc-row:hover,
+  .pc-row:focus-visible {
+    background: var(--bg-elevated);
+  }
+
+  .pc-name {
+    flex: 0 0 var(--pc-label-w, 210px);
     font-family: var(--font-body);
     font-size: 0.92rem;
     color: var(--text-muted);
-    width: 160px;
-    flex-shrink: 0;
     text-align: right;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.15s ease;
+    transition: color 0.15s var(--ease);
   }
-  .price-row:hover .price-row-model {
+  .pc-row:hover .pc-name,
+  .pc-row:focus-visible .pc-name {
     color: var(--text);
   }
-  .price-row-track {
-    flex-grow: 1;
-    position: relative;
-    height: 20px;
+  /* Brand is context, the model is the thing being looked up — so the brand
+     recedes rather than taking a column of its own. */
+  .pc-brand {
+    color: var(--text-dim);
   }
-  .price-chart-gridline {
+
+  .pc-track {
+    position: relative;
+    flex: 1 1 auto;
+    height: 22px;
+    min-width: 0;
+  }
+  .pc-gridline {
     position: absolute;
     top: 0;
     bottom: 0;
     width: 1px;
     background: var(--border);
-    opacity: 0.6;
+    opacity: 0.55;
   }
-  .price-row-connector {
+  .pc-bar {
     position: absolute;
-    top: 50%;
-    height: 2px;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
     background: var(--border-strong);
-    transform: translateY(-50%);
-    z-index: 1;
+    transition: background 0.15s var(--ease);
   }
-  .price-row.discounted .price-row-connector {
+  /* Green marks a model selling under MSRP, matching the strikethrough — the
+     one piece of information the old two-dot row carried that a bar can't. */
+  .pc-row.discounted .pc-bar {
     background: var(--green-dim);
   }
-  .price-row-dot {
-    position: absolute;
-    top: 50%;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-  }
-  .price-row-dot.msrp {
-    background: var(--bg-elevated);
-    border: 2px solid var(--text-dim);
-  }
-  .price-row-dot.price {
+  .pc-row:hover .pc-bar,
+  .pc-row:focus-visible .pc-bar {
     background: var(--text-dim);
-    border: 2px solid var(--text-dim);
   }
-  .price-row-dot.price.discount {
-    background: var(--green-bright);
-    border-color: var(--green-bright);
+  .pc-row.discounted:hover .pc-bar,
+  .pc-row.discounted:focus-visible .pc-bar {
+    background: var(--green);
   }
-  .price-row-values {
-    flex: 0 0 200px;
+
+  .pc-price {
+    flex: 0 0 var(--pc-price-w, 116px);
     display: flex;
     align-items: baseline;
-    gap: 0.5rem;
+    gap: 0.4rem;
     white-space: nowrap;
-    overflow: hidden;
   }
-  .price-row-price {
+  .pc-price-now {
     font-family: var(--font-body);
     font-size: 0.95rem;
-    color: var(--text);
     font-weight: 600;
+    color: var(--text);
   }
-  .price-row-msrp {
+  .pc-price-msrp {
     font-family: var(--font-body);
-    font-size: 0.95rem;
+    font-size: 0.88rem;
     color: var(--text-dim);
     text-decoration: line-through;
   }
-  .price-row-dealer {
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    color: var(--text-dim);
-    overflow: hidden;
-    text-overflow: ellipsis;
+
+  .pc-axis {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.6rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .pc-axis-spacer {
+    flex: 0 0 var(--pc-label-w, 210px);
+  }
+  .pc-axis-ticks {
+    position: relative;
+    flex: 1 1 auto;
+    height: 1rem;
     min-width: 0;
+  }
+  .pc-axis-pad {
+    flex: 0 0 var(--pc-price-w, 116px);
+  }
+  .pc-axis-tick {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
   }
 
   @media (max-width: 700px) {
-    .price-chart-wrap {
-      overflow-x: auto;
+    .price-chart {
+      padding-inline: 1rem;
+      --pc-label-w: 108px;
+      --pc-price-w: 74px;
     }
-    /* No room to keep the $-axis aligned with the tracks at this width, and
-       every row already states its price, so the header goes. It returns in
-       landscape / on wider screens. */
-    .price-chart-axis {
+    .pc-row {
+      gap: 0.6rem;
+    }
+    .pc-name {
+      font-size: 0.85rem;
+    }
+    /* The brand prefix is the first thing to go when the label column halves —
+       within one category the model name is the identifying part. */
+    .pc-brand {
       display: none;
     }
-    .price-row-model {
-      width: 110px;
-    }
-    .price-row-dealer {
+    /* Every row states its own price, so the scale is the affordable loss. */
+    .pc-axis {
       display: none;
     }
-    /* The dealer column is hidden here, so give its share of the 200px value
-       column back to the chart track. */
-    .price-row-values {
-      flex-basis: 110px;
+    .pc-price-msrp {
+      display: none;
     }
   }
 </style>

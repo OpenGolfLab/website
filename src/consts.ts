@@ -45,6 +45,13 @@ export const SITE_DESCRIPTION =
 /** Canonical production origin (no trailing slash). */
 export const SITE_URL = "https://opengolflab.com";
 
+/**
+ * Google Analytics 4 measurement ID. Injected once, in BaseHead, which every
+ * page renders — so there is exactly one Google tag per page, as Google
+ * requires. Set to "" to remove analytics from the whole site.
+ */
+export const GA_MEASUREMENT_ID = "G-0TKQ8HMBFG";
+
 /** Product facts reused across pages. */
 export const PRODUCT_NAME = "Golf Sim Analytics";
 export const PRODUCT_OS = "Windows 10 / 11 (64-bit)";
@@ -81,6 +88,21 @@ export const LAB_SECTIONS = [
     label: "Benchmarks",
     blurb: "Where do you stack up? Enter a number, see your percentile.",
   },
+] as const;
+
+/**
+ * The user guide's section nav. Same in-page anchor pattern as GEAR_SECTIONS:
+ * one long scroll with a shareable deep link per section, because the guide is
+ * read by jumping to the one dashboard you're looking at, not front to back.
+ */
+export const GUIDE_SECTIONS = [
+  { href: "/golf-sim-analytics/guide#start", id: "start", label: "Getting started" },
+  { href: "/golf-sim-analytics/guide#layout", id: "layout", label: "The app" },
+  { href: "/golf-sim-analytics/guide#dashboards", id: "dashboards", label: "Dashboards" },
+  { href: "/golf-sim-analytics/guide#numbers", id: "numbers", label: "The numbers" },
+  { href: "/golf-sim-analytics/guide#course", id: "course", label: "On course" },
+  { href: "/golf-sim-analytics/guide#data", id: "data", label: "Your data" },
+  { href: "/golf-sim-analytics/guide#community", id: "community", label: "Contributing" },
 ] as const;
 
 /**

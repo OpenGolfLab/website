@@ -1,0 +1,753 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import GuideNav from "../../components/GuideNav.astro";
+import JsonLd from "../../components/JsonLd.astro";
+import { LATEST_DOWNLOAD_URL, PRODUCT_NAME, SITE_URL } from "../../consts";
+
+const title = "User Guide";
+const description = `Every feature in ${PRODUCT_NAME}, what it measures, why it exists, and how to read it — all 14 dashboards, the Shot Quality score, the Sim Handicap, filters, live tracking, and how your data is stored.`;
+
+// Each dashboard: what it plots, why it's in the app at all, and the thing to
+// actually look for when you open it. `why` is the part most software guides
+// skip and the part that decides whether a chart is ever used twice.
+const dashboards = [
+  {
+    group: "Metrics",
+    blurb: "The six that answer “what are my numbers?”",
+    items: [
+      {
+        name: "Dispersion",
+        what: "Your shot pattern per club — left/right offline against distance — drawn as a density cloud with the individual shots on top. Switchable between carry and total, and between an In-Depth view and a Simple one that collapses each club to a mean marker with spread whiskers.",
+        why: "Distance is the number everyone quotes and the number that matters least. Two players who both carry a 7-iron 155 are not the same golfer if one is inside a 12-yard window and the other is inside 40. Dispersion is the shape of your miss, and the shape of your miss is what sets your scores.",
+        read: "Look at the width of the cloud before the position of it. A tight cloud offset to one side is an aim problem, which is free to fix. A wide cloud centred on target is a strike problem, which is not.",
+      },
+      {
+        name: "Trajectory",
+        what: "Every shot's flight path drawn as an arc, with launch angle, peak height and descent angle box plots underneath, each banded against that club's optimal window.",
+        why: "Carry distance hides how it was produced. A 150-yard 7-iron launched at 12° with 4,000 rpm and one launched at 20° with 7,000 rpm land in the same place and behave completely differently when there's a green to hold or wind to fight.",
+        read: "Descent angle is the one to check first on irons — under about 40° and the ball won't stop on a firm green regardless of how far it went.",
+      },
+      {
+        name: "Club Gapping",
+        what: "Carry distance per club as a box-and-strip plot, with an even-gap target marker beside each club showing where it would sit if your bag were spaced perfectly evenly from longest to shortest.",
+        why: "Bags are bought one club at a time and gapped by nobody. Overlaps and holes are invisible on the range and obvious the moment the whole set is on one axis.",
+        read: "A club sitting far from its even-gap dot is either duplicating a neighbour or leaving a distance you can't cover. Two clubs whose boxes overlap heavily means one of them isn't earning its slot.",
+      },
+      {
+        name: "Swing Efficiency",
+        what: "Ball speed against club speed for every shot, with smash-factor reference lines drawn across it.",
+        why: "This separates the two ways to hit the ball further. Swinging harder moves you right along the x-axis; striking it better moves you up off the line you're on. Most golfers chase the first and can gain more from the second.",
+        read: "Points sitting below the smash line for their club are centre-of-face misses, not speed problems. Needs a launch monitor that reports club speed.",
+      },
+      {
+        name: "Shot Quality",
+        what: "A 0–100 score for every shot, averaged per session and trended over time. Explained in full under The numbers.",
+        why: "Sessions produce hundreds of shots and no verdict. This is the one number that says whether today was better than last Tuesday, and it's built so that it can't be gamed by simply swinging harder.",
+        read: "The trend matters, not the value. A rising line across sessions is progress even if the number never leaves the sixties.",
+      },
+      {
+        name: "Shot & Club Trends",
+        what: "Shots per club per calendar day across your entire history, stacked by club, with summary tiles beneath.",
+        why: "Practice honesty. Almost everyone believes their practice is more balanced than it is, and this is the chart that shows the driver bar towering over the wedges.",
+        read: "Deliberately ignores the global time filter — it's the all-time view. Look for clubs that barely appear: those are the ones with no data behind their numbers anywhere else in the app.",
+      },
+    ],
+  },
+  {
+    group: "Optimization",
+    blurb: "The three that answer “what should I change?”",
+    items: [
+      {
+        name: "Launch & Spin Optimization",
+        what: "One club's shots plotted as launch angle against spin rate, over a target window scaled to your own clubhead speed. Points are coloured by how far they sit from the ideal.",
+        why: "Launch and spin only make sense together, and only relative to your speed. A tour launch window is the wrong target for a 90 mph driver swing, so the window moves with you rather than holding you to someone else's numbers.",
+        read: "Green means inside the window. A cluster low-and-right (low launch, high spin) is the classic distance killer and usually a strike or shaft issue, not a swing one.",
+      },
+      {
+        name: "Session Comparison",
+        what: "Up to four of your recent sessions overlaid for a single club, with a side-by-side summary table.",
+        why: "The honest way to test a change. Whatever you altered — grip, ball, shaft, a lesson — this puts the before and after on the same axes instead of relying on your memory of how last week felt.",
+        read: "Unaffected by the global time filter, since it selects its own sessions. Compare the spread as well as the mean; a change that adds 4 yards and doubles the dispersion is a bad change.",
+      },
+      {
+        name: "Shot Shape",
+        what: "Start direction against curve, coloured by where the ball actually finished.",
+        why: "It separates a face problem from a path problem. Your launch monitor doesn't record club path or face angle — those columns come through as zeros — so the app uses the ball-flight equivalents: start line is roughly 85% face-determined, and curve comes from the face-to-path relationship.",
+        read: "Shots starting on line but curving are a path issue. Shots starting offline and flying straight are a face issue. Both at once, in the same direction, is the two-way miss.",
+      },
+    ],
+  },
+  {
+    group: "Club Fitting",
+    blurb: "Turn your bay into a fitting bay.",
+    items: [
+      {
+        name: "Club Comparison",
+        what: "Up to four configurations from a single session, plotted and summarised separately. A configuration is a club plus the brand and adapter setting you were testing plus the shot range it covers.",
+        why: "A fitting session is several drivers or adapter settings hit back to back, all of which GSPro logs as one club called “Dr”. Without a way to split them by shot range, a fitting session is one undifferentiated blob and you're back to remembering which shots felt best.",
+        read: "Judge on dispersion first and carry second. The head that produces the tightest pattern is nearly always worth more strokes than the one that produces three extra yards.",
+      },
+    ],
+  },
+  {
+    group: "Speed Training",
+    blurb: "Four driver-only panels, for anyone doing speed work.",
+    items: [
+      {
+        name: "Speed Training",
+        what: "Four panels: your top-10% cruising speed and how much smash you give up per extra mph; velocity against efficiency with smash isolines drawn at 1.40, 1.45 and 1.50; a fatigue curve showing club speed by shot number within the latest session; and macro progression, a box plot per session over time.",
+        why: "Speed training works and is easy to do badly. The two failure modes are training past the point where strike falls apart, and training so hard that every session is slower than the last. There's a panel for each.",
+        read: "Cruising speed ignores warm-up drag, so it's the honest number to track. On the fatigue curve, the point where the rolling average turns down is where that session stopped being training. On macro progression, the box should physically climb the axis across weeks — if it isn't, you're accumulating fatigue, not speed.",
+      },
+    ],
+  },
+  {
+    group: "On Course",
+    blurb: "Rounds you play, scored automatically.",
+    items: [
+      {
+        name: "On-Course Play",
+        what: "Scorecard KPIs (rounds and holes played, birdies and eagles, longest drive, best round), a scoring breakdown of every completed hole from eagle to double-plus, and a bar per completed round showing score to par over time.",
+        why: "Range numbers and scoring are different skills, and the app already sees every round you play. Nothing here is typed in.",
+        read: "Only holed-out holes count toward scoring, so an abandoned last hole is ignored rather than logged as a 12. Rounds marked DNF stopped mid-hole; rounds marked with an asterisk used a mulligan. See On course for what that means.",
+      },
+    ],
+  },
+  {
+    group: "Community",
+    blurb: "Where you actually sit among other golfers.",
+    items: [
+      {
+        name: "Community",
+        what: "Other contributors' shots on the same offline-vs-carry axes as your own Dispersion chart, with a per-club table beside it.",
+        why: "Tour averages are a bad yardstick for an amateur and the published amateur numbers are thin and inconsistent. Real numbers from real people on real launch monitors are better, so the app collects them and hands them back.",
+        read: "Each dot is one golfer's median for a club, not one shot — so the cloud is the spread of golfers, not the spread of one person's session. Requires an internet connection; it degrades to a message rather than an error when offline.",
+      },
+    ],
+  },
+  {
+    group: "Live",
+    blurb: "The round happening right now.",
+    items: [
+      {
+        name: "Live Dispersion",
+        what: "A dispersion plot that updates shot by shot as you hit, opened from the Go Live button in the top bar rather than a sidebar checkbox.",
+        why: "The feedback loop that matters most is the one inside a session. Seeing the pattern build while you're still standing on the mat is worth more than seeing it a week later.",
+        read: "Fed by a background watcher on GSPro's own round file, so there's nothing to start or stop on the GSPro side. The round archives itself when GSPro ends it or when you close the app.",
+      },
+    ],
+  },
+];
+
+// Controls that apply across every dashboard at once.
+const filters = [
+  {
+    name: "Time",
+    detail: "Current session · All time · Last session · Last 3 · Last 5 · Last 30 days.",
+    note: "“Current session” reads the live buffer, so it fills in as you hit rather than after the round is archived.",
+  },
+  {
+    name: "Club",
+    detail: "One club or all of them.",
+    note: "Applies to every dashboard at once, including the community view.",
+  },
+  {
+    name: "Shot quality",
+    detail: "All shots · Drop worst 10% · Peak potential (top 10%).",
+    note: "Dropping the worst 10% shows what your game looks like without the blow-ups. Peak potential shows your ceiling. Neither is your real game; the gap between them is the interesting part.",
+  },
+  {
+    name: "Warm-up handling",
+    detail: "Keep all shots · First 5 of session · First of each club.",
+    note: "In Settings. The first few swings of a session are a different golfer from the rest, and left in they drag every average down.",
+  },
+  {
+    name: "Benchmarks",
+    detail: "PGA Tour · Average Golfer · 5, 10, 15 and 20 handicap.",
+    note: "Overlaid on the charts that can carry them. The Tour profile has the full launch-monitor breakdown; the handicap profiles only have published carry distances, so they appear on Club Gapping and nowhere else — that's a limit of the source data, not an oversight.",
+  },
+];
+
+// The derived numbers that need explaining rather than just labelling.
+const numbers = [
+  {
+    name: "Shot Quality Score",
+    lede: "0–100 per shot. What it measures depends on what the shot was trying to do.",
+    body: [
+      "The score is built from three independent components. **Strike** is contact quality alone — smash factor, launch angle, spin and angle of attack, each against that club's optimal window, scaled to your own clubhead speed. It says nothing about where the ball went. **Shape** is the shot against your own history with that club: distance against your stock number, offline against your usual spread. **Proximity** is how close the ball finished to the target it was aimed at.",
+      "Which components count depends on context. On the range with no target selected, there is no right answer for where a shot should finish — hitting a 7-iron 150 yards is neither good nor bad in isolation — so the score is strike plus shape. Pick a target on the range and it becomes strike plus proximity. On the course, for a shot played at the flag, it's strike plus proximity with proximity weighted higher, because the result is what counts.",
+      "Two deliberate exceptions are worth knowing. Long is a miss for every club except the driver: an 8-iron flushed 12 yards past its number scores below a stock one, because on the course that's the side with the trouble behind the green. And a tee shot is never scored on its distance from the flag — a tour-spec drive finishes 280 yards from the hole on a par 4 no matter how well it's struck, so tee shots and lay-ups are judged on strike and shape instead, which for a driver is exactly the right pair: distance and straightness.",
+    ],
+  },
+  {
+    name: "Sim Handicap",
+    lede: "A scoring index from your own archived rounds. Not a USGA Handicap Index, and the app says so wherever it appears.",
+    body: [
+      "The shape follows the World Handicap System so the number lands in a familiar range: a differential per round — score to par, normalised to 18 holes — with the best few from your last 20 eligible rounds averaged. How many count scales with how many rounds you have, so a single hot round early on can't set your index.",
+      "It is not a Handicap Index and the difference is worth several strokes. GSPro concedes short putts, the wind and green speed are whatever was selected that day, sim courses carry no official rating or slope, and nothing stops anyone re-hitting a bad one. What it is instead is a consistent measure of your scoring in your own sim, which is the thing that actually tracks whether you're improving.",
+      "A round counts only if it finished (play didn't stop mid-hole), covered at least 9 scored holes, and used no mulligans. Once five eligible rounds exist there's enough history for the number to mean something and it's marked **verified** — the same idea as the data-quality tier a contribution earns when its launch monitor can be corroborated. Below five, the app shows what's still missing rather than a dash.",
+    ],
+  },
+  {
+    name: "Smash factor",
+    lede: "Ball speed divided by club speed — how much of your swing reached the ball.",
+    body: [
+      "Each club is measured against its own tour number rather than a single target: about 1.48 for a driver, 1.33 for a 7-iron, 1.23 for a pitching wedge. Comparing a wedge to 1.50 is meaningless; comparing it to 1.23 isn't.",
+      "The window is two-sided on purpose, even though more smash sounds strictly better. Above the club's number means the ball came off the face hotter than that loft can produce, which in practice is a thin strike low on the face — not a good one.",
+    ],
+  },
+  {
+    name: "Even-gap target",
+    lede: "Where each club would carry if your bag were spaced perfectly evenly.",
+    body: [
+      "Drawn beside each club on the Club Gapping chart, derived from your own longest and shortest club rather than from a catalogue. It's a reference line, not a goal — most bags have a deliberate wide gap somewhere — but a club sitting far from its dot is worth a second look.",
+    ],
+  },
+  {
+    name: "Theoretical max drive",
+    lede: "What your fastest recorded clubhead speed is worth if everything else is optimal.",
+    body: [
+      "A physics ceiling from your measured speed, not a prediction. The gap between it and your actual longest drive is the distance sitting in strike quality, launch and spin rather than in the gym.",
+    ],
+  },
+];
+
+// How the app stores things, all of it local and all of it reversible.
+const dataRules = [
+  {
+    name: "Local Parquet files",
+    body: "Every shot lives in a Parquet file on your PC. No cloud, no account, works offline, and it stays on disk after you uninstall.",
+  },
+  {
+    name: "Reversible edits",
+    body: "Hiding a session, hiding a shot, or reassigning a shot's club all write to a small sidecar file and are applied on load. The archived data is never rewritten, so every edit is undoable and nothing is ever lost.",
+  },
+  {
+    name: "Adapter tags",
+    body: "GSPro has no field for driver adapter settings, so tags live in their own sidecar keyed by session. Set the driver, hit a session, tag it — then Club Comparison can tell your configurations apart.",
+  },
+  {
+    name: "Session management",
+    body: "Sessions can be hidden and restored individually, which is how you deal with a mis-clubbed session or someone else's shots without deleting anything.",
+  },
+  {
+    name: "Units",
+    body: "Yards or metres, display-only. Stored data and contributions stay in yards regardless, so switching never rewrites anything. Metric GSPro exports are detected and normalised at import.",
+  },
+  {
+    name: "Display scale",
+    body: "Auto, or anything from 80% to 300%. Auto also asks whether you're at a desk or across the room, because a 32-inch monitor at arm's length and a 32-inch panel across a garage want very different sizes.",
+  },
+  {
+    name: "Sample data",
+    body: "Settings → Use sample data loads two bundled datasets so you can explore every dashboard before you own a launch monitor. Your real data isn't touched while it's on.",
+  },
+  {
+    name: "On-course separation",
+    body: "On by default: rounds you play on the course are kept out of the practice dashboards, because chips, punch-outs and recovery shots aren't your swing and shouldn't set your 7-iron average.",
+  },
+];
+
+const guideLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  headline: `${PRODUCT_NAME} User Guide`,
+  description,
+  url: `${SITE_URL}/golf-sim-analytics/guide`,
+  publisher: { "@type": "Organization", name: "OpenGolfLab", url: SITE_URL },
+};
+
+// Renders the **bold** spans the body copy above uses, without pulling in a
+// markdown dependency for one inline mark.
+const bold = (text: string) =>
+  text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd slot="head" data={guideLd} />
+
+  <section class="guide-hero">
+    <div class="container">
+      <p class="eyebrow">Golf Sim Analytics</p>
+      <h1>User guide</h1>
+      <p class="lede" style="margin-top:1rem;max-width:64ch;">
+        Every feature in the app: what it measures, why it's there, and how to
+        read it. Jump to the part you need — nobody reads a guide front to back.
+      </p>
+      <div class="hero-cta">
+        <a href="/golf-sim-analytics" class="btn btn-secondary">Back to the app</a>
+        <a href={LATEST_DOWNLOAD_URL} class="btn btn-primary" rel="noopener">
+          Download for Windows
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <GuideNav />
+
+  <!-- ========================= GETTING STARTED ========================= -->
+  <section class="section" id="start">
+    <div class="container guide-body">
+      <h2>Getting started</h2>
+      <p class="lede">
+        There is no import step. Install the app, play, and your data shows up.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <h3>Install</h3>
+          <p class="text-muted">
+            Windows 10 or 11, 64-bit. The installer is unsigned, so Windows
+            shows a one-time SmartScreen caution — “More info” then “Run
+            anyway”. See the <a href="/download">install guide</a> for the
+            long version.
+          </p>
+        </li>
+        <li>
+          <h3>Point it at GSPro (usually automatic)</h3>
+          <p class="text-muted">
+            The app finds GSPro's data folder on its own. Only a non-standard
+            GSPro install needs the override in Settings.
+          </p>
+        </li>
+        <li>
+          <h3>Hit balls</h3>
+          <p class="text-muted">
+            Two capture paths run at once and you don't choose between them.
+            Live tracking watches GSPro's own round file and picks up each shot
+            within a couple of seconds, then archives the session when GSPro
+            ends it. Separately, any CSV you export from GSPro's shot list is
+            picked up automatically from the app's import folder. A live-tracked
+            round and a CSV import land in exactly the same place and behave
+            identically everywhere in the app.
+          </p>
+        </li>
+        <li>
+          <h3>No launch monitor yet?</h3>
+          <p class="text-muted">
+            Settings → <em>Use sample data</em> loads two bundled datasets so
+            every dashboard has something to show.
+          </p>
+        </li>
+      </ol>
+
+      <div class="callout">
+        <h3>What live tracking can and can't see</h3>
+        <p class="text-muted">
+          GSPro's round file carries ball data but no club data, so club speed,
+          smash factor and angle of attack come from a second GSPro file and
+          only exist for practice-range shots. On-course rounds legitimately
+          have no club speed at all — that isn't a bug, and the dashboards that
+          need it simply skip those shots rather than inventing them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= THE APP ========================= -->
+  <section class="section" id="layout">
+    <div class="container guide-body">
+      <h2>Finding your way around</h2>
+
+      <h3>The home page</h3>
+      <p class="text-muted">
+        Opens on a summary rather than a chart: shots logged, sessions, how long
+        since the last one, shots this week, then your records — longest drive,
+        max club speed, max ball speed, theoretical max drive. Underneath sits
+        your Shot Quality average with its per-session trend, and your Sim
+        Handicap with its verified badge. Both are explained under
+        <a href="#numbers">The numbers</a>.
+      </p>
+
+      <h3>Dashboards</h3>
+      <p class="text-muted">
+        Everything else is a dashboard, toggled from the sidebar and laid out on
+        a grid — open one for the full canvas or several to compare. Live
+        Dispersion is the exception: it's opened from the <em>Go Live</em>
+        button in the top bar, because it's tied to a background watcher rather
+        than to the filters.
+      </p>
+
+      <h3>Filters</h3>
+      <p class="text-muted">
+        These apply across every dashboard at once, which is the point — change
+        the club and the whole app changes with it.
+      </p>
+      <dl class="deflist">
+        {
+          filters.map((f) => (
+            <div class="deflist-row">
+              <dt>{f.name}</dt>
+              <dd>
+                <span class="deflist-detail">{f.detail}</span>
+                <span class="text-muted"> {f.note}</span>
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <!-- ========================= DASHBOARDS ========================= -->
+  <section class="section" id="dashboards">
+    <div class="container guide-body">
+      <h2>Every dashboard</h2>
+      <p class="lede">
+        Fourteen dashboards across seven areas. For each one: what it plots, why
+        it exists, and what to actually look for.
+      </p>
+
+      {
+        dashboards.map((group) => (
+          <div class="dash-group">
+            <div class="dash-group-head">
+              <h3>{group.group}</h3>
+              <p class="text-muted">{group.blurb}</p>
+            </div>
+            {group.items.map((d) => (
+              <article class="card guide-card">
+                <h4>{d.name}</h4>
+                <p class="gc-row">
+                  <span class="gc-tag">What it shows</span>
+                  <span>{d.what}</span>
+                </p>
+                <p class="gc-row">
+                  <span class="gc-tag">Why it exists</span>
+                  <span>{d.why}</span>
+                </p>
+                <p class="gc-row">
+                  <span class="gc-tag">How to read it</span>
+                  <span>{d.read}</span>
+                </p>
+              </article>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ========================= THE NUMBERS ========================= -->
+  <section class="section" id="numbers">
+    <div class="container guide-body">
+      <h2>The numbers, explained</h2>
+      <p class="lede">
+        Anything the app calculates rather than measures is documented here. A
+        derived number you can't explain is a number you learn to ignore.
+      </p>
+
+      {
+        numbers.map((n) => (
+          <article class="card guide-card">
+            <h4>{n.name}</h4>
+            <p class="gc-lede">{n.lede}</p>
+            {n.body.map((para) => (
+              <p class="text-muted" set:html={bold(para)} />
+            ))}
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- ========================= ON COURSE ========================= -->
+  <section class="section" id="course">
+    <div class="container guide-body">
+      <h2>On-course rounds</h2>
+
+      <h3>Scoring builds itself</h3>
+      <p class="text-muted">
+        Every round you play is scored hole by hole with nothing typed in.
+        Strokes come from GSPro's own stroke numbering rather than from counting
+        records, which gets it wrong in both directions. Putts count as strokes;
+        they just aren't treated as swings, since their ball data is copied from
+        the shot before them. Penalty strokes are handled the same way.
+      </p>
+
+      <h3>Holes that don't count</h3>
+      <p class="text-muted">
+        A hole only reaches the scorecard once it's holed out, so a last hole
+        abandoned mid-play is left off rather than logged as an unrealistic
+        score. Conceded gimmes still count: if you teed off on the next hole,
+        you finished the previous one. A round whose final hole was abandoned is
+        marked <strong>DNF</strong> — the bar still shows the real score to that
+        point, which is useful context, but it isn't mistaken for a completed
+        round.
+      </p>
+
+      <h3>Mulligans and the asterisk</h3>
+      <p class="text-muted">
+        When you re-hit a shot, GSPro keeps the superseded record and the
+        replacement repeats the same stroke number. That repeat is the only
+        evidence a mulligan happened, and the app uses it two ways. First, the
+        scorecard already ignores it — a mulligan never adds a phantom stroke to
+        your score. Second, any round that used one is marked with an
+        <strong> asterisk</strong> and excluded from your Sim Handicap.
+      </p>
+      <div class="callout">
+        <p class="text-muted">
+          The exclusion isn't a judgement — take all the mulligans you want.
+          It's that the strokes people re-hit are precisely the ones that would
+          have hurt, so a round with do-overs has a score but not a comparable
+          one. Those rounds stay everywhere else in the app and count toward
+          every total on the On-Course dashboard. They just don't get to set
+          your number.
+        </p>
+      </div>
+
+      <h3>Kept out of your practice data</h3>
+      <p class="text-muted">
+        On by default. A round is full of chips, punch-outs, lay-ups and
+        recovery shots — real strokes, but not your swing, and left in they'd
+        quietly drag down every practice average in the app. The toggle is in
+        Settings if you want them merged.
+      </p>
+    </div>
+  </section>
+
+  <!-- ========================= YOUR DATA ========================= -->
+  <section class="section" id="data">
+    <div class="container guide-body">
+      <h2>Your data</h2>
+      <p class="lede">
+        Local by default, reversible by design, and yours after uninstall.
+      </p>
+      <ul class="features rules">
+        {
+          dataRules.map((r) => (
+            <li class="feature card">
+              <h4>{r.name}</h4>
+              <p class="text-muted">{r.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========================= CONTRIBUTING ========================= -->
+  <section class="section" id="community">
+    <div class="container guide-body">
+      <h2>Contributing to the Lab</h2>
+      <p class="text-muted">
+        Entirely optional and off until you turn it on. Contributing sends
+        aggregated shot data — never your name, never your files — so the
+        Community dashboard and the <a href="/lab">open dataset</a> have real
+        amateur numbers behind them instead of thin published averages.
+      </p>
+
+      <h3>Data-quality tiers</h3>
+      <p class="text-muted">
+        A contribution carries a tier describing how much its numbers can be
+        trusted. Where the launch monitor GSPro actually reported matches the
+        one you told the app you're using, the contribution reaches the
+        <strong> Verified</strong> tier; where nothing can be corroborated it
+        stays unverified. Spin is only ever published from instruments that
+        genuinely measure it rather than estimate it. None of this affects
+        whether your data is accepted — it affects how it's weighted.
+      </p>
+
+      <h3>What you can set once</h3>
+      <p class="text-muted">
+        A public display name, a handicap band, an age band, and your bag's
+        brands and models. All optional, all stored locally, all sent with a
+        contribution rather than re-entered each time.
+      </p>
+
+      <div class="callout">
+        <h3>Still reading?</h3>
+        <p class="text-muted">
+          If something in the app isn't covered here, it's a gap in this guide
+          rather than a feature you're supposed to work out. The
+          <a href="/download">install guide and FAQ</a> covers setup problems.
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .guide-hero {
+    border-bottom: 1px solid var(--border);
+    background: radial-gradient(110% 90% at 20% -10%, var(--green-tint), transparent 60%);
+    padding-block: clamp(2rem, 5vw, 3.25rem) clamp(1.5rem, 3vw, 2.25rem);
+  }
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 1.6rem;
+  }
+
+  /* A guide is read, not scanned, so the body column is narrower than the
+     marketing page's full-width grids. */
+  .guide-body {
+    max-width: 80ch;
+  }
+  .guide-body h2 {
+    scroll-margin-top: calc(var(--nav-h) + 4rem);
+  }
+  .guide-body h3 {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+  }
+  .guide-body h3 + p {
+    margin-top: 0.6rem;
+  }
+  .guide-body .lede {
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  section[id] {
+    scroll-margin-top: calc(var(--nav-h) + 3rem);
+  }
+
+  /* Numbered getting-started steps. */
+  .steps {
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: grid;
+    gap: 1.25rem;
+  }
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 2.6rem;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0.1rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--green-ink);
+    background: var(--green);
+  }
+  .steps h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  .steps p {
+    margin-top: 0.35rem;
+  }
+
+  /* Per-dashboard and per-number cards. */
+  .dash-group {
+    margin-top: 2.5rem;
+  }
+  .dash-group-head h3 {
+    margin-top: 0;
+  }
+  .dash-group-head p {
+    margin-top: 0.3rem;
+  }
+  .guide-card {
+    margin-top: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .guide-card h4 {
+    font-family: var(--font-head);
+    font-size: 1.15rem;
+  }
+  .gc-lede {
+    color: var(--text);
+    font-size: 1.02rem;
+  }
+  .gc-row {
+    display: grid;
+    grid-template-columns: 9.5rem 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    color: var(--text-muted);
+  }
+  .gc-tag {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--green);
+    padding-top: 0.15rem;
+  }
+
+  /* Filter definition list. */
+  .deflist {
+    margin: 1.25rem 0 0;
+  }
+  .deflist-row {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    gap: 0.9rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--border);
+  }
+  .deflist-row:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+  .deflist dt {
+    font-family: var(--font-head);
+    color: var(--text);
+  }
+  .deflist dd {
+    margin: 0;
+  }
+  .deflist-detail {
+    color: var(--text);
+  }
+
+  .callout {
+    margin-top: 1.75rem;
+    padding: 1.1rem 1.25rem;
+    border-left: 3px solid var(--green);
+    background: var(--green-tint);
+  }
+  .callout h3 {
+    margin-top: 0;
+    font-size: 1.05rem;
+  }
+  .callout p {
+    margin-top: 0.4rem;
+  }
+
+  /* Data-rules grid, matching the product page's two-up card layout. */
+  .features {
+    margin-top: 1.75rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1.1rem;
+  }
+  .rules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .feature {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .feature h4 {
+    font-family: var(--font-head);
+    font-size: 1.1rem;
+  }
+
+  @media (max-width: 700px) {
+    .gc-row,
+    .deflist-row {
+      grid-template-columns: 1fr;
+      gap: 0.3rem;
+    }
+    .rules {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

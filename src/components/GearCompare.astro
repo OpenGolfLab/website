@@ -1,0 +1,454 @@
+---
+/**
+ * GearCompare — pick two or three products, see how they actually differ.
+ *
+ * Answers the three questions a golfer asks about a driver: how far does it go,
+ * how tight is the pattern, and what does it cost me when I miss the middle.
+ * Balls and launch monitors get the comparisons that matter for them (spin;
+ * measurement noise).
+ *
+ * Reads /data/sample_points.json. Everything in that file is GENERATED, and
+ * every product in it carries a placeholder name rather than a real one — see
+ * the header of scripts/generate-sample-data.mjs for why that is not optional.
+ * The panel states it on screen rather than relying on the page banner, because
+ * a comparison chart is exactly the kind of thing that gets screenshotted away
+ * from its context.
+ *
+ * When the sample-data toggle is off, this hides entirely: there is no real
+ * gear data in the pool yet, and an empty comparison is more honest than a
+ * comparison of two contributors.
+ */
+---
+
+<section class="lab-band" id="gear-compare" data-sample-section hidden>
+  <div class="lab-band-head">
+    <p class="eyebrow">Compare</p>
+    <h2>Head to head</h2>
+    <p class="text-muted" style="max-width:66ch;">
+      Pick two or three and see what actually separates them — carry, how tight
+      the pattern stays, and how much distance a bad strike costs you. That last
+      one is forgiveness, and it's the number that decides more rounds than peak
+      distance does.
+    </p>
+  </div>
+
+  <p class="gc-warn">
+    <strong>Sample data.</strong> These are generated products with placeholder
+    names, not real makes or models, and no row here describes anything you can
+    buy. The spread is anchored to the real market so the relationships behave
+    correctly — low-spin heads really do punish mishits harder — but the numbers
+    themselves are simulated. Real gear comparisons appear here once enough
+    golfers have contributed sessions with their equipment tagged.
+  </p>
+
+  <div class="gc-controls">
+    <div class="gc-tabs" id="gc-tabs" role="tablist" aria-label="Gear category"></div>
+    <p class="gc-hint" id="gc-hint"></p>
+    <div class="gc-picker" id="gc-picker" role="group" aria-label="Choose products to compare"></div>
+  </div>
+
+  <div class="gc-results" id="gc-results"></div>
+
+  <p class="gc-empty" id="gc-empty" hidden>Pick at least one product above.</p>
+</section>
+
+<script>
+  type Row = Record<string, any>;
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const MAX_PICKS = 3;
+  // Series colors, reused per pick slot. Same categorical hues as the rest of
+  // the Lab so a comparison chart doesn't invent its own palette.
+  const SERIES = ["var(--green)", "var(--cyan)", "var(--amber)"];
+
+  /** Metric definitions per category. `better` drives the "best" marker. */
+  const METRICS: Record<string, any[]> = {
+    driver: [
+      { key: "carry_centre", label: "Carry, centre strikes", unit: "yds", better: "high" },
+      { key: "carry_med", label: "Carry, typical", unit: "yds", better: "high" },
+      { key: "carry_mishit", label: "Carry, worst 20% of strikes", unit: "yds", better: "high" },
+      { key: "mishit_loss", label: "Distance lost on a mishit", unit: "yds", better: "low" },
+      { key: "offline_mad", label: "Typical miss, left or right", unit: "yds", better: "low" },
+    ],
+    ball: [
+      { key: "carry_med", label: "Driver carry", unit: "yds", better: "high", club: "Dr" },
+      { key: "spin", label: "Driver spin", unit: "rpm", better: "low", club: "Dr" },
+      { key: "spin", label: "Wedge spin", unit: "rpm", better: "high", club: "Pw" },
+    ],
+    monitor: [
+      { key: "spin_noise", label: "Spin reading spread", unit: "rpm", better: "low", club: "Dr" },
+      { key: "carry_med", label: "Driver carry as reported", unit: "yds", better: "none", club: "Dr" },
+    ],
+  };
+
+  const CATEGORIES = [
+    { key: "driver", label: "Drivers", hint: "Forgiveness is the mishit row — that's where these separate." },
+    { key: "ball", label: "Balls", hint: "The trade-off: urethane spins more everywhere, which costs driver carry and buys wedge spin." },
+    { key: "monitor", label: "Launch monitors", hint: "Measurement differences, not golf ones. Radar models spin rather than measuring it, so it reads noisier." },
+  ];
+
+  const state = { category: "driver", picks: [] as string[] };
+  let gear: Row[] = [];
+  let products: Record<string, any[]> = {};
+
+  const mean = (arr: number[]) =>
+    arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : NaN;
+
+  /** Rows for one product, optionally narrowed to a club. */
+  function rowsFor(product: string, club?: string) {
+    return gear.filter(
+      (g) => g.product === product && g.type === state.category && (!club || g.club === club),
+    );
+  }
+
+  function valueFor(product: string, metric: any) {
+    const vals = rowsFor(product, metric.club)
+      .map((r) => r[metric.key])
+      .filter((v) => typeof v === "number" && !Number.isNaN(v));
+    return mean(vals);
+  }
+
+  async function boot() {
+    let payload: any;
+    try {
+      const res = await fetch("/data/sample_points.json");
+      if (!res.ok) throw new Error(String(res.status));
+      payload = await res.json();
+    } catch {
+      return; // section stays hidden; the page's real data still renders
+    }
+    gear = payload.gear || [];
+    products = {
+      driver: payload.products?.drivers || [],
+      ball: payload.products?.balls || [],
+      monitor: payload.products?.monitors || [],
+    };
+    if (!gear.length) return;
+
+    buildTabs();
+    selectCategory("driver");
+    ($("gear-compare") as HTMLElement).hidden = false;
+  }
+
+  function buildTabs() {
+    const wrap = $("gc-tabs");
+    wrap.textContent = "";
+    CATEGORIES.forEach((c) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "gc-tab";
+      b.role = "tab";
+      b.textContent = c.label;
+      b.addEventListener("click", () => selectCategory(c.key));
+      b.dataset.key = c.key;
+      wrap.appendChild(b);
+    });
+  }
+
+  function selectCategory(key: string) {
+    state.category = key;
+    const list = products[key] || [];
+    // Default picks spread across the spectrum — comparing three adjacent
+    // products shows nothing, and "pick some yourself" is a worse first screen
+    // than a comparison that already demonstrates the point.
+    const spread = [0, Math.floor(list.length / 2), list.length - 1];
+    state.picks = [...new Set(spread)]
+      .filter((i) => i >= 0 && i < list.length)
+      .slice(0, MAX_PICKS)
+      .map((i) => list[i].name);
+
+    $("gc-tabs").querySelectorAll(".gc-tab").forEach((t) =>
+      t.classList.toggle("active", (t as HTMLElement).dataset.key === key));
+    $("gc-hint").textContent = CATEGORIES.find((c) => c.key === key)?.hint || "";
+    buildPicker();
+    render();
+  }
+
+  function buildPicker() {
+    const wrap = $("gc-picker");
+    wrap.textContent = "";
+    (products[state.category] || []).forEach((p: any) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "gc-pick";
+      b.textContent = p.name;
+      b.setAttribute("aria-pressed", String(state.picks.includes(p.name)));
+      b.addEventListener("click", () => togglePick(p.name));
+      wrap.appendChild(b);
+    });
+    syncPicker();
+  }
+
+  function togglePick(name: string) {
+    const i = state.picks.indexOf(name);
+    if (i >= 0) state.picks.splice(i, 1);
+    else {
+      if (state.picks.length >= MAX_PICKS) state.picks.shift();
+      state.picks.push(name);
+    }
+    syncPicker();
+    render();
+  }
+
+  function syncPicker() {
+    $("gc-picker").querySelectorAll(".gc-pick").forEach((b) => {
+      const el = b as HTMLButtonElement;
+      const idx = state.picks.indexOf(el.textContent || "");
+      el.setAttribute("aria-pressed", String(idx >= 0));
+      el.style.setProperty("--gc-c", idx >= 0 ? SERIES[idx] : "transparent");
+    });
+  }
+
+  function render() {
+    const out = $("gc-results");
+    out.textContent = "";
+    ($("gc-empty") as HTMLElement).hidden = state.picks.length > 0;
+    if (!state.picks.length) return;
+
+    // Legend: which color is which product.
+    const legend = document.createElement("div");
+    legend.className = "gc-legend";
+    state.picks.forEach((p, i) => {
+      const s = document.createElement("span");
+      s.className = "gc-legend-item";
+      s.innerHTML = `<span class="gc-swatch" style="background:${SERIES[i]}"></span>`;
+      s.appendChild(document.createTextNode(p));
+      legend.appendChild(s);
+    });
+    out.appendChild(legend);
+
+    METRICS[state.category].forEach((metric) => {
+      const values = state.picks.map((p) => valueFor(p, metric));
+      if (values.every((v) => Number.isNaN(v))) return;
+
+      const max = Math.max(...values.filter((v) => !Number.isNaN(v)));
+      const best =
+        metric.better === "none"
+          ? -1
+          : values.indexOf(
+              metric.better === "high"
+                ? Math.max(...values.filter((v) => !Number.isNaN(v)))
+                : Math.min(...values.filter((v) => !Number.isNaN(v))),
+            );
+
+      const block = document.createElement("div");
+      block.className = "gc-metric";
+
+      const head = document.createElement("div");
+      head.className = "gc-metric-head";
+      head.innerHTML = `<span>${metric.label}</span>`;
+      if (metric.better !== "none") {
+        const tag = document.createElement("span");
+        tag.className = "gc-better";
+        tag.textContent = metric.better === "high" ? "more is better" : "less is better";
+        head.appendChild(tag);
+      }
+      block.appendChild(head);
+
+      state.picks.forEach((p, i) => {
+        const v = values[i];
+        const row = document.createElement("div");
+        row.className = "gc-bar-row";
+        const pct = Number.isNaN(v) || max <= 0 ? 0 : (v / max) * 100;
+        row.innerHTML = `
+          <span class="gc-bar-track">
+            <span class="gc-bar" style="width:${pct}%;background:${SERIES[i]}"></span>
+          </span>
+          <span class="gc-bar-val tnum">${
+            Number.isNaN(v) ? "—" : Math.round(v).toLocaleString()
+          } <span class="gc-unit">${metric.unit}</span>${
+            i === best ? '<span class="gc-best" title="Best of the selected">best</span>' : ""
+          }</span>`;
+        block.appendChild(row);
+      });
+
+      out.appendChild(block);
+    });
+  }
+
+  // The page-level sample toggle hides this whole section: every product in it
+  // is generated, so with sample data off there is nothing left to compare.
+  document.addEventListener("opengolflab:sample-toggle", (e: any) => {
+    const section = $("gear-compare") as HTMLElement;
+    section.hidden = !e.detail?.showSample || !gear.length;
+  });
+
+  boot();
+</script>
+
+<style>
+  .gc-warn {
+    border-left: 3px solid var(--amber);
+    background: rgba(189, 135, 60, 0.09);
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    max-width: 78ch;
+  }
+  .gc-warn strong {
+    color: var(--text);
+  }
+
+  .gc-controls {
+    margin-bottom: 1.5rem;
+  }
+  .gc-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .gc-tab {
+    appearance: none;
+    background: none;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 0.5rem 0.8rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .gc-tab:hover {
+    color: var(--text-muted);
+  }
+  .gc-tab.active {
+    color: var(--green);
+    border-bottom-color: var(--green);
+  }
+
+  .gc-hint {
+    margin: 0.9rem 0 0.8rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-dim);
+    max-width: 70ch;
+  }
+
+  .gc-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .gc-pick {
+    appearance: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    /* The left edge carries the series color once selected, so the picker and
+       the bars below are readable as one thing. */
+    border-left: 3px solid var(--gc-c, transparent);
+    padding: 0.35rem 0.7rem;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .gc-pick:hover {
+    color: var(--text-muted);
+    border-color: var(--border-strong);
+  }
+  .gc-pick[aria-pressed="true"] {
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border-strong);
+  }
+
+  .gc-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.1rem;
+    margin-bottom: 1.4rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+  .gc-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .gc-swatch {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+  }
+
+  .gc-metric + .gc-metric {
+    margin-top: 1.5rem;
+  }
+  .gc-metric-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text);
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.6rem;
+  }
+  .gc-better {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .gc-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .gc-bar-row + .gc-bar-row {
+    margin-top: 0.35rem;
+  }
+  .gc-bar-track {
+    flex: 1 1 auto;
+    height: 18px;
+    min-width: 0;
+    background: var(--bg-elevated);
+  }
+  .gc-bar {
+    display: block;
+    height: 100%;
+  }
+  .gc-bar-val {
+    flex: 0 0 8.5rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .gc-unit {
+    color: var(--text-dim);
+    font-size: 0.85em;
+  }
+  .gc-best {
+    margin-left: 0.45rem;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--green);
+  }
+
+  .gc-empty {
+    font-family: var(--font-body);
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 700px) {
+    .gc-bar-val {
+      flex-basis: 6.5rem;
+      font-size: 0.85rem;
+    }
+    .gc-metric-head {
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+  }
+</style>

@@ -1,0 +1,400 @@
+---
+/**
+ * "Your starting point" — two numbers in, a shaded region on every plot out.
+ *
+ * Sits at the top of the Gear Guide and applies to the whole page. Enter a
+ * handicap (or an average score) and a driver speed (or an average driving
+ * distance), and the driver spectrum, iron map and ball map each shade the
+ * band where players around that profile usually land.
+ *
+ * The mechanism is deliberately dumb on the client side. Every possible
+ * shaded region for every plot is rendered server-side, hidden, already
+ * projected into that plot's own coordinates — several of which are piecewise.
+ * This script only decides which bucket you're in and flips a class. It never
+ * computes a position, so it can't disagree with the plot it's drawing on.
+ *
+ * The framing matters as much as the maths: this narrows a page of 100+
+ * products to a place to start looking. It is not a fitting and does not
+ * pretend to be, which is why the buckets are wide and the copy says so.
+ */
+import {
+  SKILL_BANDS, SPEED_BANDS,
+} from "../lib/fitting";
+---
+
+<section class="ff" id="focus-filter" aria-labelledby="ff-title">
+  <div class="ff-head">
+    <p class="eyebrow">Your starting point</p>
+    <h2 id="ff-title">Narrow the field</h2>
+    <p class="text-muted ff-lede">
+      Two numbers you already know. Every chart below will shade the region
+      worth looking at first — a place to start, not a fitting.
+    </p>
+  </div>
+
+  <div class="ff-form">
+    <div class="ff-field">
+      <label class="ff-label" for="ff-skill-value">
+        Handicap <span class="ff-or">or</span> average score
+      </label>
+      <div class="ff-input-row">
+        <input
+          type="number" id="ff-skill-value" class="ff-input"
+          inputmode="numeric" min="0" max="200" step="1" placeholder="e.g. 14"
+          aria-describedby="ff-skill-readout"
+        />
+        <div class="ff-seg" role="radiogroup" aria-label="Skill input type">
+          <button type="button" class="ff-seg-btn active" data-skill-mode="handicap">Handicap</button>
+          <button type="button" class="ff-seg-btn" data-skill-mode="score">Avg score</button>
+        </div>
+      </div>
+      <p class="ff-readout" id="ff-skill-readout"></p>
+    </div>
+
+    <div class="ff-field">
+      <label class="ff-label" for="ff-speed-value">
+        Driver swing speed <span class="ff-or">or</span> average drive
+      </label>
+      <div class="ff-input-row">
+        <input
+          type="number" id="ff-speed-value" class="ff-input"
+          inputmode="numeric" min="20" max="400" step="1" placeholder="e.g. 95"
+          aria-describedby="ff-speed-readout"
+        />
+        <div class="ff-seg" role="radiogroup" aria-label="Speed input type">
+          <button type="button" class="ff-seg-btn active" data-speed-mode="mph">mph</button>
+          <button type="button" class="ff-seg-btn" data-speed-mode="yards">Avg drive</button>
+        </div>
+      </div>
+      <p class="ff-readout" id="ff-speed-readout"></p>
+    </div>
+
+    <div class="ff-actions">
+      <button type="button" class="btn btn-secondary ff-clear" id="ff-clear" hidden>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <div class="ff-result" id="ff-result" hidden>
+    <p class="ff-result-line">
+      <span class="ff-swatch" aria-hidden="true"></span>
+      Showing the starting point for a
+      <strong id="ff-profile"></strong>.
+      <span class="text-muted">Shaded on every chart below.</span>
+    </p>
+    <ul class="ff-blurbs" id="ff-blurbs"></ul>
+    <p class="ff-caveat">
+      Wide bands on purpose — plenty of golfers play happily outside their
+      shaded region, and a real fitting on a launch monitor beats this every
+      time. It's here so a page with 100+ products has somewhere to begin.
+    </p>
+  </div>
+</section>
+
+<script>
+  import {
+    distanceToSpeed, focusBlurb, scoreToHandicap, skillFor, speedFor,
+    SKILL_BANDS, SPEED_BANDS,
+  } from "../lib/fitting";
+
+  const KEY = "ogl:gear-focus";
+  const $ = (id: string) => document.getElementById(id)!;
+
+  const state = {
+    skillMode: "handicap" as "handicap" | "score",
+    speedMode: "mph" as "mph" | "yards",
+    skillValue: null as number | null,
+    speedValue: null as number | null,
+  };
+
+  const bandLabel = (bands: any[], key: string) =>
+    bands.find((b) => b.key === key)?.label ?? "";
+
+  /** Resolved handicap / mph, whichever unit was typed. */
+  function resolved() {
+    const handicap = state.skillValue == null ? null
+      : state.skillMode === "score" ? scoreToHandicap(state.skillValue) : state.skillValue;
+    const mph = state.speedValue == null ? null
+      : state.speedMode === "yards" ? distanceToSpeed(state.speedValue) : state.speedValue;
+    return { handicap, mph };
+  }
+
+  function apply() {
+    const { handicap, mph } = resolved();
+
+    // Readouts show the conversion when one happened, so a golfer who typed a
+    // score can see what it was read as rather than trusting a black box.
+    $("ff-skill-readout").textContent =
+      handicap == null ? ""
+        : state.skillMode === "score"
+          ? `≈ ${Math.round(handicap)} handicap · ${bandLabel(SKILL_BANDS, skillFor(handicap))}`
+          : bandLabel(SKILL_BANDS, skillFor(handicap));
+    $("ff-speed-readout").textContent =
+      mph == null ? ""
+        : state.speedMode === "yards"
+          ? `≈ ${Math.round(mph)} mph · ${bandLabel(SPEED_BANDS, speedFor(mph))}`
+          : bandLabel(SPEED_BANDS, speedFor(mph));
+
+    ($("ff-clear") as HTMLElement).hidden = handicap == null && mph == null;
+
+    // Both numbers are needed: the two axes pull in different directions and
+    // guessing the missing one would produce confident nonsense.
+    if (handicap == null || mph == null) {
+      setFocus(null);
+      return;
+    }
+    setFocus(`${skillFor(handicap)}-${speedFor(mph)}`);
+  }
+
+  function setFocus(key: string | null) {
+    document.querySelectorAll("[data-focus-key]").forEach((n) =>
+      n.classList.toggle("is-active", key != null && (n as HTMLElement).dataset.focusKey === key));
+    document.documentElement.toggleAttribute("data-has-focus", key != null);
+    ($("ff-result") as HTMLElement).hidden = key == null;
+    if (!key) return;
+
+    const { handicap, mph } = resolved();
+    $("ff-profile").textContent =
+      `${bandLabel(SKILL_BANDS, skillFor(handicap!))}, ${bandLabel(SPEED_BANDS, speedFor(mph!))}`;
+
+    const blurbs = focusBlurb(key as any);
+    const list = $("ff-blurbs");
+    list.textContent = "";
+    ([["Drivers", "drivers", "#drivers"],
+      ["Irons", "irons", "#irons"],
+      ["Balls", "balls", "#balls"]] as const).forEach(([label, slot, href]) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<a href="${href}"><strong>${label}</strong></a> ${blurbs[slot]}`;
+      list.appendChild(li);
+    });
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* private mode */ }
+  }
+
+  function restore() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return;
+      Object.assign(state, JSON.parse(raw));
+    } catch { /* ignore */ }
+    if (state.skillValue != null) ($("ff-skill-value") as HTMLInputElement).value = String(state.skillValue);
+    if (state.speedValue != null) ($("ff-speed-value") as HTMLInputElement).value = String(state.speedValue);
+    document.querySelectorAll<HTMLElement>("[data-skill-mode]").forEach((b) =>
+      b.classList.toggle("active", b.dataset.skillMode === state.skillMode));
+    document.querySelectorAll<HTMLElement>("[data-speed-mode]").forEach((b) =>
+      b.classList.toggle("active", b.dataset.speedMode === state.speedMode));
+  }
+
+  const num = (el: HTMLInputElement) => {
+    const v = parseFloat(el.value);
+    return Number.isFinite(v) ? v : null;
+  };
+
+  $("ff-skill-value").addEventListener("input", (e) => {
+    state.skillValue = num(e.target as HTMLInputElement);
+    save(); apply();
+  });
+  $("ff-speed-value").addEventListener("input", (e) => {
+    state.speedValue = num(e.target as HTMLInputElement);
+    save(); apply();
+  });
+
+  document.querySelectorAll<HTMLElement>("[data-skill-mode]").forEach((b) => {
+    b.addEventListener("click", () => {
+      state.skillMode = b.dataset.skillMode as any;
+      document.querySelectorAll<HTMLElement>("[data-skill-mode]").forEach((o) =>
+        o.classList.toggle("active", o === b));
+      save(); apply();
+    });
+  });
+  document.querySelectorAll<HTMLElement>("[data-speed-mode]").forEach((b) => {
+    b.addEventListener("click", () => {
+      state.speedMode = b.dataset.speedMode as any;
+      document.querySelectorAll<HTMLElement>("[data-speed-mode]").forEach((o) =>
+        o.classList.toggle("active", o === b));
+      save(); apply();
+    });
+  });
+
+  $("ff-clear").addEventListener("click", () => {
+    state.skillValue = null;
+    state.speedValue = null;
+    ($("ff-skill-value") as HTMLInputElement).value = "";
+    ($("ff-speed-value") as HTMLInputElement).value = "";
+    save(); apply();
+  });
+
+  restore();
+  apply();
+</script>
+
+<style>
+  .ff {
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--focus-stroke, #5aa0dc);
+    background: linear-gradient(
+      100deg,
+      rgba(90, 160, 220, 0.07),
+      transparent 65%
+    );
+    padding: 1.4rem 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .ff-head h2 {
+    font-size: 1.4rem;
+  }
+  .ff-lede {
+    margin-top: 0.5rem;
+    max-width: 62ch;
+    font-size: 0.95rem;
+  }
+
+  .ff-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-start;
+    margin-top: 1.3rem;
+  }
+  .ff-field {
+    flex: 1 1 22rem;
+    min-width: 0;
+  }
+  .ff-label {
+    display: block;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.45rem;
+  }
+  .ff-or {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+  .ff-input-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .ff-input {
+    width: 6.5rem;
+    flex-shrink: 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    padding: 0.45rem 0.6rem;
+  }
+  .ff-input:focus-visible {
+    outline: 2px solid var(--focus-stroke, #5aa0dc);
+    outline-offset: 1px;
+  }
+  .ff-seg {
+    display: flex;
+  }
+  .ff-seg-btn {
+    appearance: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.7rem;
+    white-space: nowrap;
+    transition: color 0.15s var(--ease), background 0.15s var(--ease);
+  }
+  .ff-seg-btn + .ff-seg-btn {
+    border-left: 0;
+  }
+  .ff-seg-btn:hover {
+    color: var(--text-muted);
+  }
+  .ff-seg-btn.active {
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border-strong);
+  }
+  .ff-readout {
+    margin-top: 0.4rem;
+    min-height: 1.2em;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--focus-stroke, #5aa0dc);
+  }
+  .ff-actions {
+    align-self: flex-end;
+    padding-bottom: 1.6rem;
+  }
+  .ff-clear {
+    padding-block: 0.45rem;
+  }
+
+  .ff-result {
+    margin-top: 1.3rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--border);
+  }
+  .ff-result-line {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .ff-result-line strong {
+    color: var(--text);
+  }
+  .ff-swatch {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    background: rgba(90, 160, 220, 0.18);
+    border: 1.5px dashed rgba(90, 160, 220, 0.7);
+  }
+  .ff-blurbs {
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 0.55rem;
+  }
+  .ff-blurbs li {
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    padding-left: 0.9rem;
+    border-left: 2px solid var(--border);
+  }
+  .ff-blurbs a {
+    color: var(--text);
+  }
+  .ff-caveat {
+    margin-top: 1rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 74ch;
+  }
+
+  @media (max-width: 700px) {
+    .ff {
+      padding: 1.1rem 1rem;
+    }
+    .ff-actions {
+      align-self: flex-start;
+      padding-bottom: 0;
+    }
+    .ff-input-row {
+      flex-wrap: wrap;
+    }
+  }
+</style>

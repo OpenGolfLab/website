@@ -1,5 +1,5 @@
 ---
-import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { GA_MEASUREMENT_ID, SITE_TITLE, SITE_DESCRIPTION } from "../consts";
 import "../styles/global.css";
 
 interface Props {
@@ -26,12 +26,43 @@ const pageTitle = title ? `${title} · ${SITE_TITLE}` : `${SITE_TITLE}, Every sh
 // Canonical + absolute OG URL from the configured `site`.
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
+
+// Analytics runs on the real site only. Without this guard every `npm run dev`
+// page view lands in the same GA property as real traffic, and localhost
+// sessions are indistinguishable from visitors once they're in there. A
+// production build still carries the tag, so `npm run build && npm run preview`
+// is how to verify it locally.
+const analyticsEnabled = import.meta.env.PROD && Boolean(GA_MEASUREMENT_ID);
+const gtagSrc = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+const gtagInit = `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_MEASUREMENT_ID}');`;
 ---
 
 <!-- Charset / viewport -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
+
+{/* Google tag (gtag.js). Lives here rather than in each page because every
+    page in the site renders BaseHead exactly once — which is what gives us
+    Google's "on every page" and "never more than one per page" at the same
+    time. `is:inline` keeps Astro from bundling and hoisting these; gtag has to
+    load as its own async request with the init block running after it.
+
+    Google says "immediately after <head>"; it sits just after the three
+    charset/viewport metas instead, which is ~130 bytes later and makes no
+    practical difference to tracking, but keeps `<meta charset>` first as the
+    HTML spec prefers. */}
+{
+  analyticsEnabled && (
+    <>
+      <script is:inline async src={gtagSrc} />
+      <script is:inline set:html={gtagInit} />
+    </>
+  )
+}
 
 <!-- Primary meta -->
 <title>{pageTitle}</title>

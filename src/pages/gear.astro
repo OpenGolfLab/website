@@ -3,6 +3,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GearNav from "../components/GearNav.astro";
 import PriceChart from "../components/PriceChart.astro";
 import QuadrantMap from "../components/QuadrantMap.astro";
+import FocusFilter from "../components/FocusFilter.astro";
+import {
+  FOCUS_KEYS, ballRanges, driverRange, ironRanges,
+} from "../lib/fitting";
 import MobileLineupList from "../components/MobileLineupList.astro";
 import {
   loadMarket,
@@ -24,7 +28,7 @@ const {
   biggestDiscount,
   axisMaxRounded,
   axisTicks,
-  pricingLineups,
+  pricingRanked,
   spectrumLineups,
 } = loadMarket();
 
@@ -369,6 +373,19 @@ const ballMap = (() => {
   ];
   const labeled = placeColumnLabels(dots, W, H, PAD, toX(X_MID));
 
+  // Starting-point rectangles, projected through this map's own scales so the
+  // browser never has to re-derive the piecewise compression axis.
+  const focus = FOCUS_KEYS.map((key) => {
+    const r = ballRanges(key);
+    const x1 = toX(r.x[1]);          // x is reversed: high spin sits left
+    const x2 = toX(r.x[0]);
+    const cLo = Math.max(cMin, r.compression[0]);
+    const cHi = Math.min(cMax, r.compression[1]);
+    const y1 = toY(cHi);
+    const y2 = toY(cLo);
+    return { key, x: x1, y: y1, w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) };
+  });
+
   return {
     W, H, PAD,
     xMid: toX(X_MID),
@@ -377,6 +394,7 @@ const ballMap = (() => {
     bottom: H - PAD.b,
     dots: labeled,
     qcaps,
+    focus,
   };
 })();
 
@@ -493,6 +511,18 @@ const ironMap = (() => {
     { t: "Feel, flight control, workability", a: "end", x: W - PAD.r - 10, y: H - PAD.b + 34 },
   ];
 
+  // Starting-point rectangles, projected through this map's own scales (the
+  // x-axis is piecewise, so this can't be done in the browser).
+  const focus = FOCUS_KEYS.map((key) => {
+    const r = ironRanges(key);
+    const x1 = toX(r.x[0]);
+    const x2 = toX(r.x[1]);
+    // Stronger loft = numerically lower = higher on the plot.
+    const y1 = toY(Math.max(L_MIN, r.loft[0]));
+    const y2 = toY(Math.min(L_MAX, r.loft[1]));
+    return { key, x: x1, y: y1, w: Math.abs(x2 - x1), h: Math.abs(y2 - y1) };
+  });
+
   return {
     W, H, PAD,
     xMid: toX(X_MID),
@@ -501,6 +531,7 @@ const ironMap = (() => {
     bottom: H - PAD.b,
     dots: placeColumnLabels(dots, W, H, PAD, toX(X_MID)),
     qcaps,
+    focus,
   };
 })();
 
@@ -703,6 +734,8 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
   <GearNav />
 
   <div class="container lab-body">
+    {/* Applies to every chart on the page, so it leads. */}
+    {hasLineups && <FocusFilter />}
     {
       hasLineups ? (
         <>
@@ -734,6 +767,20 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
                       {[0, 25, 50, 75, 100].map((tick) => (
                         <span class="continuum-gridline" style={`left:${tick}%`} aria-hidden="true" />
                       ))}
+                      {/* Starting-point band, one per player bucket. Positions
+                          are already percentages here, so unlike the quadrant
+                          maps this needs no projection. */}
+                      {FOCUS_KEYS.map((key) => {
+                        const [lo, hi] = driverRange(key);
+                        return (
+                          <span
+                            class="continuum-focus"
+                            data-focus-key={key}
+                            style={`left:${lo}%; width:${hi - lo}%;`}
+                            aria-hidden="true"
+                          />
+                        );
+                      })}
                       {lineup.models.map((model: any) => (
                         <div
                           class="continuum-node"
@@ -804,10 +851,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
             </div>
 
             <PriceChart
-              lineups={pricingLineups}
+              models={pricingRanked}
               axisTicks={axisTicks}
               axisMaxRounded={axisMaxRounded}
-              ariaLabel="Pricing dumbbell chart"
+              ariaLabel="Driver street prices, most expensive first"
             />
 
             <p class="lab-caption">
@@ -829,6 +876,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               </div>
 
               <QuadrantMap
+                focus={ironMap.focus}
                 map={ironMap}
                 regionLabel="2026 iron map"
                 svgLabel="Scatter plot of iron models with forgiveness decreasing left to right and 7-iron loft getting stronger bottom to top. Strong-lofted game-improvement irons sit top left; players distance irons top right; blades and traditional cavity backs bottom right."
@@ -881,10 +929,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               </div>
 
               <PriceChart
-                lineups={irons.pricingLineups}
+                models={irons.pricingRanked}
                 axisTicks={irons.axisTicks}
                 axisMaxRounded={irons.axisMaxRounded}
-                ariaLabel="Iron pricing dumbbell chart"
+                ariaLabel="Iron set street prices, most expensive first"
                 titleFor={(brand: string, model: any) => `${brand} ${model.name}, ${model.config}`}
               />
 
@@ -960,10 +1008,10 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               </div>
 
               <PriceChart
-                lineups={wedges.pricingLineups}
+                models={wedges.pricingRanked}
                 axisTicks={wedges.axisTicks}
                 axisMaxRounded={wedges.axisMaxRounded}
-                ariaLabel="Wedge pricing dumbbell chart"
+                ariaLabel="Wedge street prices, most expensive first"
                 titleFor={(brand: string, model: any) => `${brand} ${model.name}, ${model.bounce}° bounce, ${model.grind}`}
               />
 
@@ -986,6 +1034,7 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               </div>
 
               <QuadrantMap
+                focus={ballMap.focus}
                 map={ballMap}
                 regionLabel="2026 golf ball map"
                 svgLabel="Scatter plot of golf balls with spin decreasing left to right and compression increasing bottom to top. Firm low-spin distance balls sit top right; soft straight-flying balls sit bottom right; firm tour balls sit top left."
@@ -1040,10 +1089,11 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
               </div>
 
               <PriceChart
-                lineups={balls.pricingLineups}
+                models={balls.pricingRanked}
                 axisTicks={balls.axisTicks}
                 axisMaxRounded={balls.axisMaxRounded}
-                ariaLabel="Ball pricing dumbbell chart"
+                ariaLabel="Ball street prices per dozen, most expensive first"
+                priceSuffix="/dz"
               />
 
               <p class="lab-caption">
@@ -1165,6 +1215,22 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
     width: 1px;
     background: var(--border);
     opacity: 0.6;
+  }
+  /* Starting-point band. Sits behind the nodes (z-index 2) so model dots and
+     labels stay fully legible on top of the shading. */
+  .continuum-focus {
+    position: absolute;
+    top: -6px;
+    bottom: -6px;
+    z-index: 1;
+    background: var(--focus-fill, rgba(90, 160, 220, 0.14));
+    border-inline: 1.5px dashed var(--focus-stroke, rgba(90, 160, 220, 0.55));
+    opacity: 0;
+    transition: opacity 0.25s var(--ease);
+    pointer-events: none;
+  }
+  .continuum-focus.is-active {
+    opacity: 1;
   }
   .continuum-node {
     position: absolute;

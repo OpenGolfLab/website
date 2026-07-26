@@ -2,6 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LabNav from "../../components/LabNav.astro";
 import CommunityExplorer from "../../components/CommunityExplorer.astro";
+import CommunityRanking from "../../components/CommunityRanking.astro";
+import DispersionTradeoff from "../../components/DispersionTradeoff.astro";
+import GearCompare from "../../components/GearCompare.astro";
+import SampleDataBanner from "../../components/SampleDataBanner.astro";
 import { loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
@@ -17,6 +21,9 @@ const {
   minContributors,
   totalContributors,
   totalShots,
+  publishedContributors,
+  seedContributors,
+  hasSeedData,
   feed,
 } = loadCommunity();
 ---
@@ -42,8 +49,21 @@ const {
       {
         hasCommunityData && (
           <p class="lab-stat-line tnum">
-            {totalContributors} golfers · {totalShots.toLocaleString()} shots
+            {totalContributors} golfer{totalContributors === 1 ? "" : "s"} ·{" "}
+            {totalShots.toLocaleString()} shots
             {generatedDate && <> · updated {generatedDate}</>}
+            {/* Real contributors only. A count of golfers is the one number on
+                this page nobody should have to read a caveat to trust, so the
+                seeded demo contributors are subtracted from it rather than
+                footnoted into it. */}
+            {hasSeedData && (
+              <>
+                {" "}
+                <span class="text-dim">
+                  (+{seedContributors} seeded demo contributors, marked below)
+                </span>
+              </>
+            )}
           </p>
         )
       }
@@ -57,9 +77,41 @@ const {
   <LabNav />
 
   <div class="container lab-body">
+    {/* States the sample-data situation before anything on the page can be
+        misread, and carries the off switch. Both are meant to be deleted once
+        the real pool is big enough — see the component. */}
+    <SampleDataBanner contributors={totalContributors} />
+
+    {/* The ranking leads the page: it's the question people arrive with, and
+        it's the one thing here that needs the standardization to be correct
+        rather than just interesting. Head-to-head and the explorer are the
+        drill-downs from it. */}
+    <CommunityRanking />
+    {/* Straight after the ranking: the ranking says which head is longest, and
+        this is the caveat that stops that being read as "buy the longest one". */}
+    <DispersionTradeoff />
+    <GearCompare />
     <CommunityExplorer />
 
     <section class="lab-band">
+      {/* The per-club norms below are published as aggregates — medians,
+          percentiles, dispersion — computed upstream over the whole pool. The
+          seeded contributors are baked into them and cannot be subtracted
+          here, unlike the feed and the explorer where each row is separable.
+          Saying so is the only honest option; silently presenting them as
+          community norms is not. */}
+      {hasSeedData && hasCommunityData && (
+        <p class="seed-warn">
+          <strong>Includes seeded demo data.</strong> {seedContributors} of the
+          {" "}{publishedContributors} contributors behind these norms are
+          generated demo profiles built from one golfer's own sessions — real
+          swings, but the names, launch monitors, gear and handicap bands
+          attached to them were assigned at random. These are published
+          aggregates, so unlike the feed and the explorer below they can't be
+          recomputed here without them. Treat the per-club numbers as
+          illustrative until the pool is real.
+        </p>
+      )}
       {
         hasCommunityData ? (
           <div class="tiers">
@@ -221,15 +273,28 @@ const {
             <>Fresh as of the last site build, {feed.generatedDate}.</>
           )}
         </p>
+        {hasSeedData && (
+          <p class="seed-note">
+            <span class="seed-mark">*</span> marks a generated demo
+            contributor rather than a person. Real swings, but the name, launch
+            monitor and gear were assigned at random, so nothing on those rows
+            describes anyone's actual setup.
+          </p>
+        )}
       </div>
 
       {
         feed.hasFeed ? (
           <ol class="feed" role="list">
             {feed.items.map((it: any) => (
-              <li class="feed-row">
+              <li class:list={["feed-row", { "is-seed": it.isSeed }]} data-seed-row={it.isSeed ? "" : undefined}>
                 <div class="feed-main">
-                  <span class="feed-name">{it.displayName}</span>
+                  <span class="feed-name">
+                    {it.displayName}
+                    {it.isSeed && (
+                      <span class="seed-mark" title="Generated demo contributor, not a real golfer">*</span>
+                    )}
+                  </span>
                   <span class="feed-date tnum">{it.dateLabel}</span>
                 </div>
                 <div class="feed-meta">
@@ -237,7 +302,11 @@ const {
                     {it.shots.toLocaleString()} shot{it.shots === 1 ? "" : "s"}
                   </span>
                   <span class="feed-dot" aria-hidden="true">·</span>
-                  <span class="feed-monitor">{it.launchMonitor}</span>
+                  {/* The monitor was assigned at random for seeded rows, so it
+                      must not read as a fact about a real person's setup. */}
+                  <span class="feed-monitor">
+                    {it.isSeed ? "demo profile" : it.launchMonitor}
+                  </span>
                 </div>
                 <div class="feed-clubs">
                   {it.clubs.map((club: string) => (
@@ -371,6 +440,38 @@ const {
     align-items: baseline;
     gap: 0.6rem;
     min-width: 0;
+  }
+  /* Seeded demo contributors: same amber asterisk the generated sample data
+     uses elsewhere on this page, so the two read as one signal. */
+  .seed-mark {
+    color: var(--amber);
+    font-weight: 700;
+    margin-left: 0.15rem;
+  }
+  .seed-note {
+    margin-top: 0.7rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+    max-width: 66ch;
+  }
+  .seed-warn {
+    border-left: 3px solid var(--amber);
+    background: rgba(189, 135, 60, 0.08);
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    max-width: 78ch;
+  }
+  .seed-warn strong {
+    color: var(--text);
+  }
+  .feed-row.is-seed {
+    opacity: 0.75;
   }
   .feed-name {
     font-weight: 600;
