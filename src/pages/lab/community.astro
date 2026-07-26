@@ -2,6 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import LabNav from "../../components/LabNav.astro";
 import CommunityExplorer from "../../components/CommunityExplorer.astro";
+import CommunityRanking from "../../components/CommunityRanking.astro";
+import DispersionTradeoff from "../../components/DispersionTradeoff.astro";
+import GearCompare from "../../components/GearCompare.astro";
+import SampleDataBanner from "../../components/SampleDataBanner.astro";
 import { loadCommunity } from "../../lib/lab";
 import "../../styles/lab.css";
 
@@ -57,6 +61,20 @@ const {
   <LabNav />
 
   <div class="container lab-body">
+    {/* States the sample-data situation before anything on the page can be
+        misread, and carries the off switch. Both are meant to be deleted once
+        the real pool is big enough — see the component. */}
+    <SampleDataBanner contributors={totalContributors} />
+
+    {/* The ranking leads the page: it's the question people arrive with, and
+        it's the one thing here that needs the standardization to be correct
+        rather than just interesting. Head-to-head and the explorer are the
+        drill-downs from it. */}
+    <CommunityRanking />
+    {/* Straight after the ranking: the ranking says which head is longest, and
+        this is the caveat that stops that being read as "buy the longest one". */}
+    <DispersionTradeoff />
+    <GearCompare />
     <CommunityExplorer />
 
     <section class="lab-band">

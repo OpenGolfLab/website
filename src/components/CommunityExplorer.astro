@@ -126,6 +126,14 @@
     ball: "All", handicap: "All", age: "All",
   };
   let points: any[] = [];
+  // Real contributions and generated ones are kept apart at the source and only
+  // combined at filter time, so switching sample data off can never leave a
+  // stray generated dot behind. Sample rows are always marked (`p.sample`).
+  let realPoints: any[] = [];
+  let samplePoints: any[] = [];
+  let showSample = true;
+
+  const usable = (p: any) => p.carry != null && p.offline != null;
 
   async function boot() {
     let payload: any;
@@ -137,19 +145,52 @@
       $("x-offline").hidden = false;
       return;
     }
-    points = (payload.points || []).filter(
-      (p: any) => p.carry != null && p.offline != null,
-    );
-    if (!points.length) {
+    realPoints = (payload.points || []).filter(usable);
+
+    // Sample pool is optional and additive: if it's missing, the explorer is
+    // exactly what it was before it existed.
+    try {
+      const res = await fetch("/data/sample_points.json");
+      if (res.ok) {
+        const sample = await res.json();
+        samplePoints = (sample.points || [])
+          .filter(usable)
+          .map((p: any) => ({ ...p, sample: true }));
+      }
+    } catch {
+      /* no sample pool — carry on with real data only */
+    }
+
+    if (!realPoints.length && !samplePoints.length) {
       $("x-offline").hidden = false;
       return;
     }
-    buildFilters();
-    render();
+    applyPool();
     $("x-filters").hidden = false;
     $("x-body").hidden = false;
     renderLeaderboard(payload.driver_leaderboard || []);
+    // Tell the banner a listener now exists, so it can re-broadcast the stored
+    // preference (it may have fired before this fetch finished).
+    document.dispatchEvent(new CustomEvent("opengolflab:sample-ready"));
   }
+
+  /** Rebuild filters + plot for the current sample setting. */
+  function applyPool() {
+    points = showSample ? [...realPoints, ...samplePoints] : realPoints;
+    buildFilters();
+    render();
+  }
+
+  document.addEventListener("opengolflab:sample-toggle", (e: any) => {
+    const next = Boolean(e.detail?.showSample);
+    if (next === showSample || !samplePoints.length) return;
+    showSample = next;
+    // A filter can be set to a value that only sample data has; dropping the
+    // sample pool would then show an empty plot with no obvious cause, so any
+    // now-impossible selection resets rather than stranding the user.
+    Object.keys(state).forEach((k) => { state[k] = "All"; });
+    applyPool();
+  });
 
   // ---- filters ------------------------------------------------------------
   function buildFilters() {
@@ -157,6 +198,11 @@
       (a, b) => (CLUB_ORDER.indexOf(a) + 99 || 999) - (CLUB_ORDER.indexOf(b) + 99 || 999),
     );
     const wrap = $("x-clubs");
+    // buildFilters runs again whenever the sample pool is switched in or out,
+    // so both containers have to be emptied first or the chips and selects
+    // accumulate.
+    wrap.textContent = "";
+    $("x-selects").textContent = "";
     const mkChip = (label: string, value: string, color?: string) => {
       const b = document.createElement("button");
       b.type = "button";
@@ -285,9 +331,16 @@
 
     const tip = $("x-tip");
     for (const p of pts) {
+      // Generated dots are hollow. A real contribution and a simulated one must
+      // never be indistinguishable on the plot, and color is already spoken for
+      // by the club.
       const dot = el("circle", {
         cx: X(p.offline), cy: Y(p.carry), r: 5.5,
-        fill: colorOf(p.club), class: "x-point",
+        fill: p.sample ? "transparent" : colorOf(p.club),
+        stroke: p.sample ? colorOf(p.club) : "none",
+        "stroke-width": p.sample ? 1.6 : 0,
+        "stroke-dasharray": p.sample ? "3 2" : "none",
+        class: p.sample ? "x-point x-point-sample" : "x-point",
       });
       dot.addEventListener("mouseenter", (ev) => showTip(ev as MouseEvent, p));
       dot.addEventListener("mousemove", (ev) => moveTip(ev as MouseEvent));
@@ -309,15 +362,26 @@
         const rows = byClub.get(c)!;
         const carries = rows.map((r) => r.carry).sort((a, b) => a - b);
         const med = carries[Math.floor(carries.length / 2)];
+        // Any club whose row is partly generated is asterisked, so a number
+        // read straight off this table carries its own caveat.
+        const anySample = rows.some((r) => r.sample);
         const tr = document.createElement("tr");
         tr.innerHTML =
           `<td><span class="x-dot" style="background:${colorOf(c)}"></span>${c}</td>` +
-          `<td class="tnum">${Math.round(med)} yd</td>` +
+          `<td class="tnum">${Math.round(med)} yd${
+            anySample ? '<span class="x-sample-mark">*</span>' : ""
+          }</td>` +
           `<td class="tnum">${rows.length}</td>`;
         body.appendChild(tr);
       });
-    $("x-count").textContent =
-      `${pts.length} golfer-club medians · ${pts.reduce((s, p) => s + (p.n || 0), 0).toLocaleString()} shots behind them`;
+
+    const sampleCount = pts.filter((p) => p.sample).length;
+    const shots = pts.reduce((s, p) => s + (p.n || 0), 0).toLocaleString();
+    $("x-count").innerHTML =
+      `${pts.length} golfer-club medians · ${shots} shots behind them` +
+      (sampleCount
+        ? `<br><span class="x-sample-note">* ${sampleCount} of these are generated samples</span>`
+        : "");
   }
 
   function niceTicks(lo: number, hi: number, n: number) {
@@ -333,10 +397,13 @@
 
   function tipHTML(p: any) {
     const rows = [
-      `<strong>${p.display_name || "Anonymous"}</strong> · ${norm(p.club)}`,
+      `<strong>${p.display_name || "Anonymous"}</strong>${
+        p.sample ? '<span class="x-sample-mark">*</span>' : ""
+      } · ${norm(p.club)}`,
       `Median carry ${p.carry} yd · offline ${p.offline > 0 ? "+" : ""}${p.offline} yd`,
       `${p.n} shots`,
     ];
+    if (p.sample) rows.push("<em>* generated sample, not a real golfer</em>");
     const gear = gearLabel(p);
     if (gear !== NOT_SPECIFIED) rows.push(gear);
     if (p.ball_model) rows.push(`Ball: ${p.ball_model}`);
@@ -536,6 +603,22 @@
     margin-top: 0.5rem;
     font-size: 0.95rem;
     color: var(--text-dim);
+  }
+  /* The asterisk that marks generated data, everywhere it appears. Amber,
+     matching the page banner, so the two read as the same signal. */
+  .x-sample-mark {
+    color: var(--amber);
+    font-weight: 700;
+    margin-left: 0.1rem;
+  }
+  .x-sample-note {
+    color: var(--amber);
+    font-size: 0.88rem;
+  }
+  /* Hollow, dashed outline — a generated dot should never be mistakable for a
+     contributed one at a glance. */
+  .x-point-sample {
+    opacity: 0.85;
   }
   .x-empty {
     color: var(--text-dim);

@@ -1,0 +1,461 @@
+---
+/**
+ * DispersionTradeoff — the distance-versus-forgiveness question, drawn.
+ *
+ * A low-spin head buys you ball speed and takes away help on off-centre
+ * strikes. That's a trade every golfer is told about and almost nobody is shown.
+ * This plots it: real shot scatter for each driver type, with a 1σ ellipse over
+ * the top so the widths are comparable at a glance, switchable by handicap.
+ *
+ * The reason the handicap switch is the important control, and not decoration:
+ * the penalty is not a constant. A head's punishment for an off-centre strike is
+ * proportional to how far off-centre the strike was, so a player who finds the
+ * middle rarely pays it far more often than a player who finds it usually. The
+ * plot exists to make that specific point visible, and the readout under it
+ * states the size of the effect for whichever cohort is selected.
+ *
+ * Sample data. Placeholder products, generated shots — see
+ * scripts/generate-sample-data.mjs. The underlying relationship is modelled from
+ * how a clubface actually behaves, so the shape is right even though the
+ * specific yardages aren't measurements of anything.
+ */
+---
+
+<section class="lab-band" id="tradeoff" data-sample-section hidden>
+  <div class="lab-band-head">
+    <p class="eyebrow">Trade-off</p>
+    <h2>Distance versus forgiveness</h2>
+    <p class="text-muted" style="max-width:70ch;">
+      A low-spin head gives you ball speed and stops helping when you miss the
+      middle. How much that costs depends almost entirely on how often you miss
+      it — so the honest answer to "should I play one" is different for a
+      5-handicap and a 20-handicap. Switch the cohort and watch the pattern.
+    </p>
+  </div>
+
+  <div class="dt-controls">
+    <div class="dt-row">
+      <span class="dt-lbl">Cohort</span>
+      <div class="dt-tabs" id="dt-groups" role="tablist" aria-label="Handicap cohort"></div>
+    </div>
+    <div class="dt-row">
+      <span class="dt-lbl">Show</span>
+      <div class="dt-tabs" id="dt-bands" role="group" aria-label="Driver types to show"></div>
+    </div>
+  </div>
+
+  <p class="dt-verdict" id="dt-verdict"></p>
+
+  <div class="dt-body">
+    <svg id="dt-plot" class="dt-plot" viewBox="0 0 640 470" role="img"
+      aria-label="Shot dispersion by driver type, offline against carry"></svg>
+    <div class="dt-side">
+      <table class="dt-table">
+        <thead>
+          <tr>
+            <th scope="col">Driver type</th>
+            <th scope="col" class="dt-num">Carry</th>
+            <th scope="col" class="dt-num">Spread</th>
+            <th scope="col" class="dt-num">Mishit cost</th>
+          </tr>
+        </thead>
+        <tbody id="dt-table-body"></tbody>
+      </table>
+      <p class="dt-note">
+        Spread is one standard deviation of offline — roughly the width that
+        holds two thirds of your shots. Mishit cost is the carry lost on your
+        worst 20% of strikes versus your best 25%.
+      </p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const $ = (id: string) => document.getElementById(id)!;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag: string, attrs: Record<string, string | number>) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, String(v));
+    return n;
+  };
+
+  const BANDS = [
+    { key: "forgiving", label: "Max-Forgiveness", color: "var(--green)" },
+    { key: "balanced", label: "Balanced", color: "var(--cyan)" },
+    { key: "lowspin", label: "Low-Spin", color: "var(--amber)" },
+  ];
+
+  const state = {
+    group: "mid",
+    shown: new Set(BANDS.map((b) => b.key)),
+  };
+  let cells: any[] = [];
+  let groups: any[] = [];
+
+  const cellFor = (band: string, group: string) =>
+    cells.find((c) => c.band === band && c.group === group);
+
+  async function boot() {
+    try {
+      const res = await fetch("/data/sample_points.json");
+      if (!res.ok) throw new Error(String(res.status));
+      const payload = await res.json();
+      cells = payload.dispersion?.cells || [];
+      groups = payload.dispersion?.groups || [];
+    } catch {
+      return;
+    }
+    if (!cells.length) return;
+    buildControls();
+    render();
+    ($("tradeoff") as HTMLElement).hidden = false;
+    document.dispatchEvent(new CustomEvent("opengolflab:sample-ready"));
+  }
+
+  function buildControls() {
+    const g = $("dt-groups");
+    g.textContent = "";
+    groups.forEach((grp: any) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "dt-tab";
+      b.textContent = grp.label;
+      b.dataset.key = grp.key;
+      b.addEventListener("click", () => { state.group = grp.key; sync(); render(); });
+      g.appendChild(b);
+    });
+
+    const bandWrap = $("dt-bands");
+    bandWrap.textContent = "";
+    BANDS.forEach((band) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "dt-tab dt-band";
+      b.dataset.key = band.key;
+      b.style.setProperty("--dt-c", band.color);
+      b.innerHTML = `<span class="dt-swatch"></span>${band.label}`;
+      b.addEventListener("click", () => {
+        if (state.shown.has(band.key)) {
+          // Never let the last one be switched off — an empty plot reads as
+          // broken rather than as a choice.
+          if (state.shown.size > 1) state.shown.delete(band.key);
+        } else state.shown.add(band.key);
+        sync();
+        render();
+      });
+      bandWrap.appendChild(b);
+    });
+    sync();
+  }
+
+  function sync() {
+    $("dt-groups").querySelectorAll(".dt-tab").forEach((t) =>
+      t.classList.toggle("active", (t as HTMLElement).dataset.key === state.group));
+    $("dt-bands").querySelectorAll(".dt-tab").forEach((t) =>
+      t.classList.toggle("on", state.shown.has((t as HTMLElement).dataset.key || "")));
+  }
+
+  /** 1σ ellipse for a cloud of [x,y] shots. */
+  function ellipseOf(shots: number[][]) {
+    const n = shots.length;
+    const mx = shots.reduce((s, p) => s + p[0], 0) / n;
+    const my = shots.reduce((s, p) => s + p[1], 0) / n;
+    const sx = Math.sqrt(shots.reduce((s, p) => s + (p[0] - mx) ** 2, 0) / (n - 1));
+    const sy = Math.sqrt(shots.reduce((s, p) => s + (p[1] - my) ** 2, 0) / (n - 1));
+    return { mx, my, sx, sy };
+  }
+
+  function render() {
+    const svg = $("dt-plot");
+    svg.textContent = "";
+    const active = BANDS.filter((b) => state.shown.has(b.key));
+    const shownCells = active
+      .map((b) => ({ band: b, cell: cellFor(b.key, state.group) }))
+      .filter((c) => c.cell);
+    if (!shownCells.length) return;
+
+    const W = 640, H = 470, m = { l: 54, r: 18, t: 16, b: 46 };
+    // Axes are fixed across the whole set on screen so switching cohort or
+    // hiding a band never silently rescales the plot — the entire point is
+    // comparing widths, and a rescaling axis destroys that.
+    const all = shownCells.flatMap((c) => c.cell.shots);
+    const xAbs = Math.max(40, ...all.map((p: number[]) => Math.abs(p[0]))) * 1.05;
+    const ys = all.map((p: number[]) => p[1]);
+    const y0 = Math.min(...ys) - 8, y1 = Math.max(...ys) + 8;
+    const X = (v: number) => m.l + ((v + xAbs) / (2 * xAbs)) * (W - m.l - m.r);
+    const Y = (v: number) => H - m.b - ((v - y0) / (y1 - y0)) * (H - m.t - m.b);
+
+    // grid + axes
+    const xTicks = [-xAbs, -xAbs / 2, 0, xAbs / 2, xAbs].map((v) => Math.round(v / 5) * 5);
+    xTicks.forEach((t) => {
+      svg.appendChild(el("line", {
+        x1: X(t), y1: m.t, x2: X(t), y2: H - m.b,
+        class: t === 0 ? "dt-axis-zero" : "dt-grid",
+      }));
+      const lab = el("text", { x: X(t), y: H - m.b + 18, class: "dt-tick", "text-anchor": "middle" });
+      lab.textContent = t === 0 ? "0" : `${t > 0 ? "+" : ""}${t}`;
+      svg.appendChild(lab);
+    });
+    const step = Math.max(10, Math.round((y1 - y0) / 5 / 10) * 10);
+    for (let v = Math.ceil(y0 / step) * step; v <= y1; v += step) {
+      svg.appendChild(el("line", { x1: m.l, y1: Y(v), x2: W - m.r, y2: Y(v), class: "dt-grid" }));
+      const lab = el("text", { x: m.l - 8, y: Y(v) + 4, class: "dt-tick", "text-anchor": "end" });
+      lab.textContent = String(v);
+      svg.appendChild(lab);
+    }
+
+    const xl = el("text", { x: (m.l + W - m.r) / 2, y: H - 8, class: "dt-axis-label", "text-anchor": "middle" });
+    xl.textContent = "Offline (yards) — left / right of target";
+    svg.appendChild(xl);
+    const yl = el("text", {
+      x: 14, y: (m.t + H - m.b) / 2, class: "dt-axis-label", "text-anchor": "middle",
+      transform: `rotate(-90 14 ${(m.t + H - m.b) / 2})`,
+    });
+    yl.textContent = "Carry (yards)";
+    svg.appendChild(yl);
+
+    // clouds, then ellipses on top so the widths stay readable through the dots
+    shownCells.forEach(({ band, cell }) => {
+      cell.shots.forEach((p: number[]) => {
+        svg.appendChild(el("circle", {
+          cx: X(p[0]), cy: Y(p[1]), r: 2.6, fill: band.color, class: "dt-dot",
+        }));
+      });
+    });
+    shownCells.forEach(({ band, cell }) => {
+      const e = ellipseOf(cell.shots);
+      svg.appendChild(el("ellipse", {
+        cx: X(e.mx), cy: Y(e.my),
+        rx: Math.abs(X(e.mx + e.sx) - X(e.mx)),
+        ry: Math.abs(Y(e.my) - Y(e.my + e.sy)),
+        fill: "none", stroke: band.color, "stroke-width": 2, class: "dt-ellipse",
+      }));
+    });
+
+    renderTable(shownCells);
+    renderVerdict();
+  }
+
+  function renderTable(shownCells: any[]) {
+    const body = $("dt-table-body");
+    body.textContent = "";
+    shownCells.forEach(({ band, cell }: any) => {
+      const s = cell.stats;
+      const tr = document.createElement("tr");
+      tr.innerHTML =
+        `<td><span class="dt-swatch" style="--dt-c:${band.color}"></span>${band.label}</td>` +
+        `<td class="dt-num tnum">${s.carry_med.toFixed(0)}</td>` +
+        `<td class="dt-num tnum">±${s.lateral_sd.toFixed(1)}</td>` +
+        `<td class="dt-num tnum">−${s.mishit_loss.toFixed(1)}</td>`;
+      body.appendChild(tr);
+    });
+  }
+
+  /**
+   * The sentence the plot exists to produce. Compares the two ends of the
+   * spectrum for the selected cohort and states the trade in yards — and,
+   * where it applies, how that compares with the best players.
+   */
+  function renderVerdict() {
+    const f = cellFor("forgiving", state.group);
+    const l = cellFor("lowspin", state.group);
+    if (!f || !l) { $("dt-verdict").textContent = ""; return; }
+
+    const carryGain = l.stats.carry_med - f.stats.carry_med;
+    const spreadCost = l.stats.lateral_sd - f.stats.lateral_sd;
+    const label = groups.find((g: any) => g.key === state.group)?.label ?? "";
+
+    const lowF = cellFor("forgiving", "low");
+    const lowL = cellFor("lowspin", "low");
+    const refCost = lowF && lowL ? lowL.stats.lateral_sd - lowF.stats.lateral_sd : null;
+
+    let text =
+      `For a <strong>${label}</strong>, the low-spin head is worth `
+      + `<strong>${carryGain >= 0 ? "+" : ""}${carryGain.toFixed(1)} yards</strong> of carry `
+      + `and costs <strong>${spreadCost >= 0 ? "+" : ""}${spreadCost.toFixed(1)} yards</strong> `
+      + `of side-to-side spread.`;
+
+    if (state.group !== "low" && refCost !== null && refCost > 0.05) {
+      const ratio = spreadCost / refCost;
+      if (ratio >= 1.3) {
+        text +=
+          ` That spread penalty is <strong>${ratio.toFixed(1)}×</strong> what a `
+          + `0–9 handicap pays for the same head — the punishment scales with how `
+          + `often you miss the middle, so the better player barely notices it.`;
+      }
+    } else if (state.group === "low") {
+      text +=
+        ` At this level the spread barely moves: these players find the centre `
+        + `often enough that the head has little to punish.`;
+    }
+    $("dt-verdict").innerHTML = text;
+  }
+
+  document.addEventListener("opengolflab:sample-toggle", (e: any) => {
+    ($("tradeoff") as HTMLElement).hidden = !e.detail?.showSample || !cells.length;
+  });
+
+  boot();
+</script>
+
+<style>
+  .dt-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .dt-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.9rem;
+  }
+  .dt-lbl {
+    flex: 0 0 5rem;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+  }
+  .dt-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .dt-tab {
+    appearance: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.7rem;
+    transition: color 0.15s var(--ease), border-color 0.15s var(--ease);
+  }
+  .dt-tab:hover {
+    color: var(--text-muted);
+  }
+  .dt-tab.active {
+    color: var(--green-ink);
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .dt-swatch {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    background: var(--dt-c, var(--text-dim));
+    opacity: 0.35;
+  }
+  .dt-band.on {
+    color: var(--text);
+    border-color: var(--dt-c);
+  }
+  .dt-band.on .dt-swatch {
+    opacity: 1;
+  }
+
+  .dt-verdict {
+    margin: 1.1rem 0;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 74ch;
+  }
+  .dt-verdict strong {
+    color: var(--text);
+  }
+
+  .dt-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .dt-plot {
+    width: 100%;
+    height: auto;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+  }
+  .dt-plot :global(.dt-grid) {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+  .dt-plot :global(.dt-axis-zero) {
+    stroke: var(--border-strong);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+  }
+  .dt-plot :global(.dt-tick) {
+    fill: var(--text-dim);
+    font-family: var(--font-body);
+    font-size: 12px;
+  }
+  .dt-plot :global(.dt-axis-label) {
+    fill: var(--text-dim);
+    font-family: var(--font-body);
+    font-size: 13px;
+  }
+  .dt-plot :global(.dt-dot) {
+    opacity: 0.3;
+  }
+  .dt-plot :global(.dt-ellipse) {
+    opacity: 0.95;
+  }
+
+  .dt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+  }
+  .dt-table th {
+    text-align: left;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-dim);
+    font-weight: 600;
+    padding: 0.35rem 0.4rem;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .dt-table td {
+    padding: 0.4rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .dt-table td:first-child {
+    color: var(--text);
+  }
+  .dt-num {
+    text-align: right;
+  }
+  .dt-note {
+    margin-top: 0.8rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 860px) {
+    .dt-body {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 700px) {
+    .dt-lbl {
+      flex-basis: 100%;
+    }
+  }
+</style>
