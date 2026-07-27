@@ -46,11 +46,22 @@ export const SITE_DESCRIPTION =
 export const SITE_URL = "https://opengolflab.com";
 
 /**
- * Google Analytics 4 measurement ID. Injected once, in BaseHead, which every
- * page renders — so there is exactly one Google tag per page, as Google
- * requires. Set to "" to remove analytics from the whole site.
+ * Cloudflare Web Analytics site token. Injected once, in BaseHead, which every
+ * page renders. Set to "" to remove analytics from the whole site.
+ *
+ * This replaced Google Analytics 4 (G-0TKQ8HMBFG). The whole product claim is
+ * local-first, no account, nothing uploaded — and the site was shipping
+ * Google's cookie-setting tag on every page of it. Cloudflare Web Analytics is
+ * cookieless, sets no persistent identifier, needs no consent banner, and runs
+ * on the platform this site already deploys to, so the fix costs nothing and
+ * turns the contradiction into a claim /privacy can make honestly.
+ *
+ * To get the token: Cloudflare dashboard → Analytics & Logs → Web Analytics →
+ * Add a site (opengolflab.com) → copy the value of `token` out of the JS
+ * snippet it shows. Until it's set, the site simply has no page analytics —
+ * the funnel events in lib/analytics.ts are separate and unaffected.
  */
-export const GA_MEASUREMENT_ID = "G-0TKQ8HMBFG";
+export const CF_ANALYTICS_TOKEN = "";
 
 /** Product facts reused across pages. */
 export const PRODUCT_NAME = "Golf Sim Analytics";
@@ -87,6 +98,11 @@ export const LAB_SECTIONS = [
     href: "/lab/benchmarks",
     label: "Benchmarks",
     blurb: "Where do you stack up? Enter a number, see your percentile.",
+  },
+  {
+    href: "/lab/tools/sample-size",
+    label: "Sample-Size Problem",
+    blurb: "Why most gear verdicts are coin flips, and how many shots it really takes.",
   },
 ] as const;
 

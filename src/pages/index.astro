@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ContributorProgress from "../components/ContributorProgress.astro";
 import { PRODUCT_NAME, KOFI_URL, GITHUB_URL } from "../consts";
 import { loadMarket, loadBallMarket, loadCommunity } from "../lib/lab";
 
@@ -77,6 +78,10 @@ const questions = [
       </div>
     </div>
   </section>
+
+  {/* Straight under the pitch, before the three tiles: the ask has a number
+      and a finish line, and both are read from the live aggregate. */}
+  <ContributorProgress variant="hero" />
 
   <!-- ==================== THE BIG THREE ==================== -->
   <section class="section">

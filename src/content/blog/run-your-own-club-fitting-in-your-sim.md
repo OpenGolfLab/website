@@ -21,7 +21,7 @@ Here's the protocol I've settled on after a year of doing this badly and then le
 
 **Alternate blocks of five.** Five with club A, five with club B, repeat until you're at 40 shots each. This is the single most important rule. Fatigue, back tightness, and finding your rhythm all drift across a session — alternating spreads that drift evenly across both clubs instead of gifting it to whichever club you hit second.
 
-**Same ball, every shot.** Not "same model," the same handful. And know [what your ball choice does to your numbers](/blog/does-the-ball-you-hit-into-your-screen-matter) before you test wedges especially.
+**Same ball, every shot.** Not "same model," the same handful. Range balls and premium balls spin differently enough to swamp the club difference you're testing, and that matters most on wedges.
 
 **Stop at 40, not at tired.** Speed decays measurably after 60–70 full swings in my logs. Data from an exhausted swing is data about exhaustion. If you want 60 shots per club, take two sessions — which you should anyway, see below.
 
@@ -31,9 +31,11 @@ Three numbers per club, and none of them is "longest":
 
 - **Median carry.** The middle shot is your game. The best shot is a story you'll tell.
 - **Spread (10th to 90th percentile of carry).** Two clubs with the same median but different spreads are not the same club — the tighter one is the one you can pick a landing number with.
-- **Lateral width.** How wide is the pattern, and is it biased one direction? This is usually where a modern head vs. an old one [actually shows up](/blog/is-your-old-driver-costing-you-distance) — and it's worth more strokes than carry for [most golfers](/blog/how-many-strokes-is-dispersion-worth).
+- **Lateral width.** How wide is the pattern, and is it biased one direction? This is usually where a modern head vs. an old one actually shows up — and for most golfers it's worth more strokes than carry is.
 
-On sample size: medians are noisy below about 30 shots — with 20 shots per club, a 4-yard median gap is as likely to be sampling luck as signal. At 40 per club, differences of about 4+ yards of carry or 15%+ of width start meaning something. Below that, call it a tie and keep your money.
+On sample size, the honest number is worse than you want it to be (this is the part I got wrong for a year), and it depends entirely on how much *you* scatter. Run your own numbers through the [sample-size calculator](/lab/tools/sample-size); the short version is that with a long-iron-ish 11-yard shot-to-shot spread, 40 shots per club can only resolve about a 7-yard carry difference. Twenty shots each resolves about 10. If you want to detect the 5 yards a marketing page is promising, that's around 80 shots per club, which is why a twelve-swing fitting bay was never able to check the claim it was selling you.
+
+Two things follow. Dispersion is the lever: halve your spread and you quarter the shots you need, which is a better reason to groove a repeatable swing than any of the usual ones. And "no measurable difference" is the result you should expect most of the time. Below the threshold, call it a tie and keep your money.
 
 ## The three ways you'll fool yourself anyway
 

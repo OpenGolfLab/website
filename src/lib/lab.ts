@@ -234,6 +234,47 @@ export function loadCommunity() {
   };
 }
 
+// ---- Publish progress: the contributor count vs the next gate --------------
+// Read by the site-wide progress strip, which needs the totals and thresholds
+// but none of the per-club detail (and none of feed.json), so it gets its own
+// loader rather than paying for loadCommunity() on every page in the site.
+
+/**
+ * The publish gates, nearest first. The site says "the first benchmark
+ * publishes at N" in several places, and N differs per dataset — gapping
+ * clears before balls, which clear before club benchmarks. Deriving the order
+ * from summary.json's own `meta` means the copy can't drift from what the
+ * aggregator actually enforces.
+ */
+export function loadProgress() {
+  const data = readJson("public/data/summary.json");
+  const meta = data?.meta ?? {};
+  const contributors = data?.tiers?.community?.totals?.contributors ?? 0;
+  const shots = data?.tiers?.community?.totals?.shots ?? 0;
+
+  const milestones = [
+    { n: meta.min_gap_contributors ?? 5, label: "gapping by handicap" },
+    { n: meta.min_ball_contributors ?? 6, label: "ball comparisons" },
+    { n: meta.min_contributors ?? 8, label: "club benchmarks" },
+  ].sort((a, b) => a.n - b.n);
+
+  // The nearest gate this pool has NOT cleared. Once they're all cleared the
+  // strip stops counting and points at the published data instead.
+  const next = milestones.find((m) => contributors < m.n) ?? null;
+  const target = next?.n ?? milestones[milestones.length - 1].n;
+
+  return {
+    contributors,
+    shots,
+    milestones,
+    next,
+    target,
+    pct: target > 0 ? Math.min(100, (contributors / target) * 100) : 0,
+    remaining: next ? next.n - contributors : 0,
+    generatedDate: data?.generated_date ?? null,
+  };
+}
+
 // ---- Community feed: feed.json (recent contributions) ----------------------
 // Written alongside summary.json by the aggregator. "Live" means fresh as of the
 // last build/deploy, the page states when. Every field here is already safe to

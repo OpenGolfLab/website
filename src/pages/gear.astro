@@ -740,7 +740,16 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
       hasLineups ? (
         <>
           {/* ---- Driver spectrum ---- */}
-          <section class="lab-band" id="drivers">
+          {/* The four bag categories are counted separately: the Gear Guide is
+              one long scroll, so page views can't say which category is
+              earning the traffic, and that's what decides where research time
+              goes next. */}
+          <section
+            class="lab-band"
+            id="drivers"
+            data-ogl-view="gear_section_view"
+            data-ogl-detail="drivers"
+          >
             <div class="lab-band-head">
               <h2 id="lineups">2026 Driver Lineup Spectrum</h2>
               <p class="text-muted" style="max-width:66ch;">
@@ -864,7 +873,12 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
 
           {/* ---- Iron map (quadrant plot) ---- */}
           {irons.hasLineups && ironMap && (
-            <section class="lab-band" id="irons">
+            <section
+              class="lab-band"
+              id="irons"
+              data-ogl-view="gear_section_view"
+              data-ogl-detail="irons"
+            >
               <div class="lab-band-head">
                 <h2 id="iron-map">2026 Iron Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
@@ -945,7 +959,12 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
 
           {/* ---- Wedge map (quadrant plot) ---- */}
           {wedges.hasLineups && wedgeMap && (
-            <section class="lab-band" id="wedges">
+            <section
+              class="lab-band"
+              id="wedges"
+              data-ogl-view="gear_section_view"
+              data-ogl-detail="wedges"
+            >
               <div class="lab-band-head">
                 <h2 id="wedge-map">2026 Wedge Map</h2>
                 <p class="text-muted" style="max-width:66ch;">
@@ -1024,7 +1043,12 @@ const ballMobileLineups = balls.spectrumLineups.map((lineup: any) => ({
 
           {/* ---- Golf ball map (quadrant plot) ---- */}
           {balls.hasLineups && ballMap && (
-            <section class="lab-band" id="balls">
+            <section
+              class="lab-band"
+              id="balls"
+              data-ogl-view="gear_section_view"
+              data-ogl-detail="balls"
+            >
               <div class="lab-band-head">
                 <h2 id="ball-map">2026 Golf Ball Map</h2>
                 <p class="text-muted" style="max-width:66ch;">

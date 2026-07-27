@@ -2,12 +2,19 @@
 
 Posts pulled from the live site (2026-07-15) to be rolled out one at a time.
 Published so far: `introducing-opengolflab.md`, plus the first pair on
-2026-07-16 — `gspro-has-no-memory.md` + `meet-golf-sim-analytics.md` (moved
-back to `src/content/blog/`).
+2026-07-16 — `gspro-has-no-memory.md` + `meet-golf-sim-analytics.md` — and
+`run-your-own-club-fitting-in-your-sim.md` on 2026-07-26, shipped alongside the
+sample-size calculator it now depends on (all moved back to
+`src/content/blog/`).
 
-Suggested remaining order: `speed-training-95-to-130` next (its only link
-target is now live). The final four cross-link heavily (see table below), so
-publish them as a batch — or one at a time, accepting temporary dead links.
+Suggested remaining order, re-ranked by contributor-acquisition value rather
+than narrative: `how-many-strokes-is-dispersion-worth` next (it pairs with the
+planned dispersion → strokes-gained tool), then
+`does-the-ball-you-hit-into-your-screen-matter`, then
+`is-your-old-driver-costing-you-distance`, and `speed-training-95-to-130` last
+— the best story of the five, and the one that converts traffic you don't have
+yet. They cross-link heavily (see table below), so publish as a batch, or one
+at a time accepting temporary dead links.
 
 **To publish one:** move it back to `src/content/blog/` — the blog index, RSS
 feed, and post page pick it up automatically. Consider bumping its `pubDate`
@@ -39,3 +46,9 @@ publish in any order and accept temporary 404s / trim the links as you go.
 - `src/pages/lab/gear.astro` — ball-map caption used to end with "; whether
   your own monitor can even see these differences is
   [its own story](/blog/does-the-ball-you-hit-into-your-screen-matter)."
+- `src/content/blog/run-your-own-club-fitting-in-your-sim.md` — published with
+  its three outbound post links trimmed to plain prose. Restore them when the
+  targets ship: "same ball, every shot" → `does-the-ball…`; and in "Lateral
+  width", "actually shows up" → `is-your-old-driver…` and "for most golfers"
+  → `how-many-strokes…`. Its sample-size paragraph was also rewritten against
+  `/lab/tools/sample-size`; those numbers are computed, leave them alone.

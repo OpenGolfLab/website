@@ -1,0 +1,17 @@
+---
+/**
+ * Mounts the funnel counters (src/lib/analytics.ts) on every page, and exposes
+ * `window.oglTrack` for the page-level calculators — those run as `is:inline`
+ * scripts because they take build-time data through `define:vars`, so they
+ * can't import a module and need a global to call into.
+ *
+ * Page analytics (Cloudflare Web Analytics) is a separate tag in BaseHead.
+ */
+---
+
+<script>
+  import { track, boot } from "../lib/analytics";
+
+  window.oglTrack = track;
+  boot();
+</script>

@@ -60,7 +60,10 @@ const {
 
   <LabNav />
 
-  <div class="container lab-body">
+  {/* Scroll depth is counted here and nowhere else: the "be one of the first
+      N" ask sits well down this page, and whether readers ever reach it is a
+      thing to measure rather than guess at. */}
+  <div class="container lab-body" data-ogl-scroll>
     {/* States the sample-data situation before anything on the page can be
         misread, and carries the off switch. Both are meant to be deleted once
         the real pool is big enough — see the component. */}

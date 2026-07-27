@@ -20,5 +20,16 @@
   // URL. Attaching opengolflab.com is being done from the Cloudflare dashboard
   // instead (it manages the DNS record + token scope that the CI deploy can't),
   // so this file stays workers.dev-only.
-  "workers_dev": true
+  "workers_dev": true,
+
+  // Sink for the site's funnel counters (src/pages/api/e.ts). The dataset is
+  // created on first write — nothing to provision in the dashboard. If this
+  // account can't use Analytics Engine, deleting this block is safe: the
+  // endpoint checks for the binding and no-ops without it.
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "opengolflab_events"
+    }
+  ]
 }

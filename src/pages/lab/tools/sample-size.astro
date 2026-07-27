@@ -1,0 +1,962 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import LabNav from "../../../components/LabNav.astro";
+import {
+  approxShots,
+  detectableDifference,
+  sdFromRange,
+  shotsPerClub,
+  DRIVER_CLAIM_YD,
+  TIGHTER_CLAIM_PCT,
+  HCP_BANDS,
+} from "../../../lib/power";
+import "../../../styles/lab.css";
+
+const title = "The sample-size problem, The Lab";
+const description =
+  "Golf gear has a sample-size problem: the differences being sold are smaller than the scatter of the swings used to test them. Here's the story in three numbers, and a calculator to run it on your own game.";
+
+// ---- The luck-zone chart, rendered at build from the same functions the
+// calculator uses in the browser. One curve — the smallest gap n shots per
+// driver can trust, at a mid-handicap spread — with everything below it
+// shaded: gaps in that zone are the size luck alone opens between identical
+// drivers, which is "not statistically significant" said plainly.
+const PLOT = { x0: 60, x1: 700, y0: 24, y1: 320 };
+const N_MIN = 5;
+const N_MAX = 150;
+const Y_MAX = 20;
+
+const sx = (n: number) =>
+  PLOT.x0 + ((n - N_MIN) / (N_MAX - N_MIN)) * (PLOT.x1 - PLOT.x0);
+const sy = (yards: number) =>
+  PLOT.y1 - (Math.min(yards, Y_MAX) / Y_MAX) * (PLOT.y1 - PLOT.y0);
+
+// The chart's worked spread. One curve, not three: the handicap bands live in
+// the calculator, where the answer is personal; the chart's one job is the
+// shape of the luck zone.
+const MID = HCP_BANDS[1];
+
+const curvePts: string[] = [];
+for (let n = N_MIN; n <= N_MAX; n++) {
+  const y = detectableDifference(n, MID.sd);
+  if (y > Y_MAX) continue; // off the top of the chart, honestly clipped
+  curvePts.push(`${sx(n).toFixed(1)},${sy(y).toFixed(1)}`);
+}
+const curveD = `M ${curvePts.join(" L ")}`;
+// The zone is everything at or below the curve, including the columns left of
+// where the curve exits the top of the chart.
+const zoneD =
+  `M ${PLOT.x0} ${PLOT.y0} L ${curvePts[0].split(",")[0]} ${PLOT.y0} ` +
+  `L ${curvePts.join(" L ")} L ${PLOT.x1} ${PLOT.y1} L ${PLOT.x0} ${PLOT.y1} Z`;
+
+const xTicks = [10, 30, 60, 90, 120, 150];
+const yTicks = [0, 5, 10, 15, 20];
+
+// The two marks the chart is built around: where a retail fitting lands, and
+// where the claim finally climbs out of the luck zone.
+const FITTING_N = 12; // a generous retail fitting bay
+const CLAIM_YARDS = DRIVER_CLAIM_YD;
+const fittingSees = detectableDifference(FITTING_N, MID.sd);
+const claimNeedsApprox = approxShots(shotsPerClub(CLAIM_YARDS, MID.sd));
+const crossX = sx(shotsPerClub(CLAIM_YARDS, MID.sd));
+
+// How often luck alone hands one of two IDENTICAL drivers a win of at least
+// the claimed margin, in a fitting-sized test: 2·(1 − Φ(δ / (σ·√(2/n)))).
+// Φ via Zelen–Severo 26.2.17, |error| < 7.5e-8 — far past what one decimal
+// of "x times in 10" needs.
+const phi = (z: number) => {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = Math.exp((-z * z) / 2) / Math.sqrt(2 * Math.PI);
+  const p =
+    d * t *
+    (0.31938153 +
+      t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return z >= 0 ? 1 - p : p;
+};
+const luckWinTenths = Math.round(
+  10 * 2 * (1 - phi(CLAIM_YARDS / (MID.sd * Math.sqrt(2 / FITTING_N)))),
+);
+
+// The worked example the whole page tells, computed rather than asserted.
+// It starts from the same place the calculator's default does, a mid-handicap
+// driver ("my last 10 drives spanned 43 yards"), and derives the spread
+// through the same range estimator, so the number on the story card and the
+// calculator's first answer agree at display precision.
+const STORY_SHOTS = 10;
+const STORY_SPAN = 43; // yd longest-to-shortest: 10 drives at the mid band
+const STORY_SD = sdFromRange(STORY_SPAN, STORY_SHOTS);
+const claimApprox = approxShots(shotsPerClub(CLAIM_YARDS, STORY_SD));
+
+// ---- The calculator's picks. Driver-only and illustrative on purpose: the
+// two claims every driver launch makes, and a spread assumed from handicap,
+// because that's the number people actually know.
+const CLAIMS = [
+  {
+    key: "distance",
+    label: "More distance",
+    sub: `+${DRIVER_CLAIM_YD} yd carry claim`,
+  },
+  {
+    key: "dispersion",
+    label: "Tighter dispersion",
+    sub: `${TIGHTER_CLAIM_PCT}% tighter claim`,
+  },
+] as const;
+
+const BUDGETS = [
+  { n: 20, label: "One session", sub: "~20 per driver" },
+  { n: 40, label: "A weekend", sub: "~40 per driver" },
+  { n: 60, label: "Committed", sub: "~60 per driver" },
+] as const;
+
+// Scatter strips: the SAME ten drives drawn at each band's consistency, so
+// the strips differ only by spread and the eye compares like with like.
+// Deterministic (seeded) so builds are stable.
+const STRIP = { w: 220, h: 44, pxPerYd: 2.4 };
+
+function mulberry32(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rng = mulberry32(7);
+const stripZ: number[] = [];
+const stripY: number[] = [];
+for (let i = 0; i < 10; i++) {
+  // Box-Muller, clamped so the loosest preset still fits the strip.
+  const z = Math.sqrt(-2 * Math.log(Math.max(rng(), 1e-9))) *
+    Math.cos(2 * Math.PI * rng());
+  stripZ.push(Math.max(-2.2, Math.min(2.2, z)));
+  stripY.push(8 + rng() * (STRIP.h - 16));
+}
+const pickers = HCP_BANDS.map((p) => ({
+  ...p,
+  dots: stripZ.map((z, i) => ({
+    x: +(STRIP.w / 2 + z * p.sd * STRIP.pxPerYd).toFixed(1),
+    y: +stripY[i].toFixed(1),
+  })),
+}));
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight lab-hero">
+    <div class="container lab-hero-inner">
+      <span class="pill lab-band-pill lab-status live">● Live, no data needed</span>
+      <h1>Golf gear has a sample-size problem</h1>
+      <p class="lede" style="margin-top:1rem;">
+        The differences being sold are smaller than the scatter of the swings
+        used to test them. Fittings, reviews, your own A/B session: most gear
+        verdicts are coin flips read out loud.
+      </p>
+    </div>
+  </section>
+
+  <LabNav />
+
+  <div class="container lab-body">
+    <!-- ---------------------------- THE STORY ---------------------------- -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">The whole problem, in three numbers</p>
+        <h2>A dozen swings can't answer a five-yard question</h2>
+      </div>
+
+      <div class="ss-story">
+        <div class="card ss-story-card">
+          <p class="ss-story-num tnum">{CLAIM_YARDS} yd</p>
+          <h3>The claim</h3>
+          <p class="text-muted">
+            "Up to five more yards." Every launch, every season. It sounds like
+            something a few swings could confirm.
+          </p>
+        </div>
+        <div class="card ss-story-card">
+          <p class="ss-story-num tnum">{STORY_SPAN} yd</p>
+          <h3>Your scatter</h3>
+          <p class="text-muted">
+            Hit {STORY_SHOTS} drives and your longest and shortest carries can
+            easily sit {STORY_SPAN} yards apart. That's not a flaw in your
+            swing. That's golf.
+          </p>
+        </div>
+        <div class="card ss-story-card">
+          <p class="ss-story-num tnum">~{claimApprox}</p>
+          <h3>The arithmetic</h3>
+          <p class="text-muted">
+            Seeing a {CLAIM_YARDS}-yard difference through that scatter takes
+            around {claimApprox} shots <em>per driver</em>. A retail fitting
+            gives you about {FITTING_N}.
+          </p>
+        </div>
+      </div>
+
+      <p class="lab-caption">
+        Small signal, big scatter, not enough shots — that's the sample-size
+        problem, and it applies to every gear verdict ever published,
+        including ours. The numbers above are a realistic worked example, not
+        anyone's data; the arithmetic is exact. Put your own picks in below
+        and the answer is about you.
+      </p>
+    </section>
+
+    <!-- ---------------------------- THE CALCULATOR ---------------------------- -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">The calculator</p>
+        <h2>Could your driver test actually tell?</h2>
+        <p class="text-muted" style="max-width:66ch;">
+          Three picks, no numbers to know. Say what the new driver promises,
+          tell it your handicap, and be honest about how much testing you'd
+          really do.
+        </p>
+      </div>
+
+      <div class="card ss-card">
+        <form id="ss-form" class="ss-form" autocomplete="off">
+          <fieldset class="ss-field">
+            <legend class="ss-label">What does the new driver promise?</legend>
+            <div class="ss-chips" role="radiogroup" aria-label="The claim you're testing">
+              {
+                CLAIMS.map((c, i) => (
+                  <label class="ss-chip">
+                    <input
+                      type="radio"
+                      name="ss-claim"
+                      value={c.key}
+                      checked={i === 0}
+                    />
+                    <span>{c.label}</span>
+                    <span class="ss-chip-sub tnum">{c.sub}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+
+          <fieldset class="ss-field">
+            <legend class="ss-label">Your handicap</legend>
+            <div class="ss-scatter" role="radiogroup" aria-label="Your handicap band">
+              {
+                pickers.map((p, i) => (
+                  <label class="ss-scatter-card">
+                    <input
+                      type="radio"
+                      name="ss-band"
+                      value={p.sd}
+                      data-key={p.key}
+                      checked={i === 1}
+                    />
+                    <svg
+                      viewBox={`0 0 ${STRIP.w} ${STRIP.h}`}
+                      class="ss-strip"
+                      aria-hidden="true"
+                    >
+                      <line
+                        x1={STRIP.w / 2}
+                        y1="3"
+                        x2={STRIP.w / 2}
+                        y2={STRIP.h - 3}
+                        class="ss-strip-mid"
+                      />
+                      {p.dots.map((d) => (
+                        <circle cx={d.x} cy={d.y} r="3.2" style={`fill:${p.hue}`} />
+                      ))}
+                    </svg>
+                    <span class="ss-scatter-label">{p.label}</span>
+                    <span class="ss-scatter-sub">{p.blurb}</span>
+                  </label>
+                ))
+              }
+            </div>
+            <p class="ss-hint">
+              The same ten drives, drawn at each band's typical consistency.
+            </p>
+          </fieldset>
+
+          <fieldset class="ss-field">
+            <legend class="ss-label">How much testing would you really do?</legend>
+            <div class="ss-chips" role="radiogroup" aria-label="Shots you'd hit per driver">
+              {
+                BUDGETS.map((b, i) => (
+                  <label class="ss-chip">
+                    <input
+                      type="radio"
+                      name="ss-budget"
+                      value={b.n}
+                      checked={i === 0}
+                    />
+                    <span>{b.label}</span>
+                    <span class="ss-chip-sub tnum">{b.sub}</span>
+                  </label>
+                ))
+              }
+            </div>
+          </fieldset>
+        </form>
+
+        <div id="ss-result" class="ss-result">
+          <p class="ss-state-line">
+            <span id="ss-state" class="pill ss-state"></span>
+          </p>
+          <p class="ss-big-line">
+            <span id="ss-required" class="ss-big tnum"></span>
+            <span class="ss-big-caption">
+              shots per driver to call it, <span id="ss-sessions"></span>
+            </span>
+          </p>
+          <p id="ss-vs" class="ss-vs"></p>
+
+          <p id="ss-verdict" class="ss-verdict"></p>
+
+          <div class="ss-actions">
+            <button type="button" id="ss-copy" class="btn btn-secondary">Copy the verdict</button>
+            <span id="ss-copied" class="ss-copied" hidden>Copied</span>
+          </div>
+
+          <p class="lab-caption ss-caption">
+            "Enough" means a real difference gets found 4 times in 5 and a
+            phantom one sneaks through 1 time in 20, assuming you alternate
+            drivers every few shots. Dispersion claims compare spreads rather
+            than averages, which costs far more shots — the tighter-dispersion
+            promise is the hardest one on the box to check. (Stats: two-sample,
+            two-sided at 5%, 80% power, spreads on the log scale.)
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------------------------- THE LUCK ZONE ---------------------------- -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">The picture</p>
+        <h2>The luck zone</h2>
+        <p class="text-muted" style="max-width:68ch;">
+          Give a mid-handicapper two <em>identical</em> drivers, {FITTING_N}
+          swings each, and about {luckWinTenths} times in 10 one of them
+          "wins" by {CLAIM_YARDS} yards or more. Pure luck. So a gap only
+          means something once it's too big for luck to explain — out of the
+          shaded zone. At {FITTING_N} shots that takes about
+          {Math.round(fittingSees)} yards; a {CLAIM_YARDS}-yard claim doesn't
+          climb out until around {claimNeedsApprox} shots per driver.
+        </p>
+      </div>
+
+      <figure class="figure ss-figure">
+        <svg viewBox="0 0 760 372" class="ss-svg" role="img"
+          aria-label={`Gap between two drivers against shots hit with each, for a mid-handicap spread of ${MID.sd} yards. The region below the curve is shaded "could just be luck": at ${FITTING_N} shots any gap under about ${Math.round(fittingSees)} yards could be luck, so the ${CLAIM_YARDS}-yard claim only becomes trustworthy at around ${claimNeedsApprox} shots per driver.`}>
+          {/* Gridlines + y axis */}
+          {
+            yTicks.map((t) => (
+              <>
+                <line
+                  x1={PLOT.x0}
+                  x2={PLOT.x1}
+                  y1={sy(t)}
+                  y2={sy(t)}
+                  class="ss-grid"
+                />
+                <text x={PLOT.x0 - 10} y={sy(t) + 4} class="ss-tick ss-tick-y">
+                  {t}
+                </text>
+              </>
+            ))
+          }
+          {
+            xTicks.map((t) => (
+              <text x={sx(t)} y={PLOT.y1 + 22} class="ss-tick ss-tick-x">
+                {t}
+              </text>
+            ))
+          }
+
+          {/* The luck zone and its boundary */}
+          <path d={zoneD} class="ss-zone" />
+          <path d={curveD} class="ss-curve" />
+
+          {/* The claim line, and the two dots that tell the story: a fitting
+              deep inside the zone, and the shot count where the claim gets
+              out. Labels render after lines, so text wins where they cross. */}
+          <line
+            x1={PLOT.x0}
+            x2={PLOT.x1}
+            y1={sy(CLAIM_YARDS)}
+            y2={sy(CLAIM_YARDS)}
+            class="ss-ref"
+          />
+          <circle cx={sx(FITTING_N)} cy={sy(CLAIM_YARDS)} r="5" class="ss-dot ss-dot-fitting" />
+          <circle cx={crossX} cy={sy(CLAIM_YARDS)} r="5" class="ss-dot ss-dot-cross" />
+
+          <text x={sx(FITTING_N) + 2} y={sy(CLAIM_YARDS) - 14} class="ss-ref-label">
+            a {FITTING_N}-shot fitting
+          </text>
+          <text x={crossX} y={sy(CLAIM_YARDS) - 14} class="ss-ref-label ss-ref-mid">
+            believable after ~{claimNeedsApprox} shots
+          </text>
+          <text x={PLOT.x1} y={sy(CLAIM_YARDS) + 17} class="ss-ref-label ss-ref-right">
+            the “{CLAIM_YARDS} more yards” claim
+          </text>
+
+          <text x={sx(60)} y={sy(2)} class="ss-zone-label">
+            could just be luck
+          </text>
+          <text x={sx(100)} y={sy(15)} class="ss-trust-label">
+            too big to be luck
+          </text>
+
+          {/* Axis lines last, so they sit over the grid */}
+          <line x1={PLOT.x0} x2={PLOT.x1} y1={PLOT.y1} y2={PLOT.y1} class="ss-axis" />
+          <line x1={PLOT.x0} x2={PLOT.x0} y1={PLOT.y0} y2={PLOT.y1} class="ss-axis" />
+
+          <text x={PLOT.x0} y={PLOT.y1 + 46} class="ss-axis-label">
+            shots you hit with each driver
+          </text>
+          {/* Rotated into the left margin: under rotate(-90) a point (x, y)
+              lands at screen (y, -x), so -x is the vertical centre of the
+              plot and y is how far in from the left edge it sits. */}
+          <text
+            x={-(PLOT.y0 + PLOT.y1) / 2}
+            y={16}
+            class="ss-axis-label ss-axis-label-y"
+            transform="rotate(-90)"
+          >
+            gap between the drivers (yd)
+          </text>
+        </svg>
+        <figcaption>
+          Drawn for a mid-handicap driver spread (~{MID.sd} yd shot to shot);
+          steadier swings shrink the zone, wilder ones grow it, and the
+          calculator above covers both. Same arithmetic as the calculator,
+          nothing measured.
+        </figcaption>
+      </figure>
+    </section>
+
+    <!-- ---------------------------- WHY IT MATTERS ---------------------------- -->
+    <section class="lab-band">
+      <div class="lab-band-head">
+        <p class="eyebrow">Why this exists</p>
+        <h2>The number nobody publishes</h2>
+        <p class="text-muted" style="max-width:68ch;">
+          Almost nobody who publishes a gear verdict says how many shots were
+          behind it or how wide they were — and without those two numbers a
+          difference isn't a finding, it's a sample. Every figure this project
+          publishes carries its spread and its shot count; this page is that
+          policy, made checkable by anyone.
+        </p>
+        <div class="hero-cta" style="margin-top:1.2rem;">
+          <a href="/blog/run-your-own-club-fitting-in-your-sim" class="btn btn-primary">
+            The at-home fitting protocol
+          </a>
+          <a href="/lab#methodology" class="btn btn-secondary">Read the methodology</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import {
+    approxShots,
+    shotsPerClub,
+    detectableDifference,
+    shotsForTightening,
+    detectableTightening,
+    CLUB_GAP_YD,
+    DRIVER_CLAIM_YD,
+    TIGHTER_CLAIM_PCT,
+  } from "../../../lib/power";
+
+  /** A session of honest A/B testing is ~20 counted shots per driver:
+   *  alternate blocks of five, stop before fatigue (the fitting protocol). */
+  const SESSION_SHOTS = 20;
+
+  const $ = <T extends HTMLElement>(id: string) =>
+    document.getElementById(id) as T;
+
+  const form = $<HTMLFormElement>("ss-form");
+  const resultEl = $("ss-result");
+  const stateEl = $("ss-state");
+  const requiredEl = $("ss-required");
+  const sessionsEl = $("ss-sessions");
+  const vsEl = $("ss-vs");
+  const verdictEl = $("ss-verdict");
+  const copyBtn = $<HTMLButtonElement>("ss-copy");
+  const copiedEl = $("ss-copied");
+
+  const radios = (name: string) =>
+    Array.from(
+      document.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`),
+    );
+  const checked = (name: string) => radios(name).find((i) => i.checked);
+
+  let lastSentence = "";
+  let tracked = false;
+
+  /** Sessions phrase for a shot count: the unit people actually plan in. */
+  function sessions(shots: number): string {
+    const n = Math.max(1, Math.ceil(shots / SESSION_SHOTS));
+    return n === 1 ? "one session's work" : `about ${n} sessions of testing`;
+  }
+
+  /** A carry gap in club terms, the unit golfers feel. */
+  function clubPhrase(yards: number): string {
+    const r = yards / CLUB_GAP_YD;
+    if (r < 0.45) return "a fraction of a club";
+    if (r < 0.8) return "about half a club";
+    if (r <= 1.3) return "about a full club";
+    return "more than a full club";
+  }
+
+  const STATES = {
+    ok: "Testable",
+    warn: "Borderline",
+    no: "Coin flip",
+  } as const;
+
+  /**
+   * The verdict. Three bands, because the only decisions this informs are
+   * "test it", "test it across sessions", and "don't bother". Shot counts are
+   * quoted as "around N" and percentages as whole numbers: the model's
+   * assumptions don't support more precision, and pretending otherwise is
+   * exactly the habit this page exists to break.
+   */
+  function verdict(required: number, budget: number, winsBy: string) {
+    if (required <= budget) {
+      return `Your plan covers it. If one driver ${winsBy} over ${budget} shots each, that isn't luck. Buy with a clear conscience.`;
+    }
+    if (required <= budget * 3) {
+      return `Doable, just not in one go. Around ${approxShots(required)} shots per driver gets there, ${sessions(required)}. Alternate drivers every five shots and don't peek mid-session.`;
+    }
+    return `Not with this plan. You'd need around ${approxShots(required)} shots per driver, ${sessions(required)}. Anything less and the "winner" is a coin flip. Call it a tie and keep your money.`;
+  }
+
+  function render() {
+    const claim = checked("ss-claim")?.value ?? "distance";
+    const sd = parseFloat(checked("ss-band")?.value ?? "");
+    const budget = parseInt(checked("ss-budget")?.value ?? "", 10);
+    if (!isFinite(sd) || sd <= 0 || !budget) return;
+
+    let required: number;
+    let vs: string;
+    let winsBy: string;
+    let share: string;
+
+    if (claim === "dispersion") {
+      // Spread-vs-spread test: skill level cancels out, and the required
+      // count dwarfs the distance claim's. That IS the finding.
+      required = shotsForTightening(TIGHTER_CLAIM_PCT / 100);
+      const canSee = Math.round(detectableTightening(budget) * 100);
+      vs =
+        `${budget} shots per driver can only confirm a dispersion tightening of ` +
+        `about ${canSee}%. The claim is ${TIGHTER_CLAIM_PCT}%. Skill level doesn't ` +
+        `change this one: relative spread costs the same at every handicap.`;
+      winsBy = `is ${TIGHTER_CLAIM_PCT}% tighter`;
+      share =
+        `Confirming a "${TIGHTER_CLAIM_PCT}% tighter dispersion" driver claim takes around ${approxShots(required)} shots per driver, ${sessions(required)}. ` +
+        `${budget} per driver can only confirm ${canSee}%. via opengolflab.com/lab/tools/sample-size`;
+    } else {
+      required = shotsPerClub(DRIVER_CLAIM_YD, sd);
+      const resolves = detectableDifference(budget, sd);
+      vs =
+        `${budget} shots per driver can only confirm a carry gap of ${clubPhrase(resolves)}, ` +
+        `about ${Math.round(resolves)} yards. The claim is ${DRIVER_CLAIM_YD}.`;
+      winsBy = `wins by ${DRIVER_CLAIM_YD} yards`;
+      share =
+        `Confirming a "+${DRIVER_CLAIM_YD} yards" driver claim takes around ${approxShots(required)} shots per driver, ${sessions(required)}. ` +
+        `${budget} per driver only sees ${clubPhrase(resolves)}. via opengolflab.com/lab/tools/sample-size`;
+    }
+
+    const state =
+      required <= budget ? "ok" : required <= budget * 3 ? "warn" : "no";
+
+    resultEl.dataset.state = state;
+    stateEl.textContent = STATES[state];
+    requiredEl.textContent = `~${approxShots(required)}`;
+    sessionsEl.textContent = sessions(required);
+    vsEl.textContent = vs;
+    verdictEl.textContent = verdict(required, budget, winsBy);
+    lastSentence = share;
+  }
+
+  function change() {
+    const wasTracked = tracked;
+    tracked = true;
+    render();
+    if (!wasTracked) {
+      window.oglTrack?.(
+        "sample_size_calc_complete",
+        `${checked("ss-claim")?.value ?? ""}/${checked("ss-band")?.dataset.key ?? ""}`,
+      );
+    }
+  }
+
+  form.addEventListener("submit", (e) => e.preventDefault());
+  ["ss-claim", "ss-band", "ss-budget"].forEach((name) =>
+    radios(name).forEach((input) => input.addEventListener("change", change)),
+  );
+
+  // First paint with the defaults, so the page opens answered.
+  render();
+
+  copyBtn.addEventListener("click", async () => {
+    if (!lastSentence) return;
+    try {
+      await navigator.clipboard.writeText(lastSentence);
+      window.oglTrack?.("share_link_copy", "sample-size");
+      copiedEl.hidden = false;
+      setTimeout(() => (copiedEl.hidden = true), 1600);
+    } catch {
+      /* clipboard unavailable; quietly do nothing */
+    }
+  });
+</script>
+
+<style>
+  /* ---- The story ---- */
+  .ss-story {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .ss-story-num {
+    font-family: var(--font-head);
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--green);
+  }
+  /* The three numbers escalate: claim, scatter, price of the truth. The last
+     one lands in the same violet the calculator uses for "hopeless". */
+  .ss-story-card:nth-child(2) .ss-story-num {
+    color: var(--amber);
+  }
+  .ss-story-card:nth-child(3) .ss-story-num {
+    color: var(--violet);
+  }
+  .ss-story-card h3 {
+    margin-top: 0.6rem;
+    font-size: 1.05rem;
+  }
+  .ss-story-card p.text-muted {
+    margin-top: 0.45rem;
+    font-size: 0.95rem;
+  }
+
+  /* ---- Calculator ---- */
+  .ss-card {
+    max-width: 780px;
+  }
+  .ss-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    align-items: flex-start;
+  }
+  .ss-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .ss-label {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    padding: 0;
+  }
+  /* Choice chips (claim + budget) */
+  .ss-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .ss-chip {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+  }
+  .ss-chip:hover {
+    border-color: var(--border-strong);
+  }
+  .ss-chip:has(input:checked) {
+    border-color: var(--green);
+    color: var(--text);
+  }
+  .ss-chip:has(input:focus-visible) {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  .ss-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .ss-chip-sub {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* Scatter picker: pictures, not numbers */
+  .ss-scatter {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.6rem;
+    width: 100%;
+  }
+  .ss-scatter-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 0.6rem 0.7rem;
+    cursor: pointer;
+    transition: border-color 0.15s var(--ease);
+  }
+  .ss-scatter-card:hover {
+    border-color: var(--border-strong);
+  }
+  .ss-scatter-card:has(input:checked) {
+    border-color: var(--green);
+  }
+  .ss-scatter-card:has(input:focus-visible) {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  .ss-scatter-card input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .ss-strip {
+    width: 100%;
+    height: auto;
+  }
+  .ss-strip-mid {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+  }
+  .ss-scatter-label {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+  .ss-scatter-sub {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .ss-scatter-card:has(input:checked) .ss-scatter-label {
+    color: var(--text);
+  }
+
+  .ss-hint {
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 62ch;
+  }
+
+  /* ---- Result ---- */
+  .ss-result {
+    margin-top: 1.6rem;
+    border-top: 1px solid var(--border);
+    padding-top: 1.4rem;
+  }
+  .ss-state-line {
+    margin-bottom: 0.7rem;
+  }
+  .ss-state {
+    font-weight: 600;
+  }
+  .ss-result[data-state="ok"] .ss-state {
+    color: var(--green);
+    border-color: var(--green-dim);
+  }
+  .ss-result[data-state="warn"] .ss-state {
+    color: var(--amber);
+    border-color: var(--amber);
+  }
+  .ss-result[data-state="no"] .ss-state {
+    color: var(--violet);
+    border-color: var(--violet);
+  }
+  .ss-big-line {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+  .ss-big {
+    font-family: var(--font-head);
+    font-size: 2.8rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--green);
+  }
+  /* The headline number carries the answer, so it carries the colour too:
+     green when the plan works, amber when it needs more sessions, violet when
+     the test is hopeless. Never red — nothing here is an error. */
+  .ss-result[data-state="warn"] .ss-big {
+    color: var(--amber);
+  }
+  .ss-result[data-state="no"] .ss-big {
+    color: var(--violet);
+  }
+  .ss-big-caption {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .ss-vs {
+    margin-top: 0.7rem;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    max-width: 62ch;
+  }
+  .ss-em {
+    color: var(--text);
+  }
+  .ss-verdict {
+    margin-top: 1rem;
+    color: var(--text-muted);
+    max-width: 62ch;
+  }
+  .ss-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-top: 1.2rem;
+  }
+  .ss-copied {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--green);
+  }
+  .ss-caption {
+    margin-top: 1.1rem;
+    max-width: 68ch;
+  }
+
+  /* ---- Power curve ---- */
+  /* On narrow screens the chart scrolls sideways instead of scaling down:
+     a 760-unit viewBox squeezed into a phone renders its labels at ~6px,
+     and readability outranks fitting the whole figure on screen at once. */
+  .ss-figure {
+    max-width: 860px;
+    overflow-x: auto;
+  }
+  .ss-svg {
+    width: 100%;
+    min-width: 620px;
+    height: auto;
+    overflow: visible;
+  }
+  /* Every label gets a page-colored halo, so text stays readable wherever a
+     curve or gridline runs underneath it. */
+  .ss-svg text {
+    paint-order: stroke;
+    stroke: var(--bg);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+  .ss-grid {
+    stroke: var(--border);
+    stroke-width: 1;
+  }
+  .ss-axis {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+  }
+  .ss-ref {
+    stroke: var(--text-dim);
+    stroke-width: 1;
+    stroke-dasharray: 3 4;
+  }
+  .ss-ref-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    fill: var(--text-muted);
+  }
+  .ss-ref-right {
+    text-anchor: end;
+  }
+  .ss-ref-mid {
+    text-anchor: middle;
+  }
+  .ss-zone {
+    fill: var(--violet);
+    fill-opacity: 0.08;
+  }
+  .ss-curve {
+    fill: none;
+    stroke: var(--violet);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  /* The zone labels are the chart's actual message, so they read louder than
+     the reference labels. */
+  .ss-zone-label,
+  .ss-trust-label {
+    font-family: var(--font-head);
+    font-size: 17px;
+    font-weight: 600;
+    text-anchor: middle;
+  }
+  .ss-zone-label {
+    fill: var(--violet);
+  }
+  .ss-trust-label {
+    fill: var(--green);
+  }
+  .ss-dot-fitting {
+    fill: var(--amber);
+  }
+  .ss-dot-cross {
+    fill: var(--green);
+  }
+  .ss-tick {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    fill: var(--text-muted);
+  }
+  .ss-tick-y {
+    text-anchor: end;
+  }
+  .ss-tick-x {
+    text-anchor: middle;
+  }
+  .ss-axis-label {
+    font-family: var(--font-body);
+    font-size: 13px;
+    fill: var(--text-muted);
+  }
+  .ss-axis-label-y {
+    text-anchor: middle;
+  }
+
+  @media (max-width: 700px) {
+    .ss-big {
+      font-size: 2.2rem;
+    }
+    .ss-story {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

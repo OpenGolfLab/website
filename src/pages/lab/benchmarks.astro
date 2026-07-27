@@ -238,6 +238,8 @@ const sourceEntries = Object.entries(sourceList);
     youEl.style.left = clampPct(v) + "%";
 
     resultEl.hidden = false;
+    // Lead-magnet conversion: a result rendered, not just a page opened.
+    window.oglTrack?.("benchmark_calc_complete", m.key);
   }
 
   form.addEventListener("submit", (e) => {
@@ -252,6 +254,7 @@ const sourceEntries = Object.entries(sourceList);
     if (!lastSentence) return;
     try {
       await navigator.clipboard.writeText(lastSentence);
+      window.oglTrack?.("share_link_copy", "benchmarks");
       copiedEl.hidden = false;
       setTimeout(() => (copiedEl.hidden = true), 1600);
     } catch {

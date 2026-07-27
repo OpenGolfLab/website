@@ -1,0 +1,173 @@
+---
+/**
+ * The contributor progress strip.
+ *
+ * Contributor supply is the binding constraint on everything in The Lab: no
+ * benchmark, ball comparison or gapping table publishes until enough golfers
+ * have shared sessions. That ask currently lives on /lab/community, which is
+ * one of the least-visited pages on the site, so this is the same scarcity —
+ * a real count and a visible finish line — rendered site-wide.
+ *
+ * Every number comes from public/data/summary.json at build time. Nothing here
+ * is hand-typed, so it cannot go stale the way the counts in the planning docs
+ * did; a fresh aggregate plus a deploy is the whole update path.
+ */
+import { loadProgress } from "../lib/lab";
+
+interface Props {
+  /**
+   * "footer" is the quiet site-wide instance. "hero" is the loud one directly
+   * under the home page hero, where it's the first thing after the pitch.
+   */
+  variant?: "footer" | "hero";
+}
+const { variant = "footer" } = Astro.props;
+
+const { contributors, shots, next, target, pct } = loadProgress();
+
+// Nothing to count toward once every gate is cleared: the strip flips from an
+// ask to a signpost rather than showing a full bar forever.
+const publishing = next === null;
+---
+
+<aside
+  class:list={["cprog", variant]}
+  aria-label="Community dataset progress"
+>
+  <div class="container cprog-inner">
+    <p class="cprog-lead">
+      <span class="cprog-count tnum">
+        <strong>{contributors}</strong>{!publishing && <> / {target}</>}
+      </span>
+      <span class="cprog-word">
+        contributor{contributors === 1 ? "" : "s"}
+      </span>
+      <span class="cprog-dot" aria-hidden="true">·</span>
+      <span class="tnum cprog-shots">{shots.toLocaleString()}</span>
+      <span class="cprog-word">shots pooled</span>
+    </p>
+
+    {
+      !publishing && (
+        <div
+          class="cprog-track"
+          role="img"
+          aria-label={`${contributors} of ${target} contributors`}
+        >
+          <span class="cprog-fill" style={`width:${pct}%`} />
+        </div>
+      )
+    }
+
+    <p class="cprog-gate">
+      {
+        publishing ? (
+          <>The first community numbers are live.</>
+        ) : (
+          <>
+            Next publish: {next.label} at <span class="tnum">{target}</span>.
+          </>
+        )
+      }
+      <a href="/download" class="cprog-cta">
+        {publishing ? "See the data" : "Be one of them"} →
+      </a>
+    </p>
+  </div>
+</aside>
+
+<style>
+  .cprog {
+    border-block: 1px solid var(--border);
+    background: var(--bg-elevated);
+  }
+  /* In the footer the strip sits directly on top of the footer's own top
+     border, so it drops its own to avoid a double rule. */
+  .cprog.footer {
+    border-top: 0;
+  }
+  .cprog-inner {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.1rem;
+    padding-block: 0.85rem;
+  }
+  .cprog-lead {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .cprog-count {
+    color: var(--text-muted);
+  }
+  .cprog-count strong {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--green);
+  }
+  .cprog-shots {
+    color: var(--text-muted);
+  }
+  .cprog-dot {
+    color: var(--border-strong);
+  }
+
+  .cprog-track {
+    flex: 1 1 140px;
+    max-width: 260px;
+    height: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .cprog-fill {
+    display: block;
+    height: 100%;
+    background: var(--green);
+  }
+
+  .cprog-gate {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .cprog-cta {
+    margin-left: 0.5rem;
+    color: var(--green);
+    white-space: nowrap;
+  }
+
+  /* ---- Hero variant: same anatomy, more presence ---- */
+  .cprog.hero .cprog-inner {
+    padding-block: 1.1rem;
+  }
+  .cprog.hero .cprog-count strong {
+    font-size: 1.6rem;
+  }
+  .cprog.hero .cprog-lead,
+  .cprog.hero .cprog-gate {
+    font-size: 1rem;
+  }
+  .cprog.hero .cprog-gate {
+    color: var(--text-muted);
+  }
+
+  /* Stacked on narrow screens: the bar goes full width between the two lines
+     rather than being squeezed onto one of them. */
+  @media (max-width: 760px) {
+    .cprog-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+    .cprog-track {
+      max-width: none;
+      width: 100%;
+    }
+  }
+</style>

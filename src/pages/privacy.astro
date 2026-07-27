@@ -4,7 +4,7 @@ import { GITHUB_URL, PRODUCT_NAME } from "../consts";
 
 const title = "Data & privacy";
 const description =
-  "How OpenGolfLab handles your data: the app is local-first, contribution is opt-in and anonymized, only aggregates are published, your raw shots are never sold, and this website uses Google Analytics.";
+  "How OpenGolfLab handles your data: the app is local-first, contribution is opt-in and anonymized, only aggregates are published, your raw shots are never sold, and this website measures traffic without cookies.";
 const updated = "July 2026";
 ---
 
@@ -31,24 +31,38 @@ const updated = "July 2026";
         to contribute, no data ever leaves your machine.
       </p>
 
-      <h2>This website uses analytics</h2>
+      <h2>This website counts visits, without cookies</h2>
       <p>
-        The website is separate from the app, and it does use Google Analytics
-        to count visits. That means standard web analytics data, which pages
-        were viewed, roughly where in the world the visit came from, the
-        browser and device type, and which site referred you, is collected via
-        cookies while you browse opengolflab.com. It's used to see which pages
-        are worth keeping and nothing else.
+        The website is separate from the app, and it does measure traffic. It
+        uses <a
+          href="https://www.cloudflare.com/web-analytics/"
+          rel="noopener nofollow">Cloudflare Web Analytics</a
+        >, which is cookieless: it sets no cookie, stores nothing on your
+        device, and assigns you no identifier that follows you between pages,
+        sites or visits. That's why you have never seen a cookie banner here.
+        What it records is the page, the referring site, and coarse
+        browser/country/device information, in aggregate.
       </p>
       <p>
-        This is entirely separate from {PRODUCT_NAME} itself. Analytics runs on
-        this website only, it never runs in the app, it can't see your shot
-        data, and it isn't connected to contributions in any way. To opt out,
-        block cookies for this site or install Google's
+        Alongside it, a handful of first-party counters record which parts of
+        the site actually work: a download button being clicked, a calculator
+        being run, a section being read. They post to opengolflab.com itself,
+        no third party is involved, and each one carries the event name and the
+        page it happened on and nothing else, no identifier, no session, no
+        profile. Their entire purpose is telling whether people find the
+        contribute pitch, which is the thing this project is currently stuck
+        on. They respect
         <a
-          href="https://tools.google.com/dlpage/gaoptout"
-          rel="noopener nofollow">browser opt-out add-on</a
-        >.
+          href="https://developer.mozilla.org/docs/Web/API/Navigator/doNotTrack"
+          rel="noopener nofollow">Do Not Track</a
+        >: turn it on and nothing is sent.
+      </p>
+      <p>
+        This is all entirely separate from {PRODUCT_NAME} itself. It runs on
+        this website only, it never runs in the app, it can't see your shot
+        data, and it isn't connected to contributions in any way. The previous
+        version of this site used Google Analytics; it was removed, because a
+        local-first project has no business shipping a third-party cookie tag.
       </p>
 
       <h2>Contributing is opt-in</h2>

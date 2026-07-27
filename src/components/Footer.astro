@@ -1,8 +1,18 @@
 ---
 import Logo from "./Logo.astro";
+import ContributorProgress from "./ContributorProgress.astro";
 import { GITHUB_URL, SITE_TAGLINE } from "../consts";
 const year = new Date().getFullYear();
+
+// The home page runs the loud variant directly under its hero, so the footer
+// copy would be the same strip twice on one page.
+const onHome = Astro.url.pathname.replace(/\/$/, "") === "";
 ---
+
+{/* The contributor count rides above the footer on every page: it's the one
+    number the whole project is gated on, and it was only visible to people who
+    already found /lab/community. */}
+{!onHome && <ContributorProgress />}
 
 <footer class="footer">
   {/* The old trust bar lived here: four claims in 12px mono on every page.
