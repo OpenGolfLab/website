@@ -448,10 +448,8 @@ const pickers = HCP_BANDS.map((p) => ({
           policy, made checkable by anyone.
         </p>
         <div class="hero-cta" style="margin-top:1.2rem;">
-          <a href="/blog/run-your-own-club-fitting-in-your-sim" class="btn btn-primary">
-            The at-home fitting protocol
-          </a>
-          <a href="/lab#methodology" class="btn btn-secondary">Read the methodology</a>
+          <a href="/lab#methodology" class="btn btn-primary">Read the methodology</a>
+          <a href="/lab/community" class="btn btn-secondary">See the community data</a>
         </div>
       </div>
     </section>
@@ -471,7 +469,7 @@ const pickers = HCP_BANDS.map((p) => ({
   } from "../../../lib/power";
 
   /** A session of honest A/B testing is ~20 counted shots per driver:
-   *  alternate blocks of five, stop before fatigue (the fitting protocol). */
+   *  alternate blocks of five, stop before fatigue. */
   const SESSION_SHOTS = 20;
 
   const $ = <T extends HTMLElement>(id: string) =>

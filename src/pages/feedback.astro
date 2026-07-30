@@ -1,0 +1,243 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { PRODUCT_NAME } from "../consts";
+
+const title = "Send feedback";
+const description =
+  "Found a bug or have an idea for OpenGolfLab or Golf Sim Analytics? Tell us here — it lands straight in the maintainer's inbox.";
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section-tight fb-hero">
+    <div class="container">
+      <p class="eyebrow">Feedback</p>
+      <h1>Tell us what's broken, or what's missing</h1>
+      <p class="lede" style="margin-top:0.9rem;">
+        Bug reports and improvement ideas for the site or for {PRODUCT_NAME}
+        both land here, and every one gets read. ({PRODUCT_NAME} also has
+        <em>Send feedback</em> built in, under Settings.)
+      </p>
+    </div>
+  </section>
+
+  <div class="container fb-body">
+    <div class="card fb-card">
+      <form id="fb-form" class="fb-form" autocomplete="off">
+        <fieldset class="fb-field">
+          <legend class="fb-label">What kind of feedback?</legend>
+          <div class="fb-chips" role="radiogroup" aria-label="Feedback type">
+            <label class="fb-chip">
+              <input type="radio" name="fb-kind" value="bug" />
+              <span>Something's broken</span>
+            </label>
+            <label class="fb-chip">
+              <input type="radio" name="fb-kind" value="idea" checked />
+              <span>Make it better</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <label class="fb-field">
+          <span class="fb-label">What happened, or what should exist?</span>
+          <textarea
+            id="fb-message"
+            name="message"
+            rows="6"
+            maxlength="4000"
+            required
+            placeholder="The more specific, the more fixable. For bugs: what you did, what you expected, what you got."></textarea>
+        </label>
+
+        <label class="fb-field">
+          <span class="fb-label">
+            Email or handle <span class="fb-optional">optional, only if you
+            want a reply</span>
+          </span>
+          <input
+            id="fb-contact"
+            name="contact"
+            type="text"
+            maxlength="200"
+            placeholder="you@example.com"
+          />
+        </label>
+
+        {/* Honeypot: hidden from humans, tempting to bots. Matches the check
+            in api/feedback.ts. */}
+        <input
+          class="fb-hp"
+          type="text"
+          name="website"
+          tabindex="-1"
+          autocomplete="off"
+          aria-hidden="true"
+        />
+
+        <div class="fb-actions">
+          <button type="submit" id="fb-send" class="btn btn-primary">
+            Send it
+          </button>
+          <span id="fb-status" class="fb-status" role="status"></span>
+        </div>
+      </form>
+
+      <p id="fb-done" class="fb-done" hidden>
+        Got it — thank you. If you left a contact, you'll hear back when it
+        ships or when there's a question.
+      </p>
+    </div>
+
+    <p class="fb-caption">
+      What's sent: your words, the feedback type, the contact if you offered
+      one, and your browser's user-agent string (it helps reproduce bugs).
+      Nothing else — no identifier, no tracking.
+    </p>
+  </div>
+</BaseLayout>
+
+<script>
+  const form = document.getElementById("fb-form") as HTMLFormElement;
+  const message = document.getElementById("fb-message") as HTMLTextAreaElement;
+  const contact = document.getElementById("fb-contact") as HTMLInputElement;
+  const send = document.getElementById("fb-send") as HTMLButtonElement;
+  const status = document.getElementById("fb-status") as HTMLElement;
+  const done = document.getElementById("fb-done") as HTMLElement;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!message.value.trim()) return;
+
+    const kind =
+      form.querySelector<HTMLInputElement>('input[name="fb-kind"]:checked')
+        ?.value ?? "idea";
+
+    send.disabled = true;
+    status.textContent = "Sending…";
+
+    try {
+      const res = await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          kind,
+          message: message.value,
+          contact: contact.value,
+          source: "website",
+          page: location.pathname,
+          website: form.querySelector<HTMLInputElement>(".fb-hp")?.value ?? "",
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      window.oglTrack?.("feedback_submit", kind);
+      form.hidden = true;
+      status.textContent = "";
+      done.hidden = false;
+    } catch {
+      send.disabled = false;
+      status.textContent =
+        "Couldn't send it — connection hiccup, most likely. Your message is still here; try again.";
+    }
+  });
+</script>
+
+<style>
+  .fb-body {
+    max-width: 720px;
+    padding-bottom: 3rem;
+  }
+  .fb-card {
+    padding: 1.6rem;
+  }
+  .fb-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .fb-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .fb-label {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .fb-optional {
+    color: var(--text-dim);
+    opacity: 0.7;
+  }
+  .fb-chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .fb-chip {
+    display: inline-flex;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    padding: 0.5rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s var(--ease), color 0.15s var(--ease);
+  }
+  .fb-chip:hover {
+    border-color: var(--border-strong);
+  }
+  .fb-chip:has(input:checked) {
+    border-color: var(--green);
+    color: var(--text);
+  }
+  .fb-chip:has(input:focus-visible) {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+  .fb-chip input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  textarea,
+  input[type="text"] {
+    font: inherit;
+    color: var(--text);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    padding: 0.6rem 0.7rem;
+  }
+  textarea:focus-visible,
+  input[type="text"]:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 1px;
+  }
+  .fb-hp {
+    position: absolute !important;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .fb-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    flex-wrap: wrap;
+  }
+  .fb-status {
+    font-size: 0.95rem;
+    color: var(--amber);
+  }
+  .fb-done {
+    color: var(--text-muted);
+  }
+  .fb-caption {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    max-width: 62ch;
+  }
+</style>

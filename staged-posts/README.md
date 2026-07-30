@@ -2,10 +2,11 @@
 
 Posts pulled from the live site (2026-07-15) to be rolled out one at a time.
 Published so far: `introducing-opengolflab.md`, plus the first pair on
-2026-07-16 — `gspro-has-no-memory.md` + `meet-golf-sim-analytics.md` — and
-`run-your-own-club-fitting-in-your-sim.md` on 2026-07-26, shipped alongside the
-sample-size calculator it now depends on (all moved back to
-`src/content/blog/`).
+2026-07-16 — `gspro-has-no-memory.md` + `meet-golf-sim-analytics.md` (moved
+back to `src/content/blog/`). `run-your-own-club-fitting-in-your-sim.md` was
+published 2026-07-26 alongside the sample-size calculator, then pulled back
+here on 2026-07-29 (needs a rework before it ships again); the sample-size
+page's CTA no longer points at it.
 
 Suggested remaining order, re-ranked by contributor-acquisition value rather
 than narrative: `how-many-strokes-is-dispersion-worth` next (it pairs with the

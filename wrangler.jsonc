@@ -31,5 +31,19 @@
       "binding": "ANALYTICS",
       "dataset": "opengolflab_events"
     }
+  ],
+
+  // Feedback inbox (src/pages/api/feedback.ts) — bug reports and ideas from
+  // the site's /feedback form and the desktop app's Send Feedback dialog.
+  // Read it with:
+  //   npx wrangler d1 execute opengolflab-feedback --remote \
+  //     --command "SELECT ts, source, kind, message, contact FROM feedback ORDER BY ts DESC LIMIT 50"
+  // Schema lives in db/feedback-schema.sql (idempotent; re-run it to migrate).
+  "d1_databases": [
+    {
+      "binding": "FEEDBACK_DB",
+      "database_name": "opengolflab-feedback",
+      "database_id": "eddd2f7f-6ab6-46d2-abfc-968aa759377d"
+    }
   ]
 }
