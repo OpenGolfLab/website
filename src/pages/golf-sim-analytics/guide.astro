@@ -17,7 +17,7 @@ const dashboards = [
     items: [
       {
         name: "Dispersion",
-        what: "Your shot pattern per club — left/right offline against distance — drawn as a density cloud with the individual shots on top. Switchable between carry and total, and between an In-Depth view and a Simple one that collapses each club to a mean marker with spread whiskers.",
+        what: "Your shot pattern per club — left/right offline against distance — drawn as a density cloud with the individual shots on top. Switchable between carry and total, and between three Detail views: In-Depth, Simple (each club collapsed to a mean marker with spread whiskers), and Rings — one solid ellipse per group holding 80% of its shots. An Effort filter slices shots by % of your max swing speed for that club, and Compare bands rings your easiest, middle and hardest thirds against each other.",
         why: "Distance is the number everyone quotes and the number that matters least. Two players who both carry a 7-iron 155 are not the same golfer if one is inside a 12-yard window and the other is inside 40. Dispersion is the shape of your miss, and the shape of your miss is what sets your scores.",
         read: "Look at the width of the cloud before the position of it. A tight cloud offset to one side is an aim problem, which is free to fix. A wide cloud centred on target is a strike problem, which is not.",
       },
@@ -29,9 +29,9 @@ const dashboards = [
       },
       {
         name: "Club Gapping",
-        what: "Carry distance per club as a box-and-strip plot, with an even-gap target marker beside each club showing where it would sit if your bag were spaced perfectly evenly from longest to shortest.",
+        what: "Carry distance per club as overlapping density curves on one shared yardage axis, above a row of every raw shot with a solid median dot per club. An even-gap target marks where each club's median would sit if the bag were spaced perfectly evenly from longest to shortest, with the yardage delta in a column at the right edge.",
         why: "Bags are bought one club at a time and gapped by nobody. Overlaps and holes are invisible on the range and obvious the moment the whole set is on one axis.",
-        read: "A club sitting far from its even-gap dot is either duplicating a neighbour or leaving a distance you can't cover. Two clubs whose boxes overlap heavily means one of them isn't earning its slot.",
+        read: "A club sitting far from its even-gap dot is either duplicating a neighbour or leaving a distance you can't cover. Two clubs whose curves sit on top of each other are doing the same job, and one of them isn't earning its slot.",
       },
       {
         name: "Swing Efficiency",
@@ -46,7 +46,7 @@ const dashboards = [
         read: "The trend matters, not the value. A rising line across sessions is progress even if the number never leaves the sixties.",
       },
       {
-        name: "Shot & Club Trends",
+        name: "Session Stats",
         what: "Shots per club per calendar day across your entire history, stacked by club, with summary tiles beneath.",
         why: "Practice honesty. Almost everyone believes their practice is more balanced than it is, and this is the chart that shows the driver bar towering over the wedges.",
         read: "Deliberately ignores the global time filter — it's the all-time view. Look for clubs that barely appear: those are the ones with no data behind their numbers anywhere else in the app.",

@@ -58,9 +58,9 @@ const dashboards = [
     cat: "Metrics",
     stat: "6 dashboards",
     title: "Know every number",
-    items: "Dispersion · Trajectory · Club Gapping · Swing Efficiency · Shot Quality · Shot & Club Trends",
+    items: "Dispersion · Trajectory · Club Gapping · Swing Efficiency · Shot Quality · Session Stats",
     img: "/images/screenshots/dispersion.jpg",
-    alt: "Dispersion dashboard plotting shot landing positions with left-right and carry scatter, colored by club, against an ideal target ellipse.",
+    alt: "Dispersion dashboard plotting shot landing positions with left-right and carry scatter, colored by club, over per-club density contours.",
   },
   {
     cat: "Optimization",
@@ -76,7 +76,7 @@ const dashboards = [
     title: "Test before you buy",
     items: "Compare shafts and adapter settings head-to-head with live shot capture, and let the dispersion decide.",
     img: "/images/screenshots/gapping_benchmarks.jpg",
-    alt: "Club gapping chart with carry-distance bars for each club overlaid with PGA Tour benchmark markers to reveal distance gaps.",
+    alt: "Club gapping chart with per-club carry density curves and rows of raw shots, overlaid with even-gap targets and PGA Tour benchmark markers to reveal distance gaps.",
   },
   {
     cat: "Speed Training",
@@ -221,6 +221,38 @@ const softwareLd = {
           <img
             src="/images/screenshots/dispersion.jpg"
             alt="Dispersion chart comparing shot patterns, the view used to judge two club configurations head-to-head."
+            width="2000"
+            height="1194"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= EFFORT ANALYSIS ======================= -->
+  <section class="section" style="padding-top:0;">
+    <div class="container">
+      <div class="fitbay card">
+        <div class="fitbay-copy">
+          <p class="eyebrow">Effort analysis</p>
+          <h2>What does swinging harder actually cost you?</h2>
+          <p class="text-muted" style="margin-top:0.85rem;max-width:54ch;">
+            Every shot is scored as a percentage of your max speed with that
+            club, then split into your easiest, middle and hardest thirds.
+            One ring per band — each holding 80% of its shots — shows what
+            going after one buys in carry and costs in dispersion. The
+            answer is usually not what you'd guess, and now it's measured.
+          </p>
+          <div class="hero-cta">
+            <a href="/golf-sim-analytics/guide#dashboards" class="btn btn-secondary">How to read it</a>
+          </div>
+        </div>
+        <div class="fitbay-shot">
+          <img
+            src="/images/screenshots/effort_bands.jpg"
+            alt="Dispersion chart comparing driver shots by swing effort: three rings for the easiest, middle and hardest thirds of swings, the hardest sitting longer at nearly the same width."
             width="2000"
             height="1194"
             loading="lazy"
