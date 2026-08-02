@@ -30,6 +30,11 @@ const simOnly = [
     body: "Cruising speed, fatigue curve and progression across every session.",
     icon: "m12 14 4-4M3.34 19a10 10 0 1 1 17.32 0",
   },
+  {
+    title: "A golfer each",
+    body: "Everyone in the house gets their own history. On-course rounds sort themselves out per shot.",
+    icon: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0 8 4 4 0 0 0 0-8m13 14v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
+  },
 ];
 
 // Local-first guarantees, the "your data, your rules" grid.
@@ -272,7 +277,7 @@ const softwareLd = {
         Manual-entry apps top out at a few typed-in shots. Your rig produces
         hundreds a session, captured automatically.
       </p>
-      <ul class="features">
+      <ul class="features simonly">
         {
           simOnly.map((f) => (
             <li class="feature card">
@@ -490,6 +495,12 @@ const softwareLd = {
   /* Data-rules 2×2 grid */
   .rules {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Four sim-only cards: 4-up rather than 3-up, so the fourth doesn't sit
+     alone on its own row. Falls back to the shared 2-up / 1-up breakpoints. */
+  .simonly {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   .sample-note {

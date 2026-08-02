@@ -142,6 +142,11 @@ const dashboards = [
 // Controls that apply across every dashboard at once.
 const filters = [
   {
+    name: "Player",
+    detail: "One golfer, or everyone who hits into the sim.",
+    note: "Only appears once there's more than one golfer in your data. On-course rounds attribute themselves per shot from your GSPro profile, so a round with several players splits correctly without anyone touching a control; range sessions and CSV imports follow “Who's hitting” in Settings, because GSPro doesn't record a golfer for those. Settings → Assign past sessions re-files anything that went to the wrong name.",
+  },
+  {
     name: "Time",
     detail: "Current session · All time · Last session · Last 3 · Last 5 · Last 30 days.",
     note: "“Current session” reads the live buffer, so it fills in as you hit rather than after the round is archived.",
