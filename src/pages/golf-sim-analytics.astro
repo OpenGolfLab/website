@@ -4,11 +4,19 @@ import Screenshot from "../components/Screenshot.astro";
 import JsonLd from "../components/JsonLd.astro";
 import {
   LATEST_DOWNLOAD_URL,
+  LATEST_RELEASE_URL,
   PRODUCT_NAME,
   PRODUCT_OS,
   PRODUCT_PRICE,
   SITE_URL,
 } from "../consts";
+import { formatReleaseDate, getLatestRelease } from "../lib/release";
+
+// Resolved at build time so the real numbers are in the served HTML. A release
+// published after this deploy is corrected client-side from /api/version —
+// see the script at the bottom of this file.
+const release = await getLatestRelease();
+const releaseDate = formatReleaseDate(release.publishedAt);
 
 const title = "Golf Sim Analytics";
 const description = `${PRODUCT_NAME} is a free Windows app for GSPro, zero-click capture, 15 interactive dashboards, live rounds, speed training, and unlimited local history. Free, open source, no account.`;
@@ -150,6 +158,25 @@ const softwareLd = {
             the feature sections further down. The screenshot does the work. */}
         <p class="app-free-note">
           Free · {PRODUCT_OS} · Open source · <a href="/download">Install guide &amp; FAQ</a>
+        </p>
+
+        {/* Version + release date, sitting directly under the download button
+            because "is this current, and what am I getting?" is a question you
+            have at the moment you're deciding to click it. Values come from the
+            GitHub release itself (src/lib/release.ts) — never hand-maintained,
+            because releases ship without this site being rebuilt. Hidden
+            outright if GitHub couldn't be reached, rather than showing an empty
+            badge. */}
+        <p class="app-version" data-version-badge hidden={!release.version}>
+          <a href={LATEST_RELEASE_URL} rel="noopener">
+            <span class="ver-dot" aria-hidden="true"></span>
+            <span class="ver-num" data-version-number>{release.version}</span>
+            {releaseDate && (
+              <span class="ver-date">
+                · updated <span data-version-date>{releaseDate}</span>
+              </span>
+            )}
+          </a>
         </p>
       </div>
     </div>
@@ -354,6 +381,58 @@ const softwareLd = {
   </section>
 </BaseLayout>
 
+<script>
+  // Keep the version badge honest between deploys.
+  //
+  // This page is prerendered, so the badge holds whatever was current when the
+  // site was last built. Releases ship WITHOUT a site deploy (the download
+  // button resolves releases/latest by name), so after any release the baked-in
+  // number is stale — and it's stale on the exact page telling people what
+  // they're downloading. /api/version reads GitHub live behind a 15-minute edge
+  // cache; this reconciles the two.
+  //
+  // Everything here is best-effort: a failed fetch leaves the build-time value
+  // alone, which is either right or one release behind, and never blank.
+  (async () => {
+    const badge = document.querySelector<HTMLElement>("[data-version-badge]");
+    if (!badge) return;
+    try {
+      const res = await fetch("/api/version");
+      if (!res.ok) return;
+      const { version, publishedAt } = (await res.json()) as {
+        version?: string;
+        publishedAt?: string;
+      };
+      if (!version) return;
+
+      const numEl = badge.querySelector<HTMLElement>("[data-version-number]");
+      if (numEl && numEl.textContent !== version) numEl.textContent = version;
+
+      const dateEl = badge.querySelector<HTMLElement>("[data-version-date]");
+      if (dateEl && publishedAt) {
+        const d = new Date(publishedAt);
+        if (!Number.isNaN(d.getTime())) {
+          // Viewer's own timezone, not UTC. A release published at 7pm US
+          // time is already "tomorrow" in UTC, so a UTC date reads as a day
+          // in the future to the person who just published it. The build-time
+          // fallback has to pick something and picks UTC; this corrects it to
+          // whatever "yesterday" actually means where the reader is sitting.
+          dateEl.textContent = d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+        }
+      }
+      // The badge ships hidden when the build-time fetch came back empty
+      // (GitHub unreachable at deploy time) — a live answer un-hides it.
+      badge.hidden = false;
+    } catch {
+      /* keep whatever the build produced */
+    }
+  })();
+</script>
+
 <style>
   .app-hero {
     position: relative;
@@ -380,6 +459,44 @@ const softwareLd = {
     font-family: var(--font-body);
     font-size: 0.95rem;
     color: var(--text-dim);
+  }
+
+  /* Version badge. Reads as a status pill rather than body text so it's
+     findable at a glance without competing with the download button. */
+  .app-version {
+    margin-top: 0.7rem;
+  }
+  .app-version a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    background: var(--bg-elevated);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+  }
+  .app-version a:hover {
+    border-color: var(--green-dim);
+    color: var(--text);
+  }
+  .ver-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    flex: none;
+  }
+  .ver-num {
+    color: var(--text);
+    font-weight: 600;
+    /* Tabular figures so the pill doesn't jitter when the client-side
+       refresh swaps in a different version number. */
+    font-variant-numeric: tabular-nums;
   }
   .app-hero-shot {
     margin-top: -1.5rem;
